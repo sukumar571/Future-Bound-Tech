@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/admin-sidebar :: adminSidebar('students')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <div>
+                            <h1 class="h3" th:text="${student.fullName}">Student</h1>
+                            <p class="text-muted mb-0">Student profile &amp; activity</p>
+                        </div>
+                        <div class="text-nowrap">
+                            <a th:href="@{/admin/students/{id}/edit(id=${student.id})}" class="btn btn-primary"><i class="bi bi-pencil me-1"></i> Edit</a>
+                            <a th:href="@{/admin/students}" class="btn btn-link"><i class="bi bi-arrow-left"></i> Back</a>
+                        </div>
+                    </div>
+
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-5">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center gap-3 mb-3">
+                                        <div class="avatar-circle"><i class="bi bi-person"></i></div>
+                                        <div>
+                                            <div class="fw-semibold fs-5" th:text="${student.fullName}">Name</div>
+                                            <span class="badge" th:classappend="${student.active} ? 'text-bg-success' : 'text-bg-secondary'"
+                                                  th:text="${student.active} ? 'Active' : 'Inactive'">Active</span>
+                                        </div>
+                                    </div>
+                                    <dl class="row mb-0 small">
+                                        <dt class="col-4 text-muted">Email</dt><dd class="col-8" th:text="${student.email}">email</dd>
+                                        <dt class="col-4 text-muted">Phone</dt><dd class="col-8" th:text="${student.phone} ?: '—'">phone</dd>
+                                        <dt class="col-4 text-muted">Education</dt><dd class="col-8" th:text="${student.education} ?: '—'">edu</dd>
+                                        <dt class="col-4 text-muted">Joined</dt><dd class="col-8" th:text="${#temporals.format(student.createdAt, 'd MMM yyyy')}">date</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="row g-3 h-100 align-content-center">
+                                <div class="col-6">
+                                    <div class="card stat-card shadow-sm"><div class="card-body">
+                                        <div class="stat-value" th:text="${student.enrolledCourses}">0</div>
+                                        <div class="stat-label">Enrolled courses</div>
+                                    </div></div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="card stat-card shadow-sm"><div class="card-body">
+                                        <div class="stat-value" th:text="${student.completedCourses}">0</div>
+                                        <div class="stat-label">Completed courses</div>
+                                    </div></div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="card stat-card shadow-sm"><div class="card-body">
+                                        <div class="stat-label mb-1">Payment summary</div>
+                                        <div class="stat-value fs-5" th:text="${student.paymentSummary}">—</div>
+                                    </div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h2 class="h5 mt-4">Enrollments</h2>
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="table-responsive">
+                            <table class="table data-table mb-0 align-middle">
+                                <thead class="table-light"><tr><th>Course</th><th>Batch</th><th>Status</th><th>Enrolled</th></tr></thead>
+                                <tbody>
+                                    <tr th:each="e : ${enrollments}">
+                                        <td th:text="${e.courseTitle}">Course</td>
+                                        <td th:text="${e.batchName} ?: '—'">Batch</td>
+                                        <td><span class="badge text-bg-primary" th:text="${e.statusLabel}">Status</span></td>
+                                        <td th:text="${e.enrolledAt != null} ? ${#temporals.format(e.enrolledAt, 'd MMM yyyy')} : '—'">date</td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(enrollments)}">
+                                        <td colspan="4"><div class="empty-state"><i class="bi bi-ui-checks"></i>No enrollments yet.</div></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <h2 class="h5">Payments</h2>
+                    <div class="card border-0 shadow-sm">
+                        <div class="table-responsive">
+                            <table class="table data-table mb-0 align-middle">
+                                <thead class="table-light"><tr><th>Receipt</th><th>Course</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+                                <tbody>
+                                    <tr th:each="p : ${payments}">
+                                        <td th:text="${p.receiptNumber} ?: '—'">receipt</td>
+                                        <td th:text="${p.courseTitle}">Course</td>
+                                        <td th:text="${p.formattedAmount} ?: ${p.amount}">₹0</td>
+                                        <td><span class="badge" th:classappend="${p.status.name() == 'SUCCESS'} ? 'text-bg-success' : (${p.status.name() == 'FAILED'} ? 'text-bg-danger' : 'text-bg-warning')" th:text="${p.statusLabel}">Status</span></td>
+                                        <td th:text="${p.paidAt != null ? #temporals.format(p.paidAt, 'd MMM yyyy') : (p.createdAt != null ? #temporals.format(p.createdAt, 'd MMM yyyy') : '-')}">date</td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(payments)}">
+                                        <td colspan="5"><div class="empty-state"><i class="bi bi-credit-card"></i>No payments recorded.</div></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

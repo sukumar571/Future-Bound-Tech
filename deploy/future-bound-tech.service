@@ -1,0 +1,34 @@
+# ================================================================
+# Future Bound Tech — systemd unit (Linux server)
+# Install:  sudo cp deploy/future-bound-tech.service /etc/systemd/system/
+#           sudo systemctl daemon-reload
+#           sudo systemctl enable --now future-bound-tech
+#
+# Secrets are NOT stored in this file. systemd reads them from
+# /etc/future-bound-tech.env (chmod 600, owned by root) at startup.
+# ================================================================
+[Unit]
+Description=Future Bound Tech (Spring Boot LMS)
+After=network-online.target mysql.service
+Wants=mysql.service
+
+[Service]
+Type=simple
+User=fbt
+Group=fbt
+WorkingDirectory=/opt/future-bound-tech
+EnvironmentFile=/etc/future-bound-tech.env
+Environment=SPRING_PROFILES_ACTIVE=prod
+ExecStart=/usr/bin/java -Xms256m -Xmx1g -jar /opt/future-bound-tech/future-bound-tech-1.0.0.jar
+SuccessExitStatus=143
+Restart=on-failure
+RestartSec=10
+
+# Sandbagging: no writes outside its own dirs, no privileged ports.
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(${pageTitle})}">
+    <meta name="_csrf" th:content="${_csrf != null} ? ${_csrf.token} : ''">
+    <meta name="_csrf_header" th:content="${_csrf != null} ? ${_csrf.headerName} : ''">
+</head>
+
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+
+    <section class="student-shell">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-6">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+                    <div class="card border-0 shadow-sm card-accent blue text-center p-4">
+                        <div class="mx-auto mb-3" style="width:56px;height:56px;">
+                            <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading…</span></div>
+                        </div>
+                        <h1 class="h5 fw-bold">Complete your payment</h1>
+                        <p class="text-muted">
+                            Paying <strong th:text="${order.amount}">₹0</strong> for
+                            <strong th:text="${order.courseTitle}">Course</strong>.
+                        </p>
+                        <button id="payButton" class="btn btn-gradient py-2">
+                            <i class="bi bi-credit-card-fill me-1"></i> Open Secure Payment
+                        </button>
+                        <p class="small text-muted mt-3 mb-0"><i class="bi bi-shield-lock me-1"></i>If the payment window does not open, use the button above.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var order = {
+            key: /*[[${order.razorpayKeyId}]]*/ '',
+            orderId: /*[[${order.orderId}]]*/ '',
+            amount: /*[[${order.amountInPaise}]]*/ 0,
+            currency: /*[[${order.currency}]]*/ 'INR',
+            name: /*[[${order.merchantName}]]*/ 'Future Bound Tech',
+            description: /*[[${order.courseTitle}]]*/ '',
+            receipt: /*[[${order.receiptNumber}]]*/ '',
+            email: /*[[${order.customerEmail}]]*/ '',
+            contact: /*[[${order.customerPhone}]]*/ '',
+            courseSlug: /*[[${order.courseSlug}]]*/ ''
+        };
+        var csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+        var csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+        function verifyPayment(resp) {
+            var headers = { 'Content-Type': 'application/json' };
+            if (csrfHeader && csrfToken) { headers[csrfHeader] = csrfToken; }
+            fetch('/student/checkout/verify', {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify({
+                    razorpayOrderId: resp.razorpay_order_id,
+                    razorpayPaymentId: resp.razorpay_payment_id,
+                    razorpaySignature: resp.razorpay_signature
+                })
+            }).then(function (r) { return r.json(); }).then(function (data) {
+                if (data.success) {
+                    window.location.href = data.redirect;
+                } else {
+                    window.location.href = data.redirect
+                        || ('/student/payment/failed?slug=' + encodeURIComponent(order.courseSlug)
+                            + '&reason=' + encodeURIComponent(data.message || 'Payment could not be verified.'));
+                }
+            }).catch(function () {
+                window.location.href = '/student/payment/failed?slug=' + encodeURIComponent(order.courseSlug)
+                    + '&reason=' + encodeURIComponent('Could not verify the payment. Please contact support.');
+            });
+        }
+
+        function openCheckout() {
+            var rz = new Razorpay({
+                key: order.key,
+                amount: order.amount,
+                currency: order.currency,
+                name: order.name,
+                description: order.description,
+                order_id: order.orderId,
+                receipt: order.receipt,
+                prefill: { email: order.email, contact: order.contact },
+                theme: { color: '#4F46E5' },
+                handler: verifyPayment,
+                modal: {
+                    ondismiss: function () {
+                        window.location.href = '/student/payment/failed?slug=' + encodeURIComponent(order.courseSlug)
+                            + '&reason=' + encodeURIComponent('You cancelled the checkout before completing the payment.');
+                    }
+                }
+            });
+            rz.open();
+        }
+
+        document.getElementById('payButton').addEventListener('click', openCheckout);
+        window.addEventListener('load', openCheckout);
+        /*]]>*/
+    </script>
+</body>
+
+</html>

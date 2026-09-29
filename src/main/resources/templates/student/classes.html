@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+
+    <section class="student-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/student-sidebar :: studentSidebar('classes')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+                    <h1 class="h4 mb-4"><i class="bi bi-camera-video me-2 text-primary"></i>Live Classes</h1>
+
+                    <div class="row g-3" th:if="${!classes.isEmpty()}">
+                        <div class="col-md-6" th:each="cls : ${classes}">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <span class="badge"
+                                              th:classappend="${cls.upcoming} ? 'text-bg-success' : 'text-bg-secondary'"
+                                              th:text="${cls.upcoming} ? 'Upcoming' : ${cls.status}">Upcoming</span>
+                                        <small class="text-muted" th:text="${cls.batchName}">Batch</small>
+                                    </div>
+                                    <h2 class="h6" th:text="${cls.topic}">Topic</h2>
+                                    <p class="small text-muted mb-2"><i class="bi bi-journal me-1"></i><span th:text="${cls.courseTitle}">Course</span></p>
+                                    <p class="small mb-1">
+                                        <i class="bi bi-clock me-1 text-primary"></i>
+                                        <span th:text="${#temporals.format(cls.startTime, 'EEE, MMM d yyyy · h:mm a')}">Start</span>
+                                        <span th:if="${cls.endTime != null}" th:text="' – ' + ${#temporals.format(cls.endTime, 'h:mm a')}"></span>
+                                    </p>
+                                    <p class="small text-muted mb-1"><i class="bi bi-broadcast me-1"></i><span th:text="${cls.modeLabel}">Mode</span></p>
+                                    <a th:if="${cls.meetingLink != null}" th:href="${cls.meetingLink}" target="_blank"
+                                       rel="noopener" class="btn btn-sm btn-primary mt-2">
+                                        <i class="bi bi-box-arrow-up-right me-1"></i> Join Class
+                                    </a>
+                                    <p th:if="${cls.classroomDetails != null}" class="small mb-0 mt-2">
+                                        <i class="bi bi-geo-alt me-1 text-danger"></i><span th:text="${cls.classroomDetails}">Classroom</span>
+                                    </p>
+                                    <span th:if="${!cls.upcoming}" class="btn btn-sm btn-secondary disabled mt-2">Class ended</span>
+                                    <span th:if="${cls.upcoming and cls.meetingLink == null and cls.classroomDetails == null}" class="btn btn-sm btn-outline-secondary disabled mt-2">Details not published yet</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm" th:if="${classes.isEmpty()}">
+                        <div class="card-body empty-state">
+                            <i class="bi bi-calendar-x"></i>
+                            <h3 class="h5">No live classes yet</h3>
+                            <p>Scheduled classes for your enrolled courses will appear here.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/admin-sidebar :: adminSidebar('announcements')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <div>
+                            <h1 class="h3">Announcements</h1>
+                            <p class="text-muted mb-0" th:text="${#lists.size(announcements)} + ' post(s)'">0</p>
+                        </div>
+                        <a th:href="@{/admin/announcements/new}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i> New announcement</a>
+                    </div>
+
+                    <div class="card border-0 shadow-sm">
+                        <div class="table-responsive">
+                            <table class="table data-table mb-0 align-middle">
+                                <thead class="table-light">
+                                    <tr><th>Title</th><th>Audience</th><th>Published</th><th class="text-end">Actions</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="a : ${announcements}">
+                                        <td>
+                                            <div class="fw-semibold" th:text="${a.title}">Title</div>
+                                            <div class="small text-muted text-truncate" style="max-width:420px" th:text="${a.content}">content</div>
+                                        </td>
+                                        <td>
+                                            <span class="badge text-bg-dark" th:if="${a.global}">Global</span>
+                                            <span class="badge text-bg-primary" th:unless="${a.global}" th:text="${a.batchName} ?: 'Batch'">Batch</span>
+                                        </td>
+                                        <td class="small" th:text="${a.createdAt != null} ? ${#temporals.format(a.createdAt, 'd MMM yyyy')} : '—'">date</td>
+                                        <td class="text-end text-nowrap">
+                                            <a class="btn btn-sm btn-outline-primary" th:href="@{/admin/announcements/{id}/edit(id=${a.id})}" title="Edit"><i class="bi bi-pencil"></i></a>
+                                            <form th:action="@{/admin/announcements/{id}/delete(id=${a.id})}" method="post" class="d-inline" onsubmit="return confirm('Delete this announcement?');">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(announcements)}">
+                                        <td colspan="4"><div class="empty-state"><i class="bi bi-megaphone"></i>No announcements yet.</div></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/trainer-sidebar :: trainerSidebar('quizzes')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <div>
+                            <h1 class="h3" th:text="${editing} ? 'Edit quiz' : 'New quiz'">Quiz</h1>
+                            <p class="text-muted mb-0">Set the course, duration and passing score.</p>
+                        </div>
+                        <a th:href="@{/trainer/quizzes}" class="btn btn-link"><i class="bi bi-arrow-left"></i> Back</a>
+                    </div>
+
+                    <div class="card border-0 shadow-sm form-card">
+                        <div class="card-body p-4">
+                            <form th:action="@{${formAction}}" th:object="${quizForm}" method="post">
+                                <input type="hidden" th:field="*{id}">
+                                <div class="mb-3">
+                                    <label class="form-label" for="title">Title</label>
+                                    <input type="text" id="title" th:field="*{title}" class="form-control"
+                                           th:classappend="${#fields.hasErrors('title')} ? 'is-invalid'" placeholder="e.g. Java Fundamentals Quiz">
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label" for="courseId">Course</label>
+                                    <select id="courseId" th:field="*{courseId}" class="form-select"
+                                            th:classappend="${#fields.hasErrors('courseId')} ? 'is-invalid'">
+                                        <option value="">Select a course</option>
+                                        <option th:each="c : ${courses}" th:value="${c.id}" th:text="${c.title}">Course</option>
+                                    </select>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('courseId')}" th:errors="*{courseId}"></div>
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="timeLimitMinutes">Duration (minutes)</label>
+                                        <input type="number" id="timeLimitMinutes" th:field="*{timeLimitMinutes}" class="form-control" min="1"
+                                               th:classappend="${#fields.hasErrors('timeLimitMinutes')} ? 'is-invalid'">
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('timeLimitMinutes')}" th:errors="*{timeLimitMinutes}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="passingScore">Passing score (%)</label>
+                                        <input type="number" id="passingScore" th:field="*{passingScore}" class="form-control" min="0" max="100"
+                                               th:classappend="${#fields.hasErrors('passingScore')} ? 'is-invalid'">
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('passingScore')}" th:errors="*{passingScore}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="attemptLimit">Attempt limit</label>
+                                        <input type="number" id="attemptLimit" th:field="*{attemptLimit}" class="form-control" min="1" placeholder="Leave blank for unlimited"
+                                               th:classappend="${#fields.hasErrors('attemptLimit')} ? 'is-invalid'">
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('attemptLimit')}" th:errors="*{attemptLimit}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="status">Status</label>
+                                        <select id="status" th:field="*{status}" class="form-select">
+                                            <option value="PUBLISHED">Published — students can attempt</option>
+                                            <option value="DRAFT">Draft — hidden from students</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-2 mt-4">
+                                    <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i> <span th:text="${editing} ? 'Save changes' : 'Create quiz'">Save</span></button>
+                                    <a th:href="@{/trainer/quizzes}" class="btn btn-outline-secondary">Cancel</a>
+                                    <a th:if="${editing}" th:href="@{/trainer/quizzes/{id}/questions(id=${quizId})}" class="btn btn-outline-info"><i class="bi bi-list-ol me-1"></i> Manage questions</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

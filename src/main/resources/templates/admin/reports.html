@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/admin-sidebar :: adminSidebar('reports')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <div>
+                            <h1 class="h3">Reports</h1>
+                            <p class="text-muted mb-0">Institute performance &amp; revenue analytics</p>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-6 col-md-3">
+                            <div class="card stat-card shadow-sm"><div class="card-body">
+                                <div class="stat-value fs-5" th:text="${summary.get('collected')}">₹0</div>
+                                <div class="stat-label">Total collected</div>
+                            </div></div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="card stat-card shadow-sm"><div class="card-body">
+                                <div class="stat-value fs-5" th:text="${summary.get('net')}">₹0</div>
+                                <div class="stat-label">Net revenue</div>
+                            </div></div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="card stat-card shadow-sm"><div class="card-body">
+                                <div class="stat-value" th:text="${stats.totalEnrollments}">0</div>
+                                <div class="stat-label">Enrollments</div>
+                            </div></div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="card stat-card shadow-sm"><div class="card-body">
+                                <div class="stat-value" th:text="${stats.totalStudents}">0</div>
+                                <div class="stat-label">Students</div>
+                            </div></div>
+                        </div>
+                    </div>
+
+                    <div class="row g-4 mb-4">
+                        <div class="col-lg-6">
+                            <div class="card chart-card shadow-sm h-100">
+                                <div class="card-header bg-white fw-semibold">Courses by category</div>
+                                <div class="card-body"><div class="chart-wrap"><canvas id="categoryChart"></canvas></div></div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card chart-card shadow-sm h-100">
+                                <div class="card-header bg-white fw-semibold">Revenue by payment status</div>
+                                <div class="card-body"><div class="chart-wrap"><canvas id="revenueChart"></canvas></div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card chart-card shadow-sm mb-4">
+                        <div class="card-header bg-white fw-semibold">Enrollments by course</div>
+                        <div class="card-body"><div class="chart-wrap"><canvas id="enrollChart"></canvas></div></div>
+                    </div>
+
+                    <h2 class="h5">Payment transactions</h2>
+                    <form method="get" th:action="@{/admin/reports}" class="admin-toolbar">
+                        <select name="status" class="form-select" style="max-width:200px">
+                            <option value="">All statuses</option>
+                            <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}" th:selected="${s == selectedStatus}"></option>
+                        </select>
+                        <button type="submit" class="btn btn-outline-secondary"><i class="bi bi-funnel"></i> Filter</button>
+                        <a th:href="@{/admin/reports}" class="btn btn-link">Reset</a>
+                    </form>
+
+                    <div class="card border-0 shadow-sm">
+                        <div class="table-responsive">
+                            <table class="table data-table mb-0 align-middle">
+                                <thead class="table-light">
+                                    <tr><th>Receipt</th><th>Student</th><th>Course</th><th>Amount</th><th>Status</th><th>Date</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="p : ${payments}">
+                                        <td class="small" th:text="${p.receiptNumber} ?: '—'">receipt</td>
+                                        <td th:text="${p.studentName}">Student</td>
+                                        <td th:text="${p.courseTitle}">Course</td>
+                                        <td th:text="${p.formattedAmount} ?: ${p.amount}">₹0</td>
+                                        <td><span class="badge"
+                                                  th:classappend="${p.status.name() == 'SUCCESS'} ? 'text-bg-success' : (${p.status.name() == 'FAILED'} ? 'text-bg-danger' : 'text-bg-warning')"
+                                                  th:text="${p.statusLabel} ?: ${p.status}">Status</span></td>
+                                        <td class="small" th:text="${p.paidAt != null ? #temporals.format(p.paidAt, 'd MMM yyyy') : (p.createdAt != null ? #temporals.format(p.createdAt, 'd MMM yyyy') : '-')}">date</td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(payments)}">
+                                        <td colspan="6"><div class="empty-state"><i class="bi bi-credit-card"></i>No payments found.</div></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var categoryData = /*[[${stats.coursesByCategory}]]*/ [];
+        var revenueData = /*[[${stats.revenueByStatus}]]*/ [];
+        var enrollData = /*[[${stats.enrollmentsByCourse}]]*/ [];
+        document.addEventListener('DOMContentLoaded', function () {
+            if (typeof Chart === 'undefined') { return; }
+            var c = document.getElementById('categoryChart');
+            if (c) {
+                new Chart(c, { type: 'pie', data: {
+                    labels: categoryData.map(function (d) { return d.name; }),
+                    datasets: [{ data: categoryData.map(function (d) { return d.value; }),
+                        backgroundColor: ['#2563EB', '#16A34A', '#F59E0B', '#DC2626', '#7C3AED', '#0891B2'] }]
+                }, options: { responsive: true, maintainAspectRatio: false } });
+            }
+            var r = document.getElementById('revenueChart');
+            if (r) {
+                new Chart(r, { type: 'doughnut', data: {
+                    labels: revenueData.map(function (d) { return d.name; }),
+                    datasets: [{ data: revenueData.map(function (d) { return d.value; }),
+                        backgroundColor: ['#16A34A', '#F59E0B', '#DC2626', '#6B7280'] }]
+                }, options: { responsive: true, maintainAspectRatio: false } });
+            }
+            var e = document.getElementById('enrollChart');
+            if (e) {
+                new Chart(e, { type: 'bar', data: {
+                    labels: enrollData.map(function (d) { return d.name; }),
+                    datasets: [{ label: 'Enrollments', data: enrollData.map(function (d) { return d.value; }),
+                        backgroundColor: '#2563EB', borderRadius: 6 }]
+                }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+            }
+        });
+        /*]]>*/
+    </script>
+</body>
+</html>

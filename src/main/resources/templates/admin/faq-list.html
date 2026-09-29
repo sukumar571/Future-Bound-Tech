@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/admin-sidebar :: adminSidebar('faqs')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <div>
+                            <h1 class="h3">FAQs</h1>
+                            <p class="text-muted mb-0" th:text="${#lists.size(faqs)} + ' question(s)'">0</p>
+                        </div>
+                        <a th:href="@{/admin/faqs/new}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i> New FAQ</a>
+                    </div>
+
+                    <div class="card border-0 shadow-sm">
+                        <div class="table-responsive">
+                            <table class="table data-table mb-0 align-middle">
+                                <thead class="table-light">
+                                    <tr><th>Question</th><th>Category</th><th>Order</th><th>Status</th><th class="text-end">Actions</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="f : ${faqs}">
+                                        <td>
+                                            <div class="fw-semibold" th:text="${f.question}">Question</div>
+                                            <div class="small text-muted text-truncate" style="max-width:420px" th:text="${f.answer}">answer</div>
+                                        </td>
+                                        <td class="small" th:text="${f.category} ?: '—'">—</td>
+                                        <td th:text="${f.sortOrder}">0</td>
+                                        <td>
+                                            <span class="badge" th:classappend="${f.published} ? 'text-bg-success' : 'text-bg-secondary'"
+                                                  th:text="${f.published} ? 'Published' : 'Draft'">Published</span>
+                                        </td>
+                                        <td class="text-end text-nowrap">
+                                            <a class="btn btn-sm btn-outline-primary" th:href="@{/admin/faqs/{id}/edit(id=${f.id})}" title="Edit"><i class="bi bi-pencil"></i></a>
+                                            <form th:action="@{/admin/faqs/{id}/publish(id=${f.id})}" method="post" class="d-inline">
+                                                <input type="hidden" name="published" th:value="${f.published} ? 'false' : 'true'">
+                                                <button type="submit" class="btn btn-sm btn-outline-success" th:text="${f.published} ? 'Unpublish' : 'Publish'">Publish</button>
+                                            </form>
+                                            <form th:action="@{/admin/faqs/{id}/delete(id=${f.id})}" method="post" class="d-inline" onsubmit="return confirm('Delete this FAQ?');">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(faqs)}">
+                                        <td colspan="5"><div class="empty-state"><i class="bi bi-patch-question"></i>No FAQs yet.</div></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

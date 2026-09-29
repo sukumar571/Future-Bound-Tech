@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+
+    <section class="student-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/student-sidebar :: studentSidebar('enrollments')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h1 class="h4 mb-0"><i class="bi bi-ui-checks me-2 text-primary"></i>My Enrollments</h1>
+                        <a th:href="@{/courses}" class="btn btn-sm btn-outline-primary"><i class="bi bi-plus-lg me-1"></i> Enroll in more</a>
+                    </div>
+
+                    <div class="card border-0 shadow-sm" th:if="${!enrollments.isEmpty()}">
+                        <div class="table-responsive">
+                            <table class="table data-table align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr><th>Course</th><th>Batch</th><th>Mode</th><th>Amount</th><th>Status</th><th>Progress</th><th>Date</th><th class="text-end">Action</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="e : ${enrollments}">
+                                        <td class="fw-semibold" th:text="${e.courseTitle}">Course</td>
+                                        <td th:text="${e.batchName} ?: 'Assigned later'">Batch</td>
+                                        <td><span class="badge text-bg-light text-dark" th:text="${e.trainingModeLabel} ?: '—'">Mode</span></td>
+                                        <td th:text="${e.amountLabel} ?: '—'">₹0</td>
+                                        <td>
+                                            <span class="badge"
+                                                  th:classappend="${e.active} ? 'text-bg-primary' : (${e.completed} ? 'text-bg-success' : (${e.pendingPayment} ? 'text-bg-warning' : 'text-bg-secondary'))"
+                                                  th:text="${e.statusLabel}">Status</span>
+                                            <div class="small text-muted" th:if="${e.paymentStatusLabel}" th:text="'Payment: ' + ${e.paymentStatusLabel}"></div>
+                                        </td>
+                                        <td style="min-width:110px">
+                                            <div class="progress" style="height:6px">
+                                                <div class="progress-bar bg-success" th:style="'width:' + ${e.completionPercent} + '%'"></div>
+                                            </div>
+                                            <small class="text-muted" th:text="${e.completionPercent} + '%'">0%</small>
+                                        </td>
+                                        <td class="small" th:text="${e.enrolledAt != null} ? ${#temporals.format(e.enrolledAt, 'd MMM yyyy')} : '—'">date</td>
+                                        <td class="text-end">
+                                            <a th:if="${e.active or e.completed}" th:href="@{/student/courses/{id}(id=${e.courseId})}"
+                                               class="btn btn-sm btn-outline-primary">Open</a>
+                                            <a th:if="${e.pendingPayment}" th:href="@{/courses/{slug}(slug=${e.courseSlug})}"
+                                               class="btn btn-sm btn-primary">Complete payment</a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm" th:if="${enrollments.isEmpty()}">
+                        <div class="card-body empty-state">
+                            <i class="bi bi-ui-checks"></i>
+                            <h3 class="h5">No enrollments yet</h3>
+                            <p>Browse the catalog and enroll in a course to get started.</p>
+                            <a th:href="@{/courses}" class="btn btn-primary">Browse Courses</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+
+</html>

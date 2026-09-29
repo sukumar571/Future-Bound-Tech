@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+
+    <section class="student-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/student-sidebar :: studentSidebar('practice')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h1 class="h4 mb-0"><i class="bi bi-graph-up-arrow me-2 text-primary"></i>My Practice Performance</h1>
+                        <a th:href="@{/student/practice}" class="btn btn-link"><i class="bi bi-arrow-left"></i> Practice</a>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-6 col-md-3">
+                            <div class="card border-0 shadow-sm text-center h-100">
+                                <div class="card-body">
+                                    <div class="fs-3 fw-bold text-primary" th:text="${performance.totalAttempts}">0</div>
+                                    <div class="small text-muted">MCQs attempted</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="card border-0 shadow-sm text-center h-100">
+                                <div class="card-body">
+                                    <div class="fs-3 fw-bold text-success" th:text="${performance.accuracyPercent} + '%'">0%</div>
+                                    <div class="small text-muted">Accuracy (<span th:text="${performance.correctAttempts}">0</span> correct)</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="card border-0 shadow-sm text-center h-100">
+                                <div class="card-body">
+                                    <div class="fs-3 fw-bold text-info" th:text="${performance.mockTestsTaken}">0</div>
+                                    <div class="small text-muted">Mock tests taken</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="card border-0 shadow-sm text-center h-100">
+                                <div class="card-body">
+                                    <div class="fs-3 fw-bold text-warning" th:text="${performance.bestTestPercent != null} ? ${performance.bestTestPercent} + '%' : '—'">—</div>
+                                    <div class="small text-muted">Best test score (<span th:text="${performance.mockTestsPassed}">0</span> passed)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm mb-3" th:if="${!performance.byCategory.isEmpty()}">
+                        <div class="card-header bg-white fw-semibold"><i class="bi bi-bar-chart me-2 text-primary"></i>Accuracy by category</div>
+                        <div class="table-responsive">
+                            <table class="table align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Category</th>
+                                        <th class="text-end">Attempts</th>
+                                        <th class="text-end">Correct</th>
+                                        <th style="min-width:160px">Accuracy</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="s : ${performance.byCategory}">
+                                        <td th:text="${s.category}">Java</td>
+                                        <td class="text-end" th:text="${s.attempts}">0</td>
+                                        <td class="text-end" th:text="${s.correct}">0</td>
+                                        <td>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="progress flex-grow-1" style="height:8px">
+                                                    <div class="progress-bar" role="progressbar"
+                                                         th:style="'width:' + ${s.accuracyPercent} + '%'"
+                                                         th:classappend="${s.accuracyPercent >= 70} ? 'bg-success' : (${s.accuracyPercent >= 40} ? 'bg-warning' : 'bg-danger')"></div>
+                                                </div>
+                                                <span class="small text-muted" th:text="${s.accuracyPercent} + '%'">0%</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-lg-6">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-header bg-white fw-semibold"><i class="bi bi-clock-history me-2 text-primary"></i>Recent attempts</div>
+                                <div class="list-group list-group-flush" th:if="${!performance.recentAttempts.isEmpty()}">
+                                    <div class="list-group-item d-flex justify-content-between align-items-center gap-2" th:each="a : ${performance.recentAttempts}">
+                                        <div class="text-truncate">
+                                            <span th:text="${#strings.abbreviate(a.questionText, 60)}">Question</span>
+                                            <div class="small text-muted" th:text="${a.categoryLabel}">Category</div>
+                                        </div>
+                                        <span class="badge flex-shrink-0"
+                                              th:classappend="${a.correct} ? 'text-bg-success' : 'text-bg-danger'"
+                                              th:text="${a.correct} ? 'Correct' : 'Wrong'">Correct</span>
+                                    </div>
+                                </div>
+                                <div class="card-body text-muted small" th:if="${performance.recentAttempts.isEmpty()}">
+                                    No practice attempts yet. <a th:href="@{/student/practice/mcq}">Start practicing →</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-header bg-white fw-semibold"><i class="bi bi-clipboard-check me-2 text-success"></i>Recent mock tests</div>
+                                <div class="list-group list-group-flush" th:if="${!performance.recentTests.isEmpty()}">
+                                    <div class="list-group-item d-flex justify-content-between align-items-center gap-2" th:each="t : ${performance.recentTests}">
+                                        <div>
+                                            <span th:text="${#strings.abbreviate(t.title, 40)}">Test</span>
+                                            <div class="small text-muted" th:if="${t.submittedAt != null}"
+                                                 th:text="${#temporals.format(t.submittedAt, 'MMM d, yyyy')}">date</div>
+                                        </div>
+                                        <div class="text-end flex-shrink-0">
+                                            <span class="fw-bold" th:text="${t.percentage} + '%'">0%</span>
+                                            <span class="badge d-block"
+                                                  th:classappend="${t.passed} ? 'text-bg-success' : 'text-bg-danger'"
+                                                  th:text="${t.passed} ? 'Passed' : 'Failed'">Passed</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body text-muted small" th:if="${performance.recentTests.isEmpty()}">
+                                    No mock tests taken yet. <a th:href="@{/student/practice/tests}">Browse tests →</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

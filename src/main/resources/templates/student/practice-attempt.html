@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+
+    <section class="student-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/student-sidebar :: studentSidebar('practice')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+                    <a th:href="@{/student/practice/mcq}" class="btn btn-link mb-2"><i class="bi bi-arrow-left"></i> Back to MCQs</a>
+
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="badge text-bg-primary" th:text="${question.categoryLabel}">Category</span>
+                                <span class="badge"
+                                      th:classappend="${question.difficulty == 'HARD'} ? 'text-bg-danger' : (${question.difficulty == 'MEDIUM'} ? 'text-bg-warning' : 'text-bg-success')"
+                                      th:text="${question.difficulty}">EASY</span>
+                            </div>
+                            <h1 class="h5 mb-1" th:text="${question.questionText}">Question?</h1>
+                            <p class="small text-muted mb-4">
+                                <span th:if="${question.topic}">Topic: <span th:text="${question.topic}">t</span> · </span>
+                                Marks: <span th:text="${question.marks}">1</span>
+                            </p>
+
+                            <form th:action="@{/student/practice/mcq/{id}(id=${question.id})}" method="post">
+                                <div class="list-group list-group-flush mb-3">
+                                    <label class="list-group-item d-flex align-items-center gap-2" th:if="${question.optionA != null}">
+                                        <input class="form-check-input me-2" type="radio" name="answer" value="A" th:checked="${result != null and result.selectedOption == 'A'}">
+                                        <span th:text="'A) ' + ${question.optionA}">A</span>
+                                    </label>
+                                    <label class="list-group-item d-flex align-items-center gap-2" th:if="${question.optionB != null}">
+                                        <input class="form-check-input me-2" type="radio" name="answer" value="B" th:checked="${result != null and result.selectedOption == 'B'}">
+                                        <span th:text="'B) ' + ${question.optionB}">B</span>
+                                    </label>
+                                    <label class="list-group-item d-flex align-items-center gap-2" th:if="${question.optionC != null}">
+                                        <input class="form-check-input me-2" type="radio" name="answer" value="C" th:checked="${result != null and result.selectedOption == 'C'}">
+                                        <span th:text="'C) ' + ${question.optionC}">C</span>
+                                    </label>
+                                    <label class="list-group-item d-flex align-items-center gap-2" th:if="${question.optionD != null}">
+                                        <input class="form-check-input me-2" type="radio" name="answer" value="D" th:checked="${result != null and result.selectedOption == 'D'}">
+                                        <span th:text="'D) ' + ${question.optionD}">D</span>
+                                    </label>
+                                </div>
+                                <button type="submit" class="btn btn-primary" th:if="${result == null}"><i class="bi bi-check2-circle me-1"></i> Submit answer</button>
+                            </form>
+
+                            <div th:if="${result != null}" class="mt-4">
+                                <div class="alert" th:classappend="${result.correct} ? 'alert-success' : 'alert-danger'">
+                                    <div class="fw-semibold">
+                                        <i class="bi me-1" th:classappend="${result.correct} ? 'bi-check-circle' : 'bi-x-circle'"></i>
+                                        <span th:text="${result.statusLabel}">Result</span>
+                                        <span th:if="${result.correct}">— you earned <span th:text="${result.marksAwarded}">1</span> mark(s).</span>
+                                        <span th:unless="${result.correct}">— the correct answer was <strong th:text="${result.correctOption}">A</strong>.</span>
+                                    </div>
+                                    <div th:if="${result.explanation != null}" class="mt-2 small">
+                                        <i class="bi bi-lightbulb me-1"></i><span th:text="${result.explanation}">Explanation</span>
+                                    </div>
+                                </div>
+                                <a th:href="@{/student/practice/mcq/{id}(id=${question.id})}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-clockwise me-1"></i>Try again</a>
+                                <a th:href="@{/student/practice/mcq}" class="btn btn-outline-primary btn-sm">Next question <i class="bi bi-arrow-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

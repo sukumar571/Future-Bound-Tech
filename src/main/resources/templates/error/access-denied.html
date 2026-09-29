@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+
+    <section class="error-page section-padding">
+        <div class="container text-center">
+            <div class="error-code">403</div>
+            <h1 class="fw-bold">Access denied</h1>
+            <p class="error-message">You do not have permission to view this page.</p>
+            <a th:href="@{/}" class="btn-primary-fbt">Back to Home</a>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+
+</html>

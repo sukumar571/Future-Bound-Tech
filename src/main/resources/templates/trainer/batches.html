@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/trainer-sidebar :: trainerSidebar('batches')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <div>
+                            <h1 class="h3">My batches</h1>
+                            <p class="text-muted mb-0" th:text="${#lists.size(batches)} + ' batch(es) assigned to you'">0</p>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm">
+                        <div class="table-responsive">
+                            <table class="table data-table mb-0 align-middle">
+                                <thead class="table-light">
+                                    <tr><th>Batch</th><th>Course</th><th>Schedule</th><th>Mode</th><th>Status</th><th>Seats</th><th class="text-end">Actions</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="b : ${batches}">
+                                        <td>
+                                            <div class="fw-semibold" th:text="${b.batchName}">Batch</div>
+                                            <div class="small text-muted" th:text="'#' + ${b.id}">#</div>
+                                        </td>
+                                        <td th:text="${b.courseTitle}">Course</td>
+                                        <td class="small">
+                                            <div th:text="${b.startDate != null ? #temporals.format(b.startDate, 'd MMM yyyy') : '—'}">start</div>
+                                            <div class="text-muted" th:text="${(b.startTime != null ? #temporals.format(b.startTime, 'h:mm a') : '') + (b.endTime != null ? ' – ' + #temporals.format(b.endTime, 'h:mm a') : '')}">time</div>
+                                        </td>
+                                        <td><span class="badge text-bg-light" th:text="${b.mode != null ? #strings.capitalize(#strings.toLowerCase(b.mode.name())) : '—'}">Mode</span></td>
+                                        <td><span class="badge text-bg-secondary" th:text="${b.statusLabel}">Status</span></td>
+                                        <td><span th:text="${b.enrolledCount}">0</span> / <span th:text="${b.maxSeats} ?: '∞'">∞</span></td>
+                                        <td class="text-end text-nowrap">
+                                            <a class="btn btn-sm btn-outline-secondary" th:href="@{/trainer/students(batchId=${b.id})}" title="Students"><i class="bi bi-people"></i></a>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(batches)}">
+                                        <td colspan="7"><div class="empty-state"><i class="bi bi-collection"></i>You have no batches assigned yet.</div></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

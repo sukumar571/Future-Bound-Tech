@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/admin-sidebar :: adminSidebar('trainers')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <div>
+                            <h1 class="h3">Trainers</h1>
+                            <p class="text-muted mb-0" th:text="${#lists.size(trainers)} + ' record(s)'">0</p>
+                        </div>
+                        <a th:href="@{/admin/trainers/new}" class="btn btn-primary"><i class="bi bi-person-plus me-1"></i> Add trainer</a>
+                    </div>
+
+                    <form method="get" th:action="@{/admin/trainers}" class="admin-toolbar">
+                        <input type="text" name="q" th:value="${q}" class="form-control" style="max-width:260px" placeholder="Search name, email, expertise">
+                        <select name="active" class="form-select" style="max-width:160px">
+                            <option value="">All statuses</option>
+                            <option value="true" th:selected="${selectedActive != null and selectedActive}">Active</option>
+                            <option value="false" th:selected="${selectedActive != null and !selectedActive}">Inactive</option>
+                        </select>
+                        <button type="submit" class="btn btn-outline-secondary"><i class="bi bi-funnel"></i> Filter</button>
+                        <a th:href="@{/admin/trainers}" class="btn btn-link">Reset</a>
+                    </form>
+
+                    <div class="card border-0 shadow-sm">
+                        <div class="table-responsive">
+                            <table class="table data-table mb-0 align-middle">
+                                <thead class="table-light">
+                                    <tr><th>Name</th><th>Expertise</th><th>Contact</th><th>Courses</th><th>Batches</th><th>Status</th><th class="text-end">Actions</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="t : ${trainers}">
+                                        <td>
+                                            <div class="fw-semibold" th:text="${t.fullName}">Name</div>
+                                            <div class="small text-muted" th:text="${#temporals.format(t.createdAt, 'd MMM yyyy')}">date</div>
+                                        </td>
+                                        <td th:text="${t.expertise} ?: '—'">expertise</td>
+                                        <td>
+                                            <div th:text="${t.email}">email</div>
+                                            <div class="small text-muted" th:text="${t.phone} ?: '—'">phone</div>
+                                        </td>
+                                        <td th:text="${t.courseCount}">0</td>
+                                        <td th:text="${t.batchCount}">0</td>
+                                        <td>
+                                            <span class="badge" th:classappend="${t.active} ? 'text-bg-success' : 'text-bg-secondary'"
+                                                  th:text="${t.active} ? 'Active' : 'Inactive'">Active</span>
+                                        </td>
+                                        <td class="text-end text-nowrap">
+                                            <a class="btn btn-sm btn-outline-primary" th:href="@{/admin/trainers/{id}/edit(id=${t.id})}" title="Edit"><i class="bi bi-pencil"></i></a>
+                                            <form th:action="@{/admin/trainers/{id}/status(id=${t.id})}" method="post" class="d-inline">
+                                                <input type="hidden" name="active" th:value="${t.active} ? 'false' : 'true'">
+                                                <button type="submit" class="btn btn-sm" th:classappend="${t.active} ? 'btn-outline-danger' : 'btn-outline-success'"
+                                                        th:title="${t.active} ? 'Deactivate' : 'Activate'">
+                                                    <i class="bi" th:classappend="${t.active} ? 'bi-person-x' : 'bi-person-check'"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(trainers)}">
+                                        <td colspan="7"><div class="empty-state"><i class="bi bi-person-video3"></i>No trainers match your filters.</div></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

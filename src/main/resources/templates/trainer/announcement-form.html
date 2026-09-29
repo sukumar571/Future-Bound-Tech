@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/trainer-sidebar :: trainerSidebar('announcements')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <div>
+                            <h1 class="h3">New announcement</h1>
+                            <p class="text-muted mb-0">Choose a batch and write your message.</p>
+                        </div>
+                        <a th:href="@{/trainer/announcements}" class="btn btn-link"><i class="bi bi-arrow-left"></i> Back</a>
+                    </div>
+
+                    <div class="card border-0 shadow-sm form-card">
+                        <div class="card-body p-4">
+                            <form th:action="@{${formAction}}" th:object="${announcementForm}" method="post">
+                                <input type="hidden" th:field="*{id}">
+                                <div class="mb-3">
+                                    <label class="form-label" for="title">Title</label>
+                                    <input type="text" id="title" th:field="*{title}" class="form-control"
+                                           th:classappend="${#fields.hasErrors('title')} ? 'is-invalid'" placeholder="Announcement title">
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label" for="batchId">Batch</label>
+                                    <select id="batchId" th:field="*{batchId}" class="form-select"
+                                            th:classappend="${#fields.hasErrors('batchId')} ? 'is-invalid'">
+                                        <option value="">Select a batch</option>
+                                        <option th:each="b : ${batches}" th:value="${b.id}" th:text="${b.batchName} + ' — ' + ${b.courseTitle}">Batch</option>
+                                    </select>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('batchId')}" th:errors="*{batchId}"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label" for="content">Message</label>
+                                    <textarea id="content" th:field="*{content}" class="form-control" rows="6"
+                                              th:classappend="${#fields.hasErrors('content')} ? 'is-invalid'" placeholder="Write your announcement"></textarea>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></div>
+                                </div>
+                                <div class="d-flex gap-2 mt-4">
+                                    <button type="submit" class="btn btn-primary"><i class="bi bi-send me-1"></i> Send announcement</button>
+                                    <a th:href="@{/trainer/announcements}" class="btn btn-outline-secondary">Cancel</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

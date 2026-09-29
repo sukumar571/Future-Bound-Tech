@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/admin-sidebar :: adminSidebar('settings')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <div>
+                            <h1 class="h3">Settings</h1>
+                            <p class="text-muted mb-0">Institute profile, branding &amp; preferences</p>
+                        </div>
+                    </div>
+
+                    <form th:action="@{/admin/settings}" th:object="${settings}" method="post" enctype="multipart/form-data">
+                        <!-- Institute profile -->
+                        <div class="card form-card shadow-sm mb-4">
+                            <div class="card-header bg-white fw-semibold">Institute profile</div>
+                            <div class="card-body p-4">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Institute name</label>
+                                        <input type="text" class="form-control" th:field="*{name}" th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'">
+                                        <div class="invalid-feedback" th:errors="*{name}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Tagline</label>
+                                        <input type="text" class="form-control" th:field="*{tagLine}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Primary email</label>
+                                        <input type="email" class="form-control" th:field="*{email}" th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'">
+                                        <div class="invalid-feedback" th:errors="*{email}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Website</label>
+                                        <input type="url" class="form-control" th:field="*{website}" placeholder="https://...">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Phone 1</label>
+                                        <input type="text" class="form-control" th:field="*{phone1}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Phone 2</label>
+                                        <input type="text" class="form-control" th:field="*{phone2}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Training modes</label>
+                                        <input type="text" class="form-control" th:field="*{trainingModes}" placeholder="Online + Offline">
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label class="form-label">Address</label>
+                                        <textarea class="form-control" rows="2" th:field="*{address}" th:classappend="${#fields.hasErrors('address')} ? 'is-invalid'"></textarea>
+                                        <div class="invalid-feedback" th:errors="*{address}"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Branding -->
+                        <div class="card form-card shadow-sm mb-4">
+                            <div class="card-header bg-white fw-semibold">Branding &amp; theme</div>
+                            <div class="card-body p-4">
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Logo</label>
+                                        <div class="d-flex align-items-center gap-3 mb-2" th:if="*{logoUrl != null and !#strings.isEmpty(logoUrl)}">
+                                            <img th:src="*{logoUrl}" alt="Current logo" height="48" class="border rounded p-1 bg-white">
+                                            <small class="text-muted">Current logo</small>
+                                        </div>
+                                        <input type="file" class="form-control" name="logoFile" accept="image/png,image/jpeg,image/webp,image/gif">
+                                        <div class="form-text">PNG, JPEG, WEBP or GIF, up to 10 MB. Leave empty to keep the current logo.</div>
+                                        <input type="hidden" th:field="*{logoUrl}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Favicon</label>
+                                        <div class="d-flex align-items-center gap-3 mb-2" th:if="*{faviconUrl != null and !#strings.isEmpty(faviconUrl)}">
+                                            <img th:src="*{faviconUrl}" alt="Current favicon" height="32" class="border rounded p-1 bg-white">
+                                            <small class="text-muted">Current favicon</small>
+                                        </div>
+                                        <input type="file" class="form-control" name="faviconFile" accept="image/x-icon,image/png,image/jpeg,image/webp,image/gif,image/svg+xml">
+                                        <div class="form-text">ICO, PNG, SVG or GIF. Leave empty to keep the current favicon.</div>
+                                        <input type="hidden" th:field="*{faviconUrl}">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Primary colour</label>
+                                        <input type="color" class="form-control form-control-color" th:field="*{primaryColor}" th:classappend="${#fields.hasErrors('primaryColor')} ? 'is-invalid'">
+                                        <div class="invalid-feedback" th:errors="*{primaryColor}"></div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Secondary colour</label>
+                                        <input type="color" class="form-control form-control-color" th:field="*{secondaryColor}" th:classappend="${#fields.hasErrors('secondaryColor')} ? 'is-invalid'">
+                                        <div class="invalid-feedback" th:errors="*{secondaryColor}"></div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Accent colour</label>
+                                        <input type="color" class="form-control form-control-color" th:field="*{accentColor}" th:classappend="${#fields.hasErrors('accentColor')} ? 'is-invalid'">
+                                        <div class="invalid-feedback" th:errors="*{accentColor}"></div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-text">Colours update the site theme live. Reset by leaving them at the browser default if you want the built-in palette.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Social links -->
+                        <div class="card form-card shadow-sm mb-4">
+                            <div class="card-header bg-white fw-semibold">Social links</div>
+                            <div class="card-body p-4">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Facebook</label>
+                                        <input type="url" class="form-control" th:field="*{facebookUrl}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Twitter / X</label>
+                                        <input type="url" class="form-control" th:field="*{twitterUrl}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Instagram</label>
+                                        <input type="url" class="form-control" th:field="*{instagramUrl}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">LinkedIn</label>
+                                        <input type="url" class="form-control" th:field="*{linkedinUrl}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">YouTube</label>
+                                        <input type="url" class="form-control" th:field="*{youtubeUrl}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Course defaults -->
+                        <div class="card form-card shadow-sm mb-4">
+                            <div class="card-header bg-white fw-semibold">Course defaults</div>
+                            <div class="card-body p-4">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Default registration fee</label>
+                                        <input type="number" step="0.01" min="0" class="form-control" th:field="*{defaultRegistrationFee}" th:classappend="${#fields.hasErrors('defaultRegistrationFee')} ? 'is-invalid'">
+                                        <div class="invalid-feedback" th:errors="*{defaultRegistrationFee}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Currency</label>
+                                        <input type="text" class="form-control" th:field="*{currency}" placeholder="INR">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Default duration (months)</label>
+                                        <input type="number" min="0" class="form-control" th:field="*{defaultDurationMonths}" th:classappend="${#fields.hasErrors('defaultDurationMonths')} ? 'is-invalid'">
+                                        <div class="invalid-feedback" th:errors="*{defaultDurationMonths}"></div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Default level</label>
+                                        <select class="form-select" th:field="*{defaultLevel}">
+                                            <option value="">Not set</option>
+                                            <option th:each="l : ${courseLevels}" th:value="${l}" th:text="${l}"></option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Default mode</label>
+                                        <select class="form-select" th:field="*{defaultTrainingMode}">
+                                            <option value="">Not set</option>
+                                            <option th:each="m : ${trainingModes}" th:value="${m}" th:text="${m}"></option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12 d-flex flex-wrap gap-4 mt-2">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="defaultCertificateEligible" th:field="*{defaultCertificateEligible}">
+                                            <label class="form-check-label" for="defaultCertificateEligible">New courses certificate-eligible</label>
+                                        </div>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="defaultPublicListed" th:field="*{defaultPublicListed}">
+                                            <label class="form-check-label" for="defaultPublicListed">New courses public by default</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Payments -->
+                        <div class="card form-card shadow-sm mb-4">
+                            <div class="card-header bg-white fw-semibold">Payments</div>
+                            <div class="card-body p-4">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Payment gateway</label>
+                                        <input type="text" class="form-control" th:field="*{paymentGatewayLabel}" placeholder="Razorpay">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Gateway status</label>
+                                        <div>
+                                            <span class="badge text-bg-success" th:if="${site != null and site.paymentEnabled}">Enabled</span>
+                                            <span class="badge text-bg-secondary" th:unless="${site != null and site.paymentEnabled}">Disabled</span>
+                                            <span class="text-muted small ms-2">Controlled by the RAZORPAY_ENABLED environment variable.</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">Checkout instructions</label>
+                                        <textarea class="form-control" rows="2" th:field="*{paymentInstructions}" th:classappend="${#fields.hasErrors('paymentInstructions')} ? 'is-invalid'" placeholder="Shown to students at checkout"></textarea>
+                                        <div class="invalid-feedback" th:errors="*{paymentInstructions}"></div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="alert alert-info py-2 mb-0 small">
+                                            <i class="bi bi-shield-lock me-1"></i>
+                                            API keys and secrets are <strong>not</strong> stored here &mdash; they are managed via environment variables
+                                            (<code>RAZORPAY_KEY_ID</code>, <code>RAZORPAY_KEY_SECRET</code>, <code>RAZORPAY_WEBHOOK_SECRET</code>).
+                                        </div>
+                                        <div class="form-check form-switch mt-3">
+                                            <input class="form-check-input" type="checkbox" id="allowCoupons" th:field="*{allowCoupons}">
+                                            <label class="form-check-label" for="allowCoupons">Allow coupon codes</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Notifications -->
+                        <div class="card form-card shadow-sm mb-4">
+                            <div class="card-header bg-white fw-semibold">Notifications</div>
+                            <div class="card-body p-4">
+                                <div class="d-flex flex-wrap gap-4">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="emailNotifications" th:field="*{emailNotifications}">
+                                        <label class="form-check-label" for="emailNotifications">Email notifications</label>
+                                    </div>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="whatsappNotifications" th:field="*{whatsappNotifications}">
+                                        <label class="form-check-label" for="whatsappNotifications">WhatsApp notifications</label>
+                                    </div>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="smsNotifications" th:field="*{smsNotifications}">
+                                        <label class="form-check-label" for="smsNotifications">SMS notifications</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Certificate -->
+                        <div class="card form-card shadow-sm mb-4">
+                            <div class="card-header bg-white fw-semibold">Certificate branding</div>
+                            <div class="card-body p-4">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Signatory name</label>
+                                        <input type="text" class="form-control" th:field="*{certificateSignatory}" placeholder="Printed under the signature line">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Signatory title</label>
+                                        <input type="text" class="form-control" th:field="*{certificateSignatoryTitle}" placeholder="e.g. Director, Future Bound Tech">
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label class="form-label">Footer note</label>
+                                        <textarea class="form-control" rows="2" th:field="*{certificateFooterNote}" placeholder="Optional note shown at the bottom of every certificate"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Legal -->
+                        <div class="card form-card shadow-sm mb-4">
+                            <div class="card-header bg-white fw-semibold">Legal content</div>
+                            <div class="card-body p-4">
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <label class="form-label">Privacy policy</label>
+                                        <textarea class="form-control" rows="8" th:field="*{privacyPolicy}" th:classappend="${#fields.hasErrors('privacyPolicy')} ? 'is-invalid'" placeholder="Published at /privacy-policy"></textarea>
+                                        <div class="invalid-feedback" th:errors="*{privacyPolicy}"></div>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">Terms &amp; conditions</label>
+                                        <textarea class="form-control" rows="8" th:field="*{termsAndConditions}" th:classappend="${#fields.hasErrors('termsAndConditions')} ? 'is-invalid'" placeholder="Published at /terms"></textarea>
+                                        <div class="invalid-feedback" th:errors="*{termsAndConditions}"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-5">
+                            <button type="submit" class="btn btn-primary"><i class="bi bi-check2 me-1"></i> Save settings</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

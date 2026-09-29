@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/trainer-sidebar :: trainerSidebar('classes')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <div>
+                            <h1 class="h3">Mark attendance</h1>
+                            <p class="text-muted mb-0">
+                                <span class="fw-semibold" th:text="${roster.topic}">Topic</span>
+                                · <span th:text="${roster.batchName}">Batch</span>
+                                · <span th:text="${roster.courseTitle}">Course</span>
+                                <span th:if="${roster.startLabel}"> · <span th:text="${roster.startLabel}">when</span></span>
+                            </p>
+                        </div>
+                        <a th:href="@{/trainer/classes}" class="btn btn-link"><i class="bi bi-arrow-left"></i> Back to classes</a>
+                    </div>
+
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                            <span class="fw-semibold">
+                                <span th:text="${roster.presentCount}">0</span> / <span th:text="${roster.totalCount}">0</span> present
+                            </span>
+                            <span class="badge text-bg-primary" th:text="${roster.statusLabel}">Status</span>
+                        </div>
+                        <div class="card-body p-0">
+                            <form th:action="@{/trainer/classes/{id}/attendance(id=${roster.classId})}" method="post">
+                                <div class="table-responsive">
+                                    <table class="table data-table mb-0 align-middle">
+                                        <thead class="table-light">
+                                            <tr><th>Student</th><th>Email</th><th class="text-center" style="width:120px;">Present</th></tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:each="row : ${roster.roster}">
+                                                <td class="fw-semibold" th:text="${row.studentName}">Name</td>
+                                                <td class="text-muted" th:text="${row.studentEmail}">Email</td>
+                                                <td class="text-center">
+                                                    <input class="form-check-input" type="checkbox" name="presentStudentId"
+                                                           th:value="${row.studentId}" th:checked="${row.present}">
+                                                </td>
+                                            </tr>
+                                            <tr th:if="${#lists.isEmpty(roster.roster)}">
+                                                <td colspan="3"><div class="empty-state"><i class="bi bi-people"></i>No students enrolled in this batch yet.</div></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="card-body border-top d-flex flex-wrap gap-3 align-items-center" th:if="${!#lists.isEmpty(roster.roster)}">
+                                    <label class="form-label mb-0">Set class status</label>
+                                    <select class="form-select form-select-sm" name="status" style="max-width:220px;">
+                                        <option value="">— Keep current —</option>
+                                        <option value="SCHEDULED">SCHEDULED</option>
+                                        <option value="IN_PROGRESS">IN_PROGRESS</option>
+                                        <option value="COMPLETED">COMPLETED</option>
+                                        <option value="CANCELLED">CANCELLED</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-primary ms-auto"><i class="bi bi-check2 me-1"></i> Save attendance</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

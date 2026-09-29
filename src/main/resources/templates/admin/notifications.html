@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/admin-sidebar :: adminSidebar('notifications')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <div>
+                            <h1 class="h3">Notifications</h1>
+                            <p class="text-muted mb-0">Broadcast to students and review what has been delivered.</p>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <form th:action="@{/admin/notifications/reminders}" method="post">
+                                <button type="submit" class="btn btn-outline-primary">
+                                    <i class="bi bi-alarm me-1"></i> Run reminder sweep
+                                </button>
+                            </form>
+                            <a th:href="@{/admin/notifications/new}" class="btn btn-primary">
+                                <i class="bi bi-send me-1"></i> Send notification
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="alert d-flex align-items-start gap-2 py-2"
+                         th:classappend="${emailEnabled} ? 'alert-success' : 'alert-secondary'" role="alert">
+                        <i class="bi" th:classappend="${emailEnabled} ? 'bi-envelope-check' : 'bi-envelope-slash'"></i>
+                        <div>
+                            <strong th:text="${emailEnabled} ? 'E-mail delivery is on' : 'E-mail delivery is off'">E-mail</strong>
+                            <span class="d-block small" th:text="${emailStatus}">Status</span>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm">
+                        <div class="table-responsive">
+                            <table class="table data-table mb-0 align-middle">
+                                <thead class="table-light">
+                                    <tr><th>Type</th><th>Recipient</th><th>Message</th><th>Status</th><th>Sent</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="n : ${notifications}">
+                                        <td class="text-nowrap">
+                                            <span class="badge" th:classappend="${n.badgeClass}">
+                                                <i class="bi me-1" th:classappend="${n.icon}"></i><span th:text="${n.typeLabel}">Type</span>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="small fw-semibold" th:text="${n.recipientName} != null ? ${n.recipientName} : '—'">Name</div>
+                                            <div class="small text-muted" th:text="${n.recipientEmail}">email</div>
+                                        </td>
+                                        <td>
+                                            <div class="fw-semibold" th:text="${n.displayTitle}">Title</div>
+                                            <div class="small text-muted text-truncate" style="max-width:420px" th:text="${n.message}">message</div>
+                                        </td>
+                                        <td>
+                                            <span class="badge text-bg-success" th:if="${n.read}">Read</span>
+                                            <span class="badge text-bg-secondary" th:unless="${n.read}">Unread</span>
+                                        </td>
+                                        <td class="small text-nowrap"
+                                            th:text="${n.createdAt != null} ? ${#temporals.format(n.createdAt, 'd MMM yyyy, HH:mm')} : '—'">date</td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(notifications)}">
+                                        <td colspan="5">
+                                            <div class="empty-state"><i class="bi bi-bell-slash"></i>No notifications have been sent yet.</div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <p class="text-muted small mt-3 mb-0">
+                        Showing the most recent 200 notifications. Enrollment, payment, quiz, certificate and
+                        announcement messages are created automatically; reminders are created by the sweep above.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+
+</html>

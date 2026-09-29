@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+
+    <section class="student-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/student-sidebar :: studentSidebar('practice')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="card border-0 shadow-sm mb-3">
+                        <div class="card-body text-center p-4"
+                             th:classappend="${result.passed} ? 'bg-success-subtle' : 'bg-danger-subtle'">
+                            <div class="display-6 mb-2">
+                                <i class="bi" th:classappend="${result.passed} ? 'bi-patch-check-fill text-success' : 'bi-x-octagon-fill text-danger'"></i>
+                            </div>
+                            <h1 class="h4 mb-1" th:text="${result.title}">Test</h1>
+                            <p class="mb-2">
+                                <span class="badge" th:classappend="${result.passed} ? 'text-bg-success' : 'text-bg-danger'"
+                                      th:text="${result.passed} ? 'Passed' : 'Not passed'">Passed</span>
+                            </p>
+                            <div class="d-flex justify-content-center gap-4 flex-wrap mt-3">
+                                <div>
+                                    <div class="fs-3 fw-bold" th:text="${result.scoreObtained} + ' / ' + ${result.totalMarks}">0 / 0</div>
+                                    <div class="small text-muted">Score</div>
+                                </div>
+                                <div>
+                                    <div class="fs-3 fw-bold" th:text="${result.percentage} + '%'">0%</div>
+                                    <div class="small text-muted">Percentage</div>
+                                </div>
+                                <div>
+                                    <div class="fs-3 fw-bold" th:text="${result.correctCount} + ' / ' + ${result.totalQuestions}">0 / 0</div>
+                                    <div class="small text-muted">Correct answers</div>
+                                </div>
+                            </div>
+                            <div class="small text-muted mt-2" th:if="${result.submittedAt != null}">
+                                Submitted <span th:text="${#temporals.format(result.submittedAt, 'MMM d, yyyy h:mm a')}">when</span>
+                            </div>
+                            <div class="mt-3">
+                                <a th:href="@{/student/practice/tests}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>All tests</a>
+                                <a th:href="@{/student/practice/performance}" class="btn btn-sm btn-outline-primary"><i class="bi bi-graph-up me-1"></i>My performance</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white fw-semibold"><i class="bi bi-list-check me-2 text-primary"></i>Answer review</div>
+                        <div class="list-group list-group-flush">
+                            <div class="list-group-item p-3" th:each="row, iterStat : ${result.review}">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <h2 class="h6 mb-1"><span th:text="${iterStat.count} + '.'"></span> <span th:text="${row.questionText}">Question</span></h2>
+                                    <span class="badge ms-2 flex-shrink-0"
+                                          th:classappend="${row.correct} ? 'text-bg-success' : 'text-bg-danger'"
+                                          th:text="${row.correct} ? '+ ' + ${row.marksAwarded} + ' marks' : '0 marks'">+1 marks</span>
+                                </div>
+                                <div class="small">
+                                    <span th:if="${row.selectedOption != null}">
+                                        Your answer: <span class="fw-bold" th:classappend="${row.correct} ? 'text-success' : 'text-danger'"
+                                                          th:text="'Option ' + ${row.selectedOption}">Option A</span>
+                                    </span>
+                                    <span class="text-muted" th:if="${row.selectedOption == null}">Not answered.</span>
+                                    <span th:unless="${row.correct}">
+                                        · Correct answer: <span class="fw-bold text-success" th:text="'Option ' + ${row.correctOption}">Option B</span>
+                                    </span>
+                                </div>
+                                <div class="alert alert-light border small mt-2 mb-0" th:if="${row.explanation != null}">
+                                    <i class="bi bi-lightbulb me-1 text-warning"></i><span th:text="${row.explanation}">Explanation</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

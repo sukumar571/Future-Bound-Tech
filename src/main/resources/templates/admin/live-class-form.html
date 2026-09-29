@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/admin-sidebar :: adminSidebar('classes')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <h1 class="h3" th:text="${editing} ? 'Edit live class' : 'Schedule live class'">Live class</h1>
+                        <a th:href="@{/admin/live-classes}" class="btn btn-link"><i class="bi bi-arrow-left"></i> Back to classes</a>
+                    </div>
+
+                    <div class="card form-card shadow-sm">
+                        <div class="card-body p-4">
+                            <form th:action="${formAction}" th:object="${liveClassDto}" method="post">
+                                <div class="row g-3">
+                                    <div class="col-md-12">
+                                        <label class="form-label">Topic</label>
+                                        <input type="text" class="form-control" th:field="*{topic}" th:classappend="${#fields.hasErrors('topic')} ? 'is-invalid'">
+                                        <div class="invalid-feedback" th:errors="*{topic}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Batch</label>
+                                        <select class="form-select" th:field="*{batchId}" th:classappend="${#fields.hasErrors('batchId')} ? 'is-invalid'">
+                                            <option value="">— Select batch —</option>
+                                            <option th:each="b : ${batches}" th:value="${b.id}" th:text="${b.batchName}"></option>
+                                        </select>
+                                        <div class="invalid-feedback" th:errors="*{batchId}"></div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Mode</label>
+                                        <select class="form-select" th:field="*{mode}">
+                                            <option th:each="m : ${modes}" th:value="${m}" th:text="${m.label}"></option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Status</label>
+                                        <select class="form-select" th:field="*{status}">
+                                            <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}"></option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Start time</label>
+                                        <input type="datetime-local" class="form-control" th:field="*{startTime}" th:classappend="${#fields.hasErrors('startTime')} ? 'is-invalid'">
+                                        <div class="invalid-feedback" th:errors="*{startTime}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">End time</label>
+                                        <input type="datetime-local" class="form-control" th:field="*{endTime}">
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label class="form-label">Meeting link</label>
+                                        <input type="url" class="form-control" th:field="*{meetingLink}" placeholder="https://meet.example.com/...">
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label class="form-label">Classroom details <span class="text-muted small">(offline)</span></label>
+                                        <input type="text" class="form-control" th:field="*{classroomDetails}" placeholder="Room / venue for this session">
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <button type="submit" class="btn btn-primary"><i class="bi bi-check2 me-1"></i> Save</button>
+                                    <a th:href="@{/admin/live-classes}" class="btn btn-outline-secondary">Cancel</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+
+    <section class="student-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/student-sidebar :: studentSidebar('certificates')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+                    <h1 class="h4 mb-4"><i class="bi bi-award me-2 text-primary"></i>My Certificates</h1>
+
+                    <div class="row g-3" th:if="${!certificates.isEmpty()}">
+                        <div class="col-md-6" th:each="c : ${certificates}">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center gap-3 mb-3">
+                                        <div class="stat-icon" style="background: var(--purple-50); color: var(--electric-purple); width:52px;height:52px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;">
+                                            <i class="bi bi-patch-check-fill"></i>
+                                        </div>
+                                        <div>
+                                            <h2 class="h6 mb-0" th:text="${c.courseTitle}">Course</h2>
+                                            <small class="text-muted" th:text="'No. ' + ${c.certificateNumber}">No.</small>
+                                        </div>
+                                    </div>
+                                    <p class="small text-muted mb-2">
+                                        <i class="bi bi-calendar-check me-1"></i>
+                                        <span th:if="${c.issueDate != null}">Issued: <span th:text="${#temporals.format(c.issueDate, 'MMM d, yyyy')}">Date</span></span>
+                                        <span th:unless="${c.issueDate != null}">Awaiting approval</span>
+                                    </p>
+                                    <p class="mb-3">
+                                        <span class="badge"
+                                              th:classappend="${c.issued} ? 'text-bg-success' : (${c.pendingApproval} ? 'text-bg-warning' : 'text-bg-danger')"
+                                              th:text="${c.statusLabel}">Status</span>
+                                    </p>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <a th:if="${c.issued}" th:href="@{/student/certificates/{id}/download(id=${c.id})}"
+                                           class="btn btn-sm btn-primary">
+                                            <i class="bi bi-download me-1"></i> Download PDF
+                                        </a>
+                                        <a th:href="@{/certificate/verify/{n}(n=${c.certificateNumber})}" target="_blank" rel="noopener"
+                                           class="btn btn-sm btn-outline-secondary">
+                                            <i class="bi bi-patch-question me-1"></i> Verify
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm" th:if="${certificates.isEmpty()}">
+                        <div class="card-body empty-state">
+                            <i class="bi bi-award"></i>
+                            <h3 class="h5">No certificates yet</h3>
+                            <p>Complete a certificate-eligible course to earn your Future Bound Tech certificate.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+
+</html>

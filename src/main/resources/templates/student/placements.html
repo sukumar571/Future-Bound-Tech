@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+
+    <section class="student-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/student-sidebar :: studentSidebar('placements')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h1 class="h4 mb-0"><i class="bi bi-briefcase me-2 text-primary"></i>Placement Opportunities</h1>
+                        <a th:href="@{/student/practice}" class="btn btn-link"><i class="bi bi-controller me-1"></i>Practice</a>
+                    </div>
+
+                    <div class="card border-0 shadow-sm mb-3">
+                        <div class="card-body">
+                            <form th:action="@{/student/placements}" method="get" class="row g-2 align-items-end">
+                                <div class="col-md-6">
+                                    <label class="form-label small mb-1">Filter by skill</label>
+                                    <select name="skill" class="form-select form-select-sm">
+                                        <option value="">All skills</option>
+                                        <option th:each="s : ${skills}" th:value="${s}" th:text="${s}" th:selected="${fSkill == s}"></option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="saved" value="true" id="savedOnly"
+                                               th:checked="${fSaved}">
+                                        <label class="form-check-label small" for="savedOnly">Saved only</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <button type="submit" class="btn btn-sm btn-primary w-100"><i class="bi bi-funnel me-1"></i>Apply</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-warning small">
+                        <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                        These listings are preparation resources. Future Bound Tech does not guarantee placements.
+                        Demo posts are labelled <strong>(DEMO)</strong> and are not real openings.
+                    </div>
+
+                    <div class="row g-3" th:if="${!placements.isEmpty()}">
+                        <div class="col-md-6" th:each="p : ${placements}">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body d-flex flex-column">
+                                    <div class="d-flex justify-content-between align-items-start mb-1">
+                                        <h2 class="h6 mb-0">
+                                            <span th:text="${p.companyName}">Company</span>
+                                            <span class="badge text-bg-secondary ms-1" th:if="${p.saved}"><i class="bi bi-bookmark-fill me-1"></i>Saved</span>
+                                        </h2>
+                                        <span class="badge text-bg-light" th:if="${p.jobType}" th:text="${p.jobType}">Type</span>
+                                    </div>
+                                    <p class="text-primary fw-semibold small mb-2" th:text="${p.jobTitle}">Role</p>
+                                    <div class="small text-muted mb-2 flex-grow-1">
+                                        <div th:if="${p.location}"><i class="bi bi-geo-alt me-1"></i><span th:text="${p.location}">loc</span></div>
+                                        <div th:if="${p.eligibility}"><i class="bi bi-person-check me-1"></i><span th:text="${#strings.abbreviate(p.eligibility, 80)}">eligibility</span></div>
+                                    </div>
+                                    <div class="mb-2" th:if="${!p.skillList.isEmpty()}">
+                                        <span class="badge text-bg-light border me-1 mb-1" th:each="s : ${p.skillList}" th:text="${s}">skill</span>
+                                    </div>
+                                    <div class="small mb-2" th:if="${p.deadline != null}">
+                                        <span class="text-muted"><i class="bi bi-calendar-event me-1"></i>Apply by
+                                            <span th:text="${#temporals.format(p.deadline, 'MMM d, yyyy')}">date</span></span>
+                                        <span class="badge text-bg-danger ms-1" th:if="${p.deadlinePassed}">Closed</span>
+                                        <span class="badge text-bg-warning ms-1" th:if="${!p.deadlinePassed and p.deadlineClosingSoon}">Closing soon</span>
+                                    </div>
+                                    <a th:href="@{/student/placements/{id}(id=${p.id})}" class="btn btn-sm btn-outline-primary align-self-start mt-auto">
+                                        <i class="bi bi-eye me-1"></i> View details
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm" th:if="${placements.isEmpty()}">
+                        <div class="card-body empty-state">
+                            <i class="bi bi-briefcase"></i>
+                            <h3 class="h5" th:text="${fSaved} ? 'No saved opportunities' : 'No opportunities found'">No opportunities</h3>
+                            <p th:text="${fSaved} ? 'Bookmark opportunities to track them here.' : 'Try a different skill filter, or check back soon.'">Nothing here.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+
+    <section class="student-shell">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-6">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb small">
+                            <li class="breadcrumb-item"><a th:href="@{/courses}" class="text-decoration-none">Courses</a></li>
+                            <li class="breadcrumb-item"><a th:href="@{/courses/{slug}(slug=${order.courseSlug})}" class="text-decoration-none" th:text="${order.courseTitle}">Course</a></li>
+                            <li class="breadcrumb-item active">Payment</li>
+                        </ol>
+                    </nav>
+
+                    <div class="card border-0 shadow-sm card-accent blue text-center p-4">
+                        <h1 class="h5 fw-bold mb-1">Scan to pay</h1>
+                        <p class="text-muted mb-3">
+                            Pay <strong class="text-primary" th:text="${order.amount}">₹0</strong> for
+                            <strong th:text="${order.courseTitle}">Course</strong> using any UPI app.
+                        </p>
+
+                        <div class="mx-auto bg-white p-3 rounded demo-qr-frame" style="width:max-content;">
+                            <img th:if="${demoUpiQr != null}" th:src="${demoUpiQr}"
+                                 alt="UPI payment QR code" width="220" height="220">
+                            <div th:if="${demoUpiQr == null}" class="text-muted small p-4">
+                                QR could not be generated. Use the UPI ID below instead.
+                            </div>
+                        </div>
+
+                        <div class="small text-muted mt-3">
+                            <i class="bi bi-upc-scan me-1"></i>Pay to UPI ID:
+                            <span class="fw-semibold" th:text="${demoUpiId}">UPI ID</span>
+                            <span class="badge text-bg-warning ms-1">Demo</span>
+                        </div>
+                        <div class="small text-muted mb-3">
+                            <i class="bi bi-hash me-1"></i>Receipt: <span th:text="${order.receiptNumber}">FBT-…</span>
+                        </div>
+
+                        <form th:action="@{/student/checkout/demo-confirm}" method="post" class="mt-2">
+                            <input type="hidden" name="orderId" th:value="${order.orderId}">
+                            <input type="hidden" name="slug" th:value="${order.courseSlug}">
+                            <button type="submit" class="btn btn-gradient w-100 py-2">
+                                <i class="bi bi-check2-circle me-1"></i>I have paid — Confirm enrollment
+                            </button>
+                        </form>
+
+                        <p class="small text-muted mt-3 mb-0">
+                            <i class="bi bi-info-circle me-1"></i>This is a demo QR code — no real money is
+                            transferred. Confirming below activates your enrollment instantly.
+                        </p>
+                        <a th:href="@{/student/checkout?slug=${order.courseSlug}}" class="btn btn-link mt-2">Back to checkout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+
+</html>

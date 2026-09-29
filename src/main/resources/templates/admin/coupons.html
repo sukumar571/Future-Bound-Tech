@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/admin-sidebar :: adminSidebar('coupons')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <div>
+                            <h1 class="h3">Coupons</h1>
+                            <p class="text-muted mb-0" th:text="${#lists.size(coupons)} + ' coupon(s)'">0</p>
+                        </div>
+                        <a th:href="@{/admin/coupons/new}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i> Add coupon</a>
+                    </div>
+
+                    <div class="card border-0 shadow-sm">
+                        <div class="table-responsive">
+                            <table class="table data-table mb-0 align-middle">
+                                <thead class="table-light">
+                                    <tr><th>Code</th><th>Discount</th><th>Valid until</th><th>Status</th><th class="text-end">Actions</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="c : ${coupons}">
+                                        <td class="fw-semibold text-uppercase" th:text="${c.code}">CODE</td>
+                                        <td th:text="${c.formattedDiscount} ?: ${c.discountAmount}">₹0</td>
+                                        <td th:text="${c.validUntil != null} ? ${#temporals.format(c.validUntil, 'd MMM yyyy')} : '—'">date</td>
+                                        <td>
+                                            <span class="badge" th:classappend="${c.active} ? 'text-bg-success' : 'text-bg-secondary'"
+                                                  th:text="${c.statusLabel} ?: (${c.active} ? 'Active' : 'Inactive')">Active</span>
+                                        </td>
+                                        <td class="text-end text-nowrap">
+                                            <a class="btn btn-sm btn-outline-primary" th:href="@{/admin/coupons/{id}/edit(id=${c.id})}" title="Edit"><i class="bi bi-pencil"></i></a>
+                                            <form th:action="@{/admin/coupons/{id}/delete(id=${c.id})}" method="post" class="d-inline" onsubmit="return confirm('Delete this coupon?');">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(coupons)}">
+                                        <td colspan="5"><div class="empty-state"><i class="bi bi-ticket-perforated"></i>No coupons created yet.</div></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

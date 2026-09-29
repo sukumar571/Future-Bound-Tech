@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+
+    <section class="student-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/student-sidebar :: studentSidebar('mentor')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <!-- ============ Feature disabled ============ -->
+                    <div class="card border-0 shadow-sm" th:if="${!featureEnabled}">
+                        <div class="card-body empty-state">
+                            <i class="bi bi-stars"></i>
+                            <h1 class="h5">Future Mentor is unavailable</h1>
+                            <p>The learning assistant is currently turned off. Your courses, classes and
+                                practice all work as normal without it.</p>
+                            <a th:href="@{/student/dashboard}" class="btn btn-primary mt-2">
+                                <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- ============ Chat ============ -->
+                    <div th:if="${featureEnabled}">
+                        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                            <h1 class="h4 mb-0">
+                                <i class="bi bi-stars me-2 text-primary"></i>Future Mentor
+                                <span class="badge align-middle"
+                                      th:classappend="${aiConfigured} ? 'text-bg-primary' : 'text-bg-secondary'"
+                                      th:text="${aiConfigured} ? 'AI assistant' : 'Offline study guide'">Offline study guide</span>
+                            </h1>
+                            <div class="d-flex align-items-center gap-2">
+                                <a th:href="@{/student/dashboard}" class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-arrow-left me-1"></i> Dashboard
+                                </a>
+                                <button type="button" id="mentorClear" class="btn btn-sm btn-outline-danger"
+                                        th:if="${historyEnabled}" title="Clear this conversation">
+                                    <i class="bi bi-trash me-1"></i> Clear history
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Safety disclaimer — always visible, never claim the assistant is correct -->
+                        <div class="mentor-disclaimer d-flex gap-2 align-items-start p-3 mb-3">
+                            <i class="bi bi-exclamation-triangle-fill flex-shrink-0 mt-1"></i>
+                            <div>
+                                <strong>Future Mentor can be wrong.</strong>
+                                Use it to learn and unblock yourself, but always verify important details against
+                                your course material and official documentation. It never shares other students'
+                                or staff information.
+                            </div>
+                        </div>
+
+                        <div class="mentor-chat card border-0 shadow-sm">
+                            <!-- Conversation window -->
+                            <div class="mentor-messages card-body" id="mentorMessages"
+                                 role="log" aria-live="polite" aria-label="Chat with Future Mentor">
+                                <div class="mentor-msg mentor-msg-assistant">
+                                    <div class="mentor-bubble">
+                                        <p class="mb-0">
+                                            Hi! I'm <strong>Future Mentor</strong>, your study buddy.
+                                            Ask me about Java, Python, SQL, web development, AWS, AI, interview
+                                            prep, code explanations or how to navigate your syllabus.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Suggested questions -->
+                            <div class="mentor-suggestions px-3 pb-2">
+                                <span class="small text-muted me-2">Try asking:</span>
+                                <button type="button" class="chip mentor-chip"
+                                        data-q="Explain the difference between an interface and an abstract class in Java.">Java: interface vs abstract class</button>
+                                <button type="button" class="chip mentor-chip"
+                                        data-q="How do I write a SQL query to find the second highest salary?">SQL: second highest salary</button>
+                                <button type="button" class="chip mentor-chip"
+                                        data-q="Give me a simple Python example for reading a file safely.">Python: read a file</button>
+                                <button type="button" class="chip mentor-chip"
+                                        data-q="What are some good answers to the 'tell me about a challenge you overcame' interview question?">Interview prep</button>
+                                <button type="button" class="chip mentor-chip"
+                                        data-q="What should I focus on to start learning AWS as a beginner?">AWS basics</button>
+                            </div>
+
+                            <!-- Composer -->
+                            <div class="mentor-composer card-footer">
+                                <form id="mentorForm" class="d-flex gap-2 align-items-end">
+                                    <textarea id="mentorInput" class="form-control" rows="1" maxlength="2000"
+                                              placeholder="Type your question…" aria-label="Your question"></textarea>
+                                    <button type="submit" id="mentorSend" class="btn btn-mentor flex-shrink-0">
+                                        <i class="bi bi-send-fill"></i>
+                                        <span class="d-none d-sm-inline ms-1">Send</span>
+                                    </button>
+                                </form>
+                                <div class="mentor-privacy small text-muted mt-2" th:if="${historyEnabled}">
+                                    <i class="bi bi-lock-fill me-1"></i>
+                                    Your chat history is stored privately to your account. Use “Clear history” to erase it.
+                                </div>
+                                <div class="mentor-privacy small text-muted mt-2" th:unless="${historyEnabled}">
+                                    <i class="bi bi-incognito me-1"></i>
+                                    History saving is turned off — your conversations are not stored.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+
+    <script th:inline="javascript">
+        (function () {
+            var FEATURE_ENABLED = /*[[${featureEnabled}]]*/ true;
+            var AI_CONFIGURED = /*[[${aiConfigured}]]*/ false;
+            var HISTORY_ENABLED = /*[[${historyEnabled}]]*/ true;
+            var CHAT_URL = /*[[@{/api/student/mentor/chat}]]*/ '/api/student/mentor/chat';
+            var HISTORY_URL = /*[[@{/api/student/mentor/history}]]*/ '/api/student/mentor/history';
+
+            if (!FEATURE_ENABLED) return;
+
+            var messagesEl = document.getElementById('mentorMessages');
+            var formEl = document.getElementById('mentorForm');
+            var inputEl = document.getElementById('mentorInput');
+            var sendBtn = document.getElementById('mentorSend');
+            var clearBtn = document.getElementById('mentorClear');
+
+            function esc(s) {
+                var d = document.createElement('div');
+                d.textContent = (s == null ? '' : String(s));
+                return d.innerHTML;
+            }
+
+            function addMessage(role, content, aiGenerated) {
+                var wrap = document.createElement('div');
+                wrap.className = 'mentor-msg mentor-msg-' + (role === 'user' ? 'user' : 'assistant');
+                var badge = (role !== 'user')
+                    ? '<span class="mentor-src">' + (aiGenerated ? 'AI' : 'Offline guide') + '</span>' : '';
+                wrap.innerHTML = '<div class="mentor-bubble">' + badge +
+                    '<div class="mentor-text">' + esc(content).replace(/\n/g, '<br>') + '</div></div>';
+                messagesEl.appendChild(wrap);
+                messagesEl.scrollTop = messagesEl.scrollHeight;
+                return wrap;
+            }
+
+            function setBusy(busy) {
+                sendBtn.disabled = busy;
+                inputEl.disabled = busy;
+                if (busy) {
+                    sendBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+                } else {
+                    sendBtn.innerHTML = '<i class="bi bi-send-fill"></i><span class="d-none d-sm-inline ms-1">Send</span>';
+                }
+            }
+
+            function sendQuestion(text) {
+                var q = (text || '').trim();
+                if (!q) { inputEl.focus(); return; }
+                addMessage('user', q, false);
+                inputEl.value = '';
+                autoGrow();
+                setBusy(true);
+                fetch(CHAT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({ message: q })
+                })
+                .then(function (r) { return r.json().then(function (j) { return { status: r.status, body: j }; }); })
+                .then(function (res) {
+                    if (res.status === 429) {
+                        addMessage('assistant', 'You are asking a little too fast — please wait a minute and try again.', false);
+                    } else if (res.body && res.body.success && res.body.data && res.body.data.reply) {
+                        var d = res.body.data;
+                        addMessage('assistant', d.reply.content, d.reply.aiGenerated);
+                    } else {
+                        addMessage('assistant', (res.body && res.body.message)
+                            ? res.body.message : 'Sorry, something went wrong. Please try again.', false);
+                    }
+                })
+                .catch(function () {
+                    addMessage('assistant', 'Network error — please check your connection and try again.', false);
+                })
+                .finally(function () { setBusy(false); inputEl.focus(); });
+            }
+
+            function autoGrow() {
+                inputEl.style.height = 'auto';
+                inputEl.style.height = Math.min(inputEl.scrollHeight, 160) + 'px';
+            }
+
+            formEl.addEventListener('submit', function (e) {
+                e.preventDefault();
+                sendQuestion(inputEl.value);
+            });
+            inputEl.addEventListener('input', autoGrow);
+            inputEl.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendQuestion(inputEl.value);
+                }
+            });
+
+            Array.prototype.forEach.call(document.querySelectorAll('.mentor-chip'), function (chip) {
+                chip.addEventListener('click', function () { sendQuestion(chip.getAttribute('data-q')); });
+            });
+
+            if (clearBtn) {
+                clearBtn.addEventListener('click', function () {
+                    if (!confirm('Clear your Future Mentor conversation history?')) return;
+                    fetch(HISTORY_URL, { method: 'DELETE', headers: { 'Accept': 'application/json' }, credentials: 'same-origin' })
+                        .then(function (r) { return r.json(); })
+                        .then(function () { loadHistory(); })
+                        .catch(function () { loadHistory(); });
+                });
+            }
+
+            function loadHistory() {
+                if (!HISTORY_ENABLED) return;
+                fetch(HISTORY_URL, { headers: { 'Accept': 'application/json' }, credentials: 'same-origin' })
+                    .then(function (r) { return r.ok ? r.json() : null; })
+                    .then(function (j) {
+                        if (!j || !j.success || !j.data) return;
+                        messagesEl.innerHTML = '';
+                        if (j.data.length === 0) {
+                            addMessage('assistant', 'Hi! I\'m Future Mentor, your study buddy. Ask me about Java, Python, SQL, web development, AWS, AI, interview prep, code explanations or how to navigate your syllabus.', false);
+                            return;
+                        }
+                        j.data.forEach(function (m) { addMessage(m.role, m.content, m.aiGenerated); });
+                    })
+                    .catch(function () { /* keep greeting */ });
+            }
+
+            loadHistory();
+        })();
+    </script>
+</body>
+
+</html>

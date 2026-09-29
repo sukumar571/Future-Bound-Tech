@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+
+    <section class="error-page section-padding">
+        <div class="container fade-in-up">
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-6 text-center">
+                    <div class="error-code" th:text="${errorCode}">404</div>
+                    <h1 style="font-weight: 800; font-size: 2rem; color: var(--dark-text);">Oops! We have a problem.
+                    </h1>
+                    <p class="error-message" th:text="${errorMessage}">The page you are looking for does not exist or
+                        has been moved.</p>
+                    <div class="d-flex justify-content-center gap-3">
+                        <a th:href="@{/}" class="btn-primary-fbt"><i class="bi bi-house-door me-2"></i>Back to Home</a>
+                        <a href="javascript:history.back()" class="btn-outline-fbt"><i
+                                class="bi bi-arrow-left me-2"></i>Go Back</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+
+</html>

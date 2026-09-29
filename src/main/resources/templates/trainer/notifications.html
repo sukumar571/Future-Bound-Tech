@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/trainer-sidebar :: trainerSidebar('notifications')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <div>
+                            <h1 class="h3">
+                                Notifications
+                                <span class="badge text-bg-danger align-middle" th:if="${unreadCount > 0}"
+                                      th:text="${unreadCount} + ' new'"></span>
+                            </h1>
+                            <p class="text-muted mb-0">Announcements and updates routed to you.</p>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="btn-group btn-group-sm" role="group" aria-label="Filter notifications">
+                                <a class="btn btn-outline-primary" th:href="@{/trainer/notifications}"
+                                   th:classappend="${!unreadOnly} ? 'active'">All</a>
+                                <a class="btn btn-outline-primary" th:href="@{/trainer/notifications(filter='unread')}"
+                                   th:classappend="${unreadOnly} ? 'active'">Unread</a>
+                            </div>
+                            <form th:action="@{/trainer/notifications/read-all}" method="post" th:if="${unreadCount > 0}">
+                                <button type="submit" class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-check2-all me-1"></i> Mark all read
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm" th:if="${!notifications.isEmpty()}">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-start py-3 gap-3"
+                                th:each="n : ${notifications}" th:classappend="${!n.read} ? 'bg-body-tertiary' : ''">
+                                <div class="d-flex gap-3 flex-grow-1">
+                                    <i class="bi fs-4 text-primary" th:classappend="${n.icon}" th:title="${n.typeLabel}"></i>
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                                            <span class="fw-semibold" th:text="${n.displayTitle}">Title</span>
+                                            <span class="badge" th:classappend="${n.badgeClass}" th:text="${n.typeLabel}">Type</span>
+                                            <span class="badge text-bg-danger" th:if="${!n.read}">New</span>
+                                        </div>
+                                        <p class="mb-1 small text-muted" style="white-space:pre-line" th:text="${n.message}">Message</p>
+                                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                                            <small class="text-muted"
+                                                   th:text="${#temporals.format(n.createdAt, 'MMM d, yyyy h:mm a')}">Date</small>
+                                            <a th:if="${n.actionUrl != null}" th:href="@{${n.actionUrl}}"
+                                               class="small text-decoration-none">
+                                                <i class="bi bi-box-arrow-up-right me-1"></i><span th:text="${n.actionLabel}">Open</span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-nowrap d-flex gap-1">
+                                    <form th:action="@{/trainer/notifications/{id}/read(id=${n.id})}" method="post" th:if="${!n.read}">
+                                        <button type="submit" class="btn btn-sm btn-outline-secondary" title="Mark as read">
+                                            <i class="bi bi-check2"></i>
+                                        </button>
+                                    </form>
+                                    <form th:action="@{/trainer/notifications/{id}/delete(id=${n.id})}" method="post"
+                                          onsubmit="return confirm('Dismiss this notification?');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Dismiss">
+                                            <i class="bi bi-x-lg"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="card border-0 shadow-sm" th:if="${notifications.isEmpty()}">
+                        <div class="card-body">
+                            <div class="empty-state mb-0">
+                                <i class="bi bi-bell-slash"></i>Nothing to show here.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+
+</html>

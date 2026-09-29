@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/trainer-sidebar :: trainerSidebar('classes')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <div>
+                            <h1 class="h3">Classes</h1>
+                            <p class="text-muted mb-0">Schedule online or offline classes for your batches and mark attendance.</p>
+                        </div>
+                        <a th:href="@{/trainer/classes/new}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i> Schedule class</a>
+                    </div>
+
+                    <div class="card border-0 shadow-sm">
+                        <div class="table-responsive">
+                            <table class="table data-table mb-0 align-middle">
+                                <thead class="table-light">
+                                    <tr><th>Topic</th><th>Batch</th><th>Scheduled</th><th>Mode</th><th>Status</th><th class="text-end">Actions</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="lc : ${classes}">
+                                        <td>
+                                            <div class="fw-semibold" th:text="${lc.topic}">Topic</div>
+                                            <div class="small text-muted" th:text="${lc.courseTitle}">Course</div>
+                                            <a class="small" th:if="${lc.meetingLink}" th:href="${lc.meetingLink}" target="_blank" rel="noopener"><i class="bi bi-link-45deg"></i> Meeting link</a>
+                                            <div class="small text-muted" th:if="${lc.classroomDetails}" th:text="${lc.classroomDetails}">Room</div>
+                                        </td>
+                                        <td th:text="${lc.batchName} ?: '—'">Batch</td>
+                                        <td>
+                                            <div th:text="${lc.startLabel} ?: '—'">when</div>
+                                            <span class="badge text-bg-info" th:if="${lc.upcoming}">Upcoming</span>
+                                        </td>
+                                        <td><span class="badge" th:classappend="${lc.mode.name() == 'ONLINE' ? 'text-bg-primary' : 'text-bg-secondary'}" th:text="${lc.modeLabel}">Mode</span></td>
+                                        <td><span class="badge text-bg-primary" th:text="${lc.statusLabel} ?: ${lc.status}">Status</span></td>
+                                        <td class="text-end text-nowrap">
+                                            <a class="btn btn-sm btn-outline-secondary" th:href="@{/trainer/classes/{id}/attendance(id=${lc.id})}" title="Mark attendance"><i class="bi bi-clipboard-check"></i></a>
+                                            <a class="btn btn-sm btn-outline-primary" th:href="@{/trainer/classes/{id}/edit(id=${lc.id})}" title="Edit"><i class="bi bi-pencil"></i></a>
+                                            <form th:action="@{/trainer/classes/{id}/delete(id=${lc.id})}" method="post" class="d-inline"
+                                                  onsubmit="return confirm('Delete this class?');">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(classes)}">
+                                        <td colspan="6"><div class="empty-state"><i class="bi bi-camera-video"></i>No classes scheduled yet.</div></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

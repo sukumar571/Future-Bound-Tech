@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/trainer-sidebar :: trainerSidebar('quizzes')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <div>
+                            <h1 class="h3">Quizzes</h1>
+                            <p class="text-muted mb-0">Create quizzes, add questions and review student results.</p>
+                        </div>
+                        <a th:href="@{/trainer/quizzes/new}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i> New quiz</a>
+                    </div>
+
+                    <div class="card border-0 shadow-sm">
+                        <div class="table-responsive">
+                            <table class="table data-table mb-0 align-middle">
+                                <thead class="table-light">
+                                    <tr><th>Title</th><th>Course</th><th>Questions</th><th>Duration</th><th>Passing %</th><th>Attempts</th><th>Status</th><th class="text-end">Actions</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="q : ${quizzes}">
+                                        <td class="fw-semibold" th:text="${q.title}">Title</td>
+                                        <td th:text="${q.courseTitle}">Course</td>
+                                        <td><span class="badge text-bg-light" th:text="${q.questionCount}">0</span></td>
+                                        <td class="small" th:text="${q.timeLimitMinutes} + ' min'">min</td>
+                                        <td class="small" th:text="${q.passingScore} + '%'">%</td>
+                                        <td class="small">
+                                            <span th:text="${q.attemptCount}">0</span>
+                                            <span class="text-muted" th:if="${q.attemptLimit != null}" th:text="'/ ' + ${q.attemptLimit}"></span>
+                                        </td>
+                                        <td>
+                                            <span class="badge" th:classappend="${q.published} ? 'text-bg-success' : 'text-bg-secondary'"
+                                                  th:text="${q.published} ? 'Published' : 'Draft'">Status</span>
+                                        </td>
+                                        <td class="text-end text-nowrap">
+                                            <a class="btn btn-sm btn-outline-secondary" th:href="@{/trainer/quizzes/{id}/questions(id=${q.id})}" title="Questions"><i class="bi bi-list-ol"></i></a>
+                                            <a class="btn btn-sm btn-outline-info" th:href="@{/trainer/quizzes/{id}/results(id=${q.id})}" title="Results"><i class="bi bi-bar-chart"></i></a>
+                                            <a class="btn btn-sm btn-outline-primary" th:href="@{/trainer/quizzes/{id}/edit(id=${q.id})}" title="Edit"><i class="bi bi-pencil"></i></a>
+                                            <form th:action="${q.published} ? @{/trainer/quizzes/{id}/unpublish(id=${q.id})} : @{/trainer/quizzes/{id}/publish(id=${q.id})}"
+                                                  method="post" class="d-inline">
+                                                <button type="submit" class="btn btn-sm btn-outline-success"
+                                                        th:title="${q.published} ? 'Move to draft' : 'Publish'">
+                                                    <i class="bi" th:classappend="${q.published} ? 'bi-eye-slash' : 'bi-eye'"></i>
+                                                </button>
+                                            </form>
+                                            <form th:action="@{/trainer/quizzes/{id}/delete(id=${q.id})}" method="post" class="d-inline"
+                                                  onsubmit="return confirm('Delete this quiz?');">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(quizzes)}">
+                                        <td colspan="8"><div class="empty-state"><i class="bi bi-patch-question"></i>No quizzes yet. Create one to get started.</div></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

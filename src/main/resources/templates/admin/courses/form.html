@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+
+    <section class="section-padding" style="background: var(--light-bg);">
+        <div class="container">
+            <div class="mb-4">
+                <a th:href="@{/admin/courses}" class="text-decoration-none"><i class="bi bi-arrow-left"></i> Back to courses</a>
+                <h1 class="h3 fw-bold mt-2" th:text="${editing} ? 'Edit course' : 'Create course'">Course form</h1>
+            </div>
+
+            <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+            <form class="card border-0 shadow-sm" th:action="@{${formAction}}" th:object="${courseDto}" method="post" enctype="multipart/form-data">
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <div class="col-lg-8">
+                            <label class="form-label" for="title">Title</label>
+                            <input id="title" class="form-control" th:field="*{title}" th:classappend="${#fields.hasErrors('title')} ? 'is-invalid'">
+                            <div class="invalid-feedback" th:errors="*{title}"></div>
+                        </div>
+                        <div class="col-lg-4">
+                            <label class="form-label" for="slug">Slug</label>
+                            <input id="slug" class="form-control" th:field="*{slug}" placeholder="Generated from title if empty">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" for="shortDescription">Short description</label>
+                            <textarea id="shortDescription" class="form-control" rows="2" th:field="*{shortDescription}"
+                                      th:classappend="${#fields.hasErrors('shortDescription')} ? 'is-invalid'"></textarea>
+                            <div class="invalid-feedback" th:errors="*{shortDescription}"></div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" for="detailedDescription">Detailed description</label>
+                            <textarea id="detailedDescription" class="form-control" rows="6" th:field="*{detailedDescription}"
+                                      th:classappend="${#fields.hasErrors('detailedDescription')} ? 'is-invalid'"></textarea>
+                            <div class="invalid-feedback" th:errors="*{detailedDescription}"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="category">Category</label>
+                            <select id="category" class="form-select" th:field="*{category}" th:classappend="${#fields.hasErrors('category')} ? 'is-invalid'">
+                                <option value="">Select category</option>
+                                <option th:each="cat : ${categories}" th:value="${cat}" th:text="${cat.label}"></option>
+                            </select>
+                            <div class="invalid-feedback" th:errors="*{category}"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="level">Skill level</label>
+                            <select id="level" class="form-select" th:field="*{level}" th:classappend="${#fields.hasErrors('level')} ? 'is-invalid'">
+                                <option value="">Select level</option>
+                                <option th:each="lvl : ${levels}" th:value="${lvl}"
+                                        th:text="${#strings.capitalize(#strings.toLowerCase(lvl.name()))}"></option>
+                            </select>
+                            <div class="invalid-feedback" th:errors="*{level}"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="trainingMode">Training mode</label>
+                            <select id="trainingMode" class="form-select" th:field="*{trainingMode}" th:classappend="${#fields.hasErrors('trainingMode')} ? 'is-invalid'">
+                                <option th:each="mode : ${trainingModes}" th:value="${mode}"
+                                        th:text="${#strings.capitalize(#strings.toLowerCase(mode.name()))}"></option>
+                            </select>
+                            <div class="invalid-feedback" th:errors="*{trainingMode}"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="durationMonths">Duration (months)</label>
+                            <input id="durationMonths" type="number" min="1" max="24" class="form-control" th:field="*{durationMonths}"
+                                   th:classappend="${#fields.hasErrors('durationMonths')} ? 'is-invalid'">
+                            <div class="invalid-feedback" th:errors="*{durationMonths}"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="fee">Course fee (INR)</label>
+                            <input id="fee" type="number" min="0" step="0.01" class="form-control" th:field="*{fee}" placeholder="Leave blank until confirmed">
+                            <div class="form-text">Do not enter a placeholder price. Leave empty if the fee is not final.</div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="discountFee">Discount fee (INR)</label>
+                            <input id="discountFee" type="number" min="0" step="0.01" class="form-control" th:field="*{discountFee}" placeholder="Optional">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="trainerId">Assign trainer</label>
+                            <select id="trainerId" class="form-select" th:field="*{trainerId}">
+                                <option value="">Unassigned</option>
+                                <option th:each="trainer : ${trainers}" th:value="${trainer.id}"
+                                        th:text="${trainer.fullName + (trainer.expertise != null ? ' — ' + trainer.expertise : '')}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label" for="status">Status</label>
+                            <select id="status" class="form-select" th:field="*{status}">
+                                <option th:each="st : ${statuses}" th:value="${st}"
+                                        th:text="${#strings.capitalize(#strings.toLowerCase(st.name()))}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label d-block">Visibility</label>
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" type="checkbox" th:field="*{publicListed}" id="publicListed">
+                                <label class="form-check-label" for="publicListed">Public catalog</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" th:field="*{certificateEligible}" id="certificateEligible">
+                                <label class="form-check-label" for="certificateEligible">Certificate eligibility</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="thumbnailFile">Upload thumbnail</label>
+                            <input id="thumbnailFile" type="file" name="thumbnailFile" class="form-control" accept="image/png,image/jpeg,image/webp,image/gif">
+                            <div class="form-text" th:if="${courseDto.thumbnailUrl}">Current thumbnail is saved. Upload a new file to replace it.</div>
+                        </div>
+                        <div class="col-md-6" th:if="${courseDto.thumbnailUrl}">
+                            <img th:src="@{${courseDto.thumbnailUrl}}" alt="Current thumbnail" class="img-thumbnail" style="max-height:120px;">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="learningOutcomes">Learning outcomes</label>
+                            <textarea id="learningOutcomes" class="form-control" rows="6" th:field="*{learningOutcomes}" placeholder="One item per line"></textarea>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="prerequisites">Prerequisites</label>
+                            <textarea id="prerequisites" class="form-control" rows="6" th:field="*{prerequisites}" placeholder="One item per line"></textarea>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="projects">Projects</label>
+                            <textarea id="projects" class="form-control" rows="6" th:field="*{projects}" placeholder="One item per line"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-white p-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary" th:text="${editing} ? 'Save changes' : 'Create course'">Save</button>
+                    <a th:href="@{/admin/courses}" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+
+</html>

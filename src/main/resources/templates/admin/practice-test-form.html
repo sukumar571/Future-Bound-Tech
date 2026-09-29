@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/admin-sidebar :: adminSidebar('practice')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <h1 class="h3" th:text="${editing} ? 'Edit mock test' : 'New mock test'">Mock test</h1>
+                        <a th:href="@{/admin/practice/tests}" class="btn btn-link"><i class="bi bi-arrow-left"></i> Back to tests</a>
+                    </div>
+
+                    <div class="card form-card shadow-sm">
+                        <div class="card-body p-4">
+                            <form th:action="${formAction}" th:object="${testForm}" method="post">
+                                <div class="row g-3">
+                                    <div class="col-md-12">
+                                        <label class="form-label">Title</label>
+                                        <input type="text" class="form-control" th:field="*{title}" th:classappend="${#fields.hasErrors('title')} ? 'is-invalid'">
+                                        <div class="invalid-feedback" th:errors="*{title}"></div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label class="form-label">Description</label>
+                                        <textarea class="form-control" rows="2" th:field="*{description}"></textarea>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Duration (minutes)</label>
+                                        <input type="number" min="1" class="form-control" th:field="*{durationMinutes}" placeholder="Leave blank for untimed">
+                                        <div class="invalid-feedback" th:errors="*{durationMinutes}"></div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Passing marks</label>
+                                        <input type="number" min="0" class="form-control" th:field="*{passingMarks}" placeholder="Defaults to 50%">
+                                        <div class="invalid-feedback" th:errors="*{passingMarks}"></div>
+                                    </div>
+                                    <div class="col-md-4 d-flex align-items-end">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="published" th:field="*{published}">
+                                            <label class="form-check-label" for="published">Published</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <hr class="my-4">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h2 class="h6 mb-0">Select questions</h2>
+                                    <span class="small text-muted" th:text="${#lists.size(allQuestions)} + ' published MCQs available'">0</span>
+                                </div>
+
+                                <div class="alert alert-warning small" th:if="${#lists.isEmpty(allQuestions)}">
+                                    No published MCQ questions yet. <a th:href="@{/admin/practice/questions/new}">Add questions</a> first.
+                                </div>
+
+                                <div class="row g-2" style="max-height:360px; overflow-y:auto">
+                                    <div class="col-md-12" th:each="q : ${allQuestions}">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="questionIds" th:value="${q.id}" th:id="'q-'+${q.id}" th:checked="${#lists.contains(selectedIds, q.id)}">
+                                            <label class="form-check-label small" th:for="'q-'+${q.id}">
+                                                <span class="badge text-bg-primary me-1" th:text="${q.categoryLabel}">Cat</span>
+                                                <span class="badge text-bg-light border me-1" th:text="${q.difficulty}">EASY</span>
+                                                <span th:text="${#strings.abbreviate(q.questionText, 110)}">Question</span>
+                                                <span class="text-muted" th:text="' (' + ${q.marks} + ' marks)'"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4">
+                                    <button type="submit" class="btn btn-primary"><i class="bi bi-check2 me-1"></i> <span th:text="${editing} ? 'Save changes' : 'Create test'">Save</span></button>
+                                    <a th:href="@{/admin/practice/tests}" class="btn btn-outline-secondary">Cancel</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/admin-sidebar :: adminSidebar('notifications')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <h1 class="h3">Send notification</h1>
+                        <a th:href="@{/admin/notifications}" class="btn btn-link"><i class="bi bi-arrow-left"></i> Back to notifications</a>
+                    </div>
+
+                    <div class="card form-card shadow-sm">
+                        <div class="card-body p-4">
+                            <form th:action="@{/admin/notifications}" th:object="${sendForm}" method="post">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="audience">Send to</label>
+                                        <select class="form-select" id="audience" th:field="*{audience}">
+                                            <option th:each="a : ${audiences}" th:value="${a}" th:text="${a.label}">Audience</option>
+                                        </select>
+                                        <div class="invalid-feedback" th:errors="*{audience}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="type">Notification type</label>
+                                        <select class="form-select" id="type" th:field="*{type}">
+                                            <option th:each="t : ${types}" th:value="${t}" th:text="${t.label}">Type</option>
+                                        </select>
+                                        <div class="invalid-feedback" th:errors="*{type}"></div>
+                                    </div>
+
+                                    <div class="col-md-6 audience-field" data-audience="COURSE">
+                                        <label class="form-label" for="courseId">Course</label>
+                                        <select class="form-select" id="courseId" th:field="*{courseId}">
+                                            <option value="">Select a course…</option>
+                                            <option th:each="c : ${courses}" th:value="${c.value}" th:text="${c.name}">Course</option>
+                                        </select>
+                                        <div class="form-text">Notifies every student enrolled in this course.</div>
+                                    </div>
+
+                                    <div class="col-md-6 audience-field" data-audience="BATCH">
+                                        <label class="form-label" for="batchId">Batch</label>
+                                        <select class="form-select" id="batchId" th:field="*{batchId}">
+                                            <option value="">Select a batch…</option>
+                                            <option th:each="b : ${batches}" th:value="${b.id}" th:text="${b.batchName}">Batch</option>
+                                        </select>
+                                        <div class="form-text">Notifies every student enrolled in this batch.</div>
+                                    </div>
+
+                                    <div class="col-md-6 audience-field" data-audience="STUDENT">
+                                        <label class="form-label" for="studentId">Student</label>
+                                        <select class="form-select" id="studentId" th:field="*{studentId}">
+                                            <option value="">Select a student…</option>
+                                            <option th:each="s : ${students}" th:value="${s.id}" th:text="${s.fullName}">Student</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-6 audience-field" data-audience="TRAINER">
+                                        <label class="form-label" for="trainerId">Trainer</label>
+                                        <select class="form-select" id="trainerId" th:field="*{trainerId}">
+                                            <option value="">Select a trainer…</option>
+                                            <option th:each="t : ${trainers}" th:value="${t.id}" th:text="${t.fullName}">Trainer</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <label class="form-label" for="title">Title</label>
+                                        <input type="text" class="form-control" id="title" maxlength="160"
+                                               th:field="*{title}" th:classappend="${#fields.hasErrors('title')} ? 'is-invalid'"
+                                               placeholder="What this notification is about">
+                                        <div class="invalid-feedback" th:errors="*{title}"></div>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <label class="form-label" for="message">Message</label>
+                                        <textarea class="form-control" id="message" rows="5" maxlength="1000"
+                                                  th:field="*{message}" th:classappend="${#fields.hasErrors('message')} ? 'is-invalid'"
+                                                  placeholder="Write the message recipients will see"></textarea>
+                                        <div class="invalid-feedback" th:errors="*{message}"></div>
+                                    </div>
+                                </div>
+
+                                <div class="alert alert-secondary small mt-3 mb-0 d-flex align-items-start gap-2">
+                                    <i class="bi bi-info-circle"></i>
+                                    <span th:if="${emailEnabled}">An e-mail copy is sent to each recipient as well as the in-app inbox.</span>
+                                    <span th:unless="${emailEnabled}">In-app only right now — <span th:text="${emailStatus}">e-mail status</span></span>
+                                </div>
+
+                                <div class="mt-4">
+                                    <button type="submit" class="btn btn-primary"><i class="bi bi-send me-1"></i> Send notification</button>
+                                    <a th:href="@{/admin/notifications}" class="btn btn-outline-secondary">Cancel</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script th:inline="javascript">
+        (function () {
+            var audience = document.getElementById('audience');
+            if (!audience) { return; }
+            function sync() {
+                var value = audience.value;
+                document.querySelectorAll('.audience-field').forEach(function (field) {
+                    var matches = field.getAttribute('data-audience') === value;
+                    field.classList.toggle('d-none', !matches);
+                    field.querySelectorAll('select').forEach(function (input) {
+                        input.disabled = !matches;
+                    });
+                });
+            }
+            audience.addEventListener('change', sync);
+            sync();
+        })();
+    </script>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+
+</html>

@@ -1,0 +1,60 @@
+<!-- Head Fragment — Future Bound Tech -->
+<head th:fragment="head(pageTitle)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Theme bootstrap: public/product surfaces stay light by default; dark is opt-in -->
+    <script>
+        (function () {
+            try {
+                var saved = localStorage.getItem('fbt-theme');
+                document.documentElement.setAttribute('data-bs-theme', saved === 'dark' ? 'dark' : 'light');
+            } catch (e) {
+                document.documentElement.setAttribute('data-bs-theme', 'light');
+            }
+        })();
+    </script>
+    <meta name="description" th:content="${site != null and site.tagLine != null} ? (${site.name} + ' — ' + site.tagLine) : 'Future Bound Tech — Learn Today. Build Tomorrow. Premium coaching for Java, Python, Web Development, AWS, and AI.'">
+    <meta name="keywords" content="Future Bound Tech, Java Full Stack, Python, Web Development, AWS, AI, Coaching, Online Classes">
+    <meta name="author" th:content="${site != null and site.name != null} ? ${site.name} : 'Future Bound Tech'">
+    <meta name="theme-color" content="#0B1020">
+
+    <title th:text="${pageTitle} ?: (${site != null and site.name != null} ? ${site.name} : 'Future Bound Tech')">Future Bound Tech</title>
+
+    <!-- Favicon (institute-configurable, falls back to the bundled logo) -->
+    <link rel="icon" th:href="${site != null and site.faviconUrl != null and !#strings.isEmpty(site.faviconUrl)} ? ${site.faviconUrl} : @{/images/logo.png}">
+
+    <!-- Google Fonts — Inter (body) + Plus Jakarta Sans (display) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+
+    <!-- No-JS safety net: reveal scroll-animated content that would otherwise stay hidden -->
+    <noscript><style>.fade-in-up{opacity:1 !important;transform:none !important;}</style></noscript>
+
+    <!-- Institute brand theme overrides (applied to :root custom properties when configured) -->
+    <script th:inline="javascript">
+        (function () {
+            var brand = {
+                primary:   /*[[${site != null} ? ${site.primaryColor} : null]]*/ null,
+                secondary: /*[[${site != null} ? ${site.secondaryColor} : null]]*/ null,
+                accent:    /*[[${site != null} ? ${site.accentColor} : null]]*/ null
+            };
+            try {
+                var root = document.documentElement.style;
+                if (brand.primary)   { root.setProperty('--cyan', brand.primary); root.setProperty('--cyan-600', brand.primary); }
+                if (brand.secondary) { root.setProperty('--deep-navy', brand.secondary); root.setProperty('--primary', brand.secondary); }
+                if (brand.accent)    { root.setProperty('--coral-pink', brand.accent); root.setProperty('--accent', brand.accent); }
+            } catch (e) { /* no-op */ }
+        })();
+    </script>
+</head>

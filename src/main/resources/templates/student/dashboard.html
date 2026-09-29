@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+
+    <section class="student-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/student-sidebar :: studentSidebar('dashboard')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <!-- ============ Welcome message ============ -->
+                    <div class="welcome-banner p-4 p-md-4 mb-4">
+                        <div class="d-flex align-items-center gap-3 flex-wrap">
+                            <div class="avatar-circle">
+                                <img th:if="${dashboard.profile.avatarUrl != null}" th:src="${dashboard.profile.avatarUrl}"
+                                     th:alt="${dashboard.profile.fullName}" class="dash-avatar">
+                                <span th:if="${dashboard.profile.avatarUrl == null}" th:text="${dashboard.profile.initials}">ST</span>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h1 class="h4 mb-1 text-white">Welcome back,
+                                    <span th:text="${dashboard.profile.firstName}">Student</span>! 👋
+                                </h1>
+                                <p class="mb-0 text-white-50">Here is a snapshot of your learning journey at Future Bound Tech.</p>
+                            </div>
+                            <div class="d-flex gap-2 flex-wrap">
+                                <a th:href="@{/student/courses}" class="btn btn-light fw-semibold">
+                                    <i class="bi bi-collection-play me-1"></i> My Courses
+                                </a>
+                                <a th:href="@{/courses}" class="btn btn-mentor-outline text-white">
+                                    <i class="bi bi-compass me-1"></i> Explore
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ============ Future Mentor ============ -->
+                    <div class="mentor-card p-4 mb-4">
+                        <div class="d-flex align-items-start gap-3 flex-wrap">
+                            <div class="mentor-orb">
+                                <i class="bi bi-stars"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="d-flex align-items-center gap-2 mb-1">
+                                    <span class="mentor-badge">Future Mentor</span>
+                                    <span class="mentor-sub">Your personal learning assistant</span>
+                                </div>
+                                <p class="mentor-line mb-0"
+                                   th:if="${dashboard.enrolledCourses == 0}">
+                                    You haven't enrolled in a course yet — browse the catalog and pick your first track to get started. 🚀
+                                </p>
+                                <p class="mentor-line mb-0" th:if="${dashboard.enrolledCourses > 0}">
+                                    <span th:if="${dashboard.continueLearning.isEmpty() and dashboard.selfPacedCourses.isEmpty()}">
+                                        Pick up where you left off, or start a new lesson to keep your momentum going.
+                                    </span>
+                                    <span th:unless="${dashboard.continueLearning.isEmpty() and dashboard.selfPacedCourses.isEmpty()}">
+                                        You're
+                                        <strong th:text="${dashboard.overallProgressPercent} + '%'">0%</strong>
+                                        through your courses.
+                                        <span th:if="${dashboard.nextLessonLabel != null}">
+                                            Next up: <strong th:text="${dashboard.nextLessonLabel}">your next lesson</strong>.
+                                        </span>
+                                        <span th:if="${dashboard.pendingAssignmentsCount > 0}">
+                                            You also have
+                                            <strong th:text="${dashboard.pendingAssignmentsCount}">0</strong> assignment(s) waiting.
+                                        </span>
+                                    </span>
+                                </p>
+                            </div>
+                           <a th:href="@{/student/mentor}" class="btn btn-mentor fw-semibold align-self-center">
+                                <i class="bi bi-chat-dots me-1"></i> Chat with Future Mentor
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- ============ Stat cards ============ -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-6 col-md-3">
+                            <div class="card stat-card accent-blue shadow-sm">
+                                <div class="card-body d-flex align-items-center gap-3">
+                                    <div class="stat-icon" style="background: var(--blue-50); color: var(--royal-blue);">
+                                        <i class="bi bi-journal-bookmark-fill"></i>
+                                    </div>
+                                    <div>
+                                        <div class="stat-value" th:text="${dashboard.enrolledCourses}">0</div>
+                                        <div class="stat-label">Enrolled</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="card stat-card accent-purple shadow-sm">
+                                <div class="card-body d-flex align-items-center gap-3">
+                                    <div class="stat-icon" style="background: var(--purple-50); color: var(--electric-purple);">
+                                        <i class="bi bi-play-btn-fill"></i>
+                                    </div>
+                                    <div>
+                                        <div class="stat-value" th:text="${dashboard.activeCourses}">0</div>
+                                        <div class="stat-label">Active</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="card stat-card accent-green shadow-sm">
+                                <div class="card-body d-flex align-items-center gap-3">
+                                    <div class="stat-icon" style="background: #DCFCE7; color: #16A34A;">
+                                        <i class="bi bi-check2-circle"></i>
+                                    </div>
+                                    <div>
+                                        <div class="stat-value" th:text="${dashboard.completedCourses}">0</div>
+                                        <div class="stat-label">Completed</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="card stat-card accent-cyan shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="stat-label mb-0">Overall Progress</span>
+                                        <span class="fw-bold" th:text="${dashboard.overallProgressPercent} + '%'">0%</span>
+                                    </div>
+                                    <div class="progress" style="height: 10px;">
+                                        <div class="progress-bar bg-success"
+                                             th:style="'width:' + ${dashboard.overallProgressPercent} + '%'"></div>
+                                    </div>
+                                    <small class="text-muted"
+                                           th:text="${dashboard.totalCompletedLessons} + ' / ' + ${dashboard.totalPublishedLessons} + ' lessons'"></small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ============ Live Classes ============ -->
+                    <div class="card border-0 shadow-sm mb-4" th:if="${!dashboard.liveClasses.isEmpty()}">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h2 class="h5 mb-0"><span class="live-dot"></span> Live Classes</h2>
+                                <a th:href="@{/student/classes}" class="small text-decoration-none">View all</a>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-6" th:each="cls : ${dashboard.liveClasses}">
+                                    <div class="live-class-card">
+                                        <div class="d-flex justify-content-between align-items-start gap-2">
+                                            <div class="flex-grow-1">
+                                                <div class="fw-bold text-truncate" th:text="${cls.topic}">Topic</div>
+                                                <div class="small text-muted">
+                                                    <i class="bi bi-journal me-1"></i><span th:text="${cls.courseTitle}">Course</span>
+                                                    <span th:if="${cls.batchName != null}"> · <span th:text="${cls.batchName}">Batch</span></span>
+                                                </div>
+                                            </div>
+                                            <span class="badge"
+                                                  th:classappend="${cls.inProgress} ? 'text-bg-danger' : 'text-bg-warning'"
+                                                  th:text="${cls.inProgress} ? 'LIVE NOW' : 'Starting soon'">Live</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center mt-2 flex-wrap gap-2">
+                                            <small class="text-muted">
+                                                <i class="bi bi-clock me-1"></i>
+                                                <span th:text="${#temporals.format(cls.startTime, 'MMM d, h:mm a')}">Time</span>
+                                                <span class="ms-1" th:text="'· ' + ${cls.modeLabel}">· Online</span>
+                                            </small>
+                                            <div class="d-flex gap-2">
+                                                <a th:if="${cls.classroomDetails != null}" class="btn btn-sm btn-outline-secondary"
+                                                   th:href="@{/student/classes}" title="Venue details available in Live Classes">
+                                                    <i class="bi bi-geo-alt me-1"></i> Venue
+                                                </a>
+                                                <a th:if="${cls.meetingLink != null}" class="btn btn-sm btn-mentor"
+                                                   th:href="${cls.meetingLink}" target="_blank" rel="noopener noreferrer">
+                                                    <i class="bi bi-camera-video-fill me-1"></i> Join Class
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ============ Continue Learning ============ -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h2 class="h5 mb-0"><i class="bi bi-play-circle me-2 mentor-accent"></i>Continue Learning</h2>
+                                <a th:href="@{/student/courses}" class="small text-decoration-none">View all</a>
+                            </div>
+
+                            <div class="row g-3" th:if="${!dashboard.continueLearning.isEmpty()}">
+                                <div class="col-md-6 col-xl-4" th:each="course : ${dashboard.continueLearning}">
+                                    <div class="card h-100 border shadow-sm course-card">
+                                        <div class="course-thumb"
+                                             th:style="${course.thumbnailUrl != null} ? 'background-image:url(' + ${course.thumbnailUrl} + ')' : ''">
+                                            <i class="bi bi-book-half" th:if="${course.thumbnailUrl == null}"></i>
+                                            <span class="badge course-mode" th:text="${course.trainingModeLabel}">Online</span>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-start gap-2 mb-1">
+                                                <h3 class="h6 text-truncate mb-0" th:text="${course.title}">Course</h3>
+                                                <span class="badge align-self-start"
+                                                      th:classappend="'text-bg-' + ${course.statusVariant}"
+                                                      th:text="${course.statusLabel}">Ongoing</span>
+                                            </div>
+                                            <p class="small text-muted mb-2">
+                                                <i class="bi bi-person-badge me-1"></i><span th:text="${course.trainerName}">Trainer</span>
+                                            </p>
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <small class="text-muted">Progress</small>
+                                                <small class="fw-bold" th:text="${course.progressPercent} + '%'">0%</small>
+                                            </div>
+                                            <div class="progress mb-2" style="height: 8px;">
+                                                <div class="progress-bar bg-gradient from-blue-to-purple"
+                                                     th:style="'width:' + ${course.progressPercent} + '%'"></div>
+                                            </div>
+                                            <p class="small text-muted mb-3">
+                                                <i class="bi bi-calendar-event me-1"></i>
+                                                <span th:if="${course.nextClassTime != null}"
+                                                      th:text="'Next class: ' + ${#temporals.format(course.nextClassTime, 'MMM d, h:mm a')}">Next class</span>
+                                                <span th:if="${course.nextClassTime == null}">Self-paced · no scheduled class</span>
+                                            </p>
+                                            <div class="d-flex gap-2">
+                                                <a th:if="${course.joinClassUrl != null}" th:href="${course.joinClassUrl}"
+                                                   target="_blank" rel="noopener noreferrer"
+                                                   class="btn btn-sm btn-mentor flex-fill">
+                                                    <i class="bi bi-camera-video-fill me-1"></i> Join Class
+                                                </a>
+                                                <a th:href="@{/student/courses/{id}(id=${course.courseId})}"
+                                                   class="btn btn-sm btn-outline-primary flex-fill">
+                                                    <i class="bi bi-box-arrow-in-right me-1"></i> View Course
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="empty-state" th:if="${dashboard.continueLearning.isEmpty()}">
+                                <i class="bi bi-inboxes"></i>
+                                <p class="mb-0">You have no live cohort courses running right now.
+                                    <a th:href="@{/courses}" class="text-decoration-none">Browse the catalog</a> to enroll.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ============ Self-Paced Courses ============ -->
+                    <div class="card border-0 shadow-sm mb-4" th:if="${!dashboard.selfPacedCourses.isEmpty()}">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h2 class="h5 mb-0"><i class="bi bi-bounding-circle me-2 mentor-accent"></i>Self-Paced Courses</h2>
+                                <a th:href="@{/student/courses}" class="small text-decoration-none">View all</a>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-6 col-xl-4" th:each="course : ${dashboard.selfPacedCourses}">
+                                    <div class="card h-100 border shadow-sm course-card">
+                                        <div class="course-thumb self-paced-thumb"
+                                             th:style="${course.thumbnailUrl != null} ? 'background-image:url(' + ${course.thumbnailUrl} + ')' : ''">
+                                            <i class="bi bi-mortarboard" th:if="${course.thumbnailUrl == null}"></i>
+                                            <span class="badge course-mode" th:text="${course.trainingModeLabel}">Online</span>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-start gap-2 mb-1">
+                                                <h3 class="h6 text-truncate mb-0" th:text="${course.title}">Course</h3>
+                                                <span class="badge align-self-start"
+                                                      th:classappend="'text-bg-' + ${course.statusVariant}"
+                                                      th:text="${course.statusLabel}">Start here</span>
+                                            </div>
+                                            <p class="small text-muted mb-2">
+                                                <i class="bi bi-person-badge me-1"></i><span th:text="${course.trainerName}">Trainer</span>
+                                            </p>
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <small class="text-muted">Progress</small>
+                                                <small class="fw-bold" th:text="${course.progressPercent} + '%'">0%</small>
+                                            </div>
+                                            <div class="progress mb-2" style="height: 8px;">
+                                                <div class="progress-bar bg-gradient from-cyan-to-pink"
+                                                     th:style="'width:' + ${course.progressPercent} + '%'"></div>
+                                            </div>
+                                            <p class="small text-muted mb-3">
+                                                <i class="bi bi-easel2 me-1"></i> Learn at your own pace
+                                            </p>
+                                            <div class="d-flex gap-2">
+                                                <a th:href="@{/student/courses/{id}(id=${course.courseId})}"
+                                                   class="btn btn-sm btn-mentor flex-fill">
+                                                    <i class="bi bi-play-fill me-1"></i> View Course
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ============ Upcoming Classes ============ -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h2 class="h5 mb-0"><i class="bi bi-calendar-event me-2 mentor-accent"></i>Upcoming Classes</h2>
+                                <a th:href="@{/student/classes}" class="small text-decoration-none">View all</a>
+                            </div>
+                            <div class="list-group list-group-flush" th:if="${!dashboard.upcomingClasses.isEmpty()}">
+                                <div class="list-group-item px-0 d-flex justify-content-between align-items-center gap-2"
+                                     th:each="cls : ${dashboard.upcomingClasses}">
+                                    <div class="min-w-0">
+                                        <div class="fw-semibold text-truncate" th:text="${cls.topic}">Topic</div>
+                                        <small class="text-muted" th:text="${cls.courseTitle}">Course</small>
+                                    </div>
+                                    <div class="text-end text-nowrap">
+                                        <div class="small text-primary"
+                                             th:text="${#temporals.format(cls.startTime, 'MMM d, h:mm a')}">Date</div>
+                                        <a th:if="${cls.meetingLink != null}" class="btn btn-sm btn-mentor mt-1"
+                                           th:href="${cls.meetingLink}" target="_blank" rel="noopener noreferrer">
+                                            <i class="bi bi-camera-video-fill me-1"></i> Join
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-muted small mb-0" th:if="${dashboard.upcomingClasses.isEmpty()}">No upcoming classes scheduled.</p>
+                        </div>
+                    </div>
+
+                    <div class="row g-4">
+                        <!-- Pending assignments -->
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body p-4">
+                                    <h2 class="h6 mb-3"><i class="bi bi-pencil-square me-2 text-primary"></i>Pending Assignments</h2>
+                                    <div class="list-group list-group-flush" th:if="${!dashboard.pendingAssignments.isEmpty()}">
+                                        <div class="list-group-item px-0" th:each="a : ${dashboard.pendingAssignments}">
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <div class="fw-semibold text-truncate" th:text="${a.title}">Assignment</div>
+                                                    <small class="text-muted" th:text="${a.courseTitle}">Course</small>
+                                                </div>
+                                                <span class="badge align-self-center"
+                                                      th:classappend="${a.overdue} ? 'text-bg-danger' : 'text-bg-warning'"
+                                                      th:text="${a.overdue} ? 'Overdue' : 'Pending'">Pending</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p class="text-muted small mb-0" th:if="${dashboard.pendingAssignments.isEmpty()}">You are all caught up!</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Announcements -->
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body p-4">
+                                    <h2 class="h6 mb-3"><i class="bi bi-megaphone me-2 text-primary"></i>Announcements</h2>
+                                    <div th:if="${!dashboard.announcements.isEmpty()}">
+                                        <div class="mb-3" th:each="ann : ${dashboard.announcements}">
+                                            <div class="fw-semibold" th:text="${ann.title}">Title</div>
+                                            <p class="small text-muted mb-1" th:text="${ann.content}">Content</p>
+                                            <small class="text-muted" th:text="'· ' + ${ann.scope} + ' · ' + ${#temporals.format(ann.createdAt, 'MMM d, yyyy')}"></small>
+                                        </div>
+                                    </div>
+                                    <p class="text-muted small mb-0" th:if="${dashboard.announcements.isEmpty()}">No announcements yet.</p>
+                                    <a th:href="@{/student/announcements}" class="small text-decoration-none mt-2 d-inline-block"
+                                       th:if="${!dashboard.announcements.isEmpty()}">View all announcements</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/admin-sidebar :: adminSidebar('placements')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <div>
+                            <h1 class="h3" th:text="${editing} ? 'Edit Placement Post' : 'New Placement Post'">Placement Post</h1>
+                            <p class="text-muted mb-0">Only publish verified hiring information</p>
+                        </div>
+                        <a th:href="@{/admin/placements}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Back</a>
+                    </div>
+
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <form th:action="@{${formAction}}" method="post" th:object="${placementForm}" class="form">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Company name <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" th:field="*{companyName}" maxlength="150"
+                                               placeholder="e.g. Acme Software (DEMO)" required>
+                                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('companyName')}" th:errors="*{companyName}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Job title <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" th:field="*{jobTitle}" maxlength="150"
+                                               placeholder="e.g. Junior Java Developer (DEMO)" required>
+                                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('jobTitle')}" th:errors="*{jobTitle}"></div>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">Description</label>
+                                        <textarea class="form-control" rows="3" th:field="*{description}" maxlength="4000"
+                                                  placeholder="Role summary, responsibilities, salary range (if verified)…"></textarea>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">Eligibility</label>
+                                        <textarea class="form-control" rows="2" th:field="*{eligibility}" maxlength="2000"
+                                                  placeholder="e.g. Batch 2025, 60% aggregate, no active backlogs"></textarea>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Skills <span class="small text-muted">(comma-separated)</span></label>
+                                        <input type="text" class="form-control" th:field="*{skills}" maxlength="500"
+                                               placeholder="Java, Spring Boot, SQL">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Location</label>
+                                        <input type="text" class="form-control" th:field="*{location}" maxlength="120" placeholder="Bengaluru">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Job type</label>
+                                        <select class="form-select" th:field="*{jobType}">
+                                            <option value="">— Select —</option>
+                                            <option th:each="t : ${jobTypes}" th:value="${t}" th:text="${t}"></option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Application deadline</label>
+                                        <input type="date" class="form-control" th:field="*{deadline}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Application link <span class="small text-muted">(http/https only)</span></label>
+                                        <input type="url" class="form-control" th:field="*{applicationUrl}" maxlength="500"
+                                               placeholder="https://careers.example.com/apply">
+                                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('applicationUrl')}" th:errors="*{applicationUrl}"></div>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">Preparation resources</label>
+                                        <textarea class="form-control" rows="3" th:field="*{prepResources}" maxlength="4000"
+                                                  placeholder="What to revise, likely rounds, recommended practice topics…"></textarea>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" role="switch" th:field="*{published}" id="publishedSwitch">
+                                            <label class="form-check-label" for="publishedSwitch">Published (visible to students and the public page)</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="alert alert-warning small mt-3 mb-0">
+                                    <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                                    Do not publish fake or unverified company hiring information.
+                                    Use <strong>(DEMO)</strong> in company/role names until real openings are confirmed.
+                                </div>
+
+                                <div class="d-flex justify-content-end gap-2 mt-4">
+                                    <a th:href="@{/admin/placements}" class="btn btn-outline-secondary">Cancel</a>
+                                    <button type="submit" class="btn btn-primary" th:text="${editing} ? 'Save changes' : 'Create post'">Save</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

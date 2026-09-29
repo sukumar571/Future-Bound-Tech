@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/admin-sidebar :: adminSidebar('trainers')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <h1 class="h3" th:text="${editing} ? 'Edit trainer' : 'Add trainer'">Trainer</h1>
+                        <a th:href="@{/admin/trainers}" class="btn btn-link"><i class="bi bi-arrow-left"></i> Back to trainers</a>
+                    </div>
+
+                    <div class="card form-card shadow-sm">
+                        <div class="card-body p-4">
+                            <form th:action="${formAction}" th:object="${trainerForm}" method="post" enctype="multipart/form-data">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">First name</label>
+                                        <input type="text" class="form-control" th:field="*{firstName}" th:classappend="${#fields.hasErrors('firstName')} ? 'is-invalid'">
+                                        <div class="invalid-feedback" th:errors="*{firstName}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Last name</label>
+                                        <input type="text" class="form-control" th:field="*{lastName}" th:classappend="${#fields.hasErrors('lastName')} ? 'is-invalid'">
+                                        <div class="invalid-feedback" th:errors="*{lastName}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Email</label>
+                                        <input type="email" class="form-control" th:field="*{email}" th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'">
+                                        <div class="invalid-feedback" th:errors="*{email}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Phone</label>
+                                        <input type="text" class="form-control" th:field="*{phone}" th:classappend="${#fields.hasErrors('phone')} ? 'is-invalid'">
+                                        <div class="invalid-feedback" th:errors="*{phone}"></div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label class="form-label">Expertise</label>
+                                        <input type="text" class="form-control" th:field="*{expertise}" placeholder="e.g. Full-Stack Java, Data Science">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Years of experience</label>
+                                        <input type="number" min="0" max="60" class="form-control" th:field="*{experienceYears}" placeholder="e.g. 5">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Profile photo</label>
+                                        <input type="file" name="photoFile" class="form-control" accept="image/png,image/jpeg,image/webp,image/gif">
+                                        <div class="form-text" th:if="*{photoUrl}">A photo is already set. Upload a new file to replace it.</div>
+                                        <div class="form-text" th:unless="*{photoUrl}">Optional. JPEG, PNG, WEBP or GIF, up to 10&nbsp;MB.</div>
+                                    </div>
+                                    <div class="col-md-6" th:if="*{photoUrl}">
+                                        <label class="form-label d-block">Current photo</label>
+                                        <img th:src="*{photoUrl}" alt="Current photo" class="rounded-circle" style="width:96px;height:96px;object-fit:cover;">
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label class="form-label">Bio</label>
+                                        <textarea class="form-control" rows="3" th:field="*{bio}" th:classappend="${#fields.hasErrors('bio')} ? 'is-invalid'"></textarea>
+                                        <div class="invalid-feedback" th:errors="*{bio}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label" th:if="${editing}">New password <span class="text-muted small">(leave blank to keep current)</span></label>
+                                        <label class="form-label" th:unless="${editing}">Password</label>
+                                        <input type="password" class="form-control" th:field="*{password}" autocomplete="new-password">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Confirm password</label>
+                                        <input type="password" class="form-control" th:field="*{confirmPassword}" autocomplete="new-password">
+                                    </div>
+                                    <div class="col-12 form-check ms-2" th:if="${editing}">
+                                        <input type="checkbox" class="form-check-input" id="active" th:field="*{active}">
+                                        <label class="form-check-label" for="active">Account active</label>
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <button type="submit" class="btn btn-primary"><i class="bi bi-check2 me-1"></i> Save</button>
+                                    <a th:href="@{/admin/trainers}" class="btn btn-outline-secondary">Cancel</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

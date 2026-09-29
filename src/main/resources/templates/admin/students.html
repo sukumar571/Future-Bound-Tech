@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/admin-sidebar :: adminSidebar('students')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <div>
+                            <h1 class="h3">Students</h1>
+                            <p class="text-muted mb-0" th:text="${#lists.size(students)} + ' record(s)'">0</p>
+                        </div>
+                        <a th:href="@{/admin/students/new}" class="btn btn-primary"><i class="bi bi-person-plus me-1"></i> Add student</a>
+                    </div>
+
+                    <form method="get" th:action="@{/admin/students}" class="admin-toolbar">
+                        <input type="text" name="q" th:value="${q}" class="form-control" style="max-width:260px" placeholder="Search name, email, phone">
+                        <select name="active" class="form-select" style="max-width:160px">
+                            <option value="">All statuses</option>
+                            <option value="true" th:selected="${selectedActive != null and selectedActive}">Active</option>
+                            <option value="false" th:selected="${selectedActive != null and !selectedActive}">Inactive</option>
+                        </select>
+                        <button type="submit" class="btn btn-outline-secondary"><i class="bi bi-funnel"></i> Filter</button>
+                        <a th:href="@{/admin/students}" class="btn btn-link">Reset</a>
+                    </form>
+
+                    <div class="card border-0 shadow-sm">
+                        <div class="table-responsive">
+                            <table class="table data-table mb-0 align-middle">
+                                <thead class="table-light">
+                                    <tr><th>Name</th><th>Contact</th><th>Courses</th><th>Paid</th><th>Status</th><th class="text-end">Actions</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="s : ${students}">
+                                        <td>
+                                            <a class="fw-semibold text-decoration-none" th:href="@{/admin/students/{id}(id=${s.id})}" th:text="${s.fullName}">Name</a>
+                                            <div class="small text-muted" th:text="${s.education} ?: '—'"></div>
+                                        </td>
+                                        <td>
+                                            <div th:text="${s.email}">email</div>
+                                            <div class="small text-muted" th:text="${s.phone} ?: '—'">phone</div>
+                                        </td>
+                                        <td>
+                                            <span th:text="${s.enrolledCourses}">0</span> enrolled
+                                            <div class="small text-muted"><span th:text="${s.completedCourses}">0</span> completed</div>
+                                        </td>
+                                        <td th:text="${s.paymentSummary}">—</td>
+                                        <td>
+                                            <span class="badge" th:classappend="${s.active} ? 'text-bg-success' : 'text-bg-secondary'"
+                                                  th:text="${s.active} ? 'Active' : 'Inactive'">Active</span>
+                                        </td>
+                                        <td class="text-end text-nowrap">
+                                            <a class="btn btn-sm btn-outline-secondary" th:href="@{/admin/students/{id}(id=${s.id})}" title="View"><i class="bi bi-eye"></i></a>
+                                            <a class="btn btn-sm btn-outline-primary" th:href="@{/admin/students/{id}/edit(id=${s.id})}" title="Edit"><i class="bi bi-pencil"></i></a>
+                                            <form th:action="@{/admin/students/{id}/status(id=${s.id})}" method="post" class="d-inline">
+                                                <input type="hidden" name="active" th:value="${s.active} ? 'false' : 'true'">
+                                                <button type="submit" class="btn btn-sm" th:classappend="${s.active} ? 'btn-outline-danger' : 'btn-outline-success'"
+                                                        th:title="${s.active} ? 'Deactivate' : 'Activate'">
+                                                    <i class="bi" th:classappend="${s.active} ? 'bi-person-x' : 'bi-person-check'"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(students)}">
+                                        <td colspan="6"><div class="empty-state"><i class="bi bi-people"></i>No students match your filters.</div></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

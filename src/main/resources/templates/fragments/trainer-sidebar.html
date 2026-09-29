@@ -1,0 +1,73 @@
+<!-- Trainer Portal Sidebar Fragment — Future Bound Tech -->
+<aside th:fragment="trainerSidebar(active)" class="admin-sidebar trainer-sidebar">
+    <div class="card border-0 shadow-sm admin-sidebar-card">
+        <div class="card-body p-2">
+            <div class="portal-rail-title">
+                <span class="rail-chip"><i class="bi bi-person-video3"></i></span>
+                <span>Trainer Desk<small>Deliver · Mentor · Track</small></span>
+            </div>
+            <ul class="nav flex-column gap-1">
+                <li class="sidebar-heading">Overview</li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/trainer/dashboard}" th:classappend="${active == 'dashboard'} ? 'active'">
+                        <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/trainer/profile}" th:classappend="${active == 'profile'} ? 'active'">
+                        <i class="bi bi-person me-2"></i> Profile
+                    </a>
+                </li>
+
+                <li class="sidebar-heading">Teaching</li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/trainer/courses}" th:classappend="${active == 'courses'} ? 'active'">
+                        <i class="bi bi-journal-bookmark me-2"></i> Courses
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/trainer/batches}" th:classappend="${active == 'batches'} ? 'active'">
+                        <i class="bi bi-collection me-2"></i> Batches
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/trainer/students}" th:classappend="${active == 'students'} ? 'active'">
+                        <i class="bi bi-people me-2"></i> Students
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/trainer/classes}" th:classappend="${active == 'classes'} ? 'active'">
+                        <i class="bi bi-camera-video me-2"></i> Classes
+                    </a>
+                </li>
+
+                <li class="sidebar-heading">Assessments</li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/trainer/assignments}" th:classappend="${active == 'assignments'} ? 'active'">
+                        <i class="bi bi-pencil-square me-2"></i> Assignments
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/trainer/quizzes}" th:classappend="${active == 'quizzes'} ? 'active'">
+                        <i class="bi bi-patch-question me-2"></i> Quizzes
+                    </a>
+                </li>
+
+                <li class="sidebar-heading">Engagement</li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/trainer/announcements}" th:classappend="${active == 'announcements'} ? 'active'">
+                        <i class="bi bi-megaphone me-2"></i> Announcements
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/trainer/notifications}" th:classappend="${active == 'notifications'} ? 'active'">
+                        <i class="bi bi-bell me-2"></i> Notifications
+                        <span class="badge rounded-pill bg-danger ms-auto"
+                              th:if="${navUnreadCount != null and navUnreadCount > 0}"
+                              th:text="${navUnreadCount}">0</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</aside>

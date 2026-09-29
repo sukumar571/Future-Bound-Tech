@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+
+    <section class="student-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/student-sidebar :: studentSidebar('attendance')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+                    <h1 class="h4 mb-4"><i class="bi bi-clipboard-check me-2 text-primary"></i>My Attendance</h1>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-6 col-md-4">
+                            <div class="card stat-card shadow-sm">
+                                <div class="card-body text-center">
+                                    <div class="stat-value" th:text="${attendance.attendancePercent} + '%'">0%</div>
+                                    <div class="stat-label">Attendance</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <div class="card stat-card shadow-sm">
+                                <div class="card-body text-center">
+                                    <div class="stat-value" th:text="${attendance.presentClasses}">0</div>
+                                    <div class="stat-label">Classes present</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <div class="card stat-card shadow-sm">
+                                <div class="card-body text-center">
+                                    <div class="stat-value" th:text="${attendance.totalClasses}">0</div>
+                                    <div class="stat-label">Classes marked</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm">
+                        <div class="table-responsive">
+                            <table class="table data-table mb-0 align-middle">
+                                <thead class="table-light">
+                                    <tr><th>Topic</th><th>Course</th><th>Batch</th><th>Date</th><th class="text-end">Status</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="row : ${attendance.rows}">
+                                        <td class="fw-semibold" th:text="${row.topic}">Topic</td>
+                                        <td th:text="${row.courseTitle}">Course</td>
+                                        <td th:text="${row.batchName} ?: '—'">Batch</td>
+                                        <td class="small" th:text="${row.startTime != null ? #temporals.format(row.startTime, 'd MMM yyyy, h:mm a') : '—'}">date</td>
+                                        <td class="text-end">
+                                            <span class="badge"
+                                                  th:classappend="${row.status == 'PRESENT'} ? 'text-bg-success' : (${row.status == 'ABSENT'} ? 'text-bg-danger' : 'text-bg-secondary')"
+                                                  th:text="${row.statusLabel}">Status</span>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(attendance.rows)}">
+                                        <td colspan="5"><div class="empty-state"><i class="bi bi-calendar-x"></i>No classes recorded yet.</div></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+
+</html>

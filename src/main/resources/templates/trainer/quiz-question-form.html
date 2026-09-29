@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/trainer-sidebar :: trainerSidebar('quizzes')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <div>
+                            <h1 class="h3" th:text="${editing} ? 'Edit question' : 'Add question'">Question</h1>
+                            <p class="text-muted mb-0" th:text="'Quiz: ' + ${quiz.title}">Quiz</p>
+                        </div>
+                        <a th:href="@{/trainer/quizzes/{id}/questions(id=${quiz.id})}" class="btn btn-link"><i class="bi bi-arrow-left"></i> Back to questions</a>
+                    </div>
+
+                    <div class="card border-0 shadow-sm form-card">
+                        <div class="card-body p-4">
+                            <form th:action="@{${formAction}}" th:object="${questionForm}" method="post">
+                                <input type="hidden" th:field="*{id}">
+                                <input type="hidden" th:field="*{quizId}">
+                                <div class="mb-3">
+                                    <label class="form-label" for="questionText">Question</label>
+                                    <textarea id="questionText" th:field="*{questionText}" class="form-control" rows="3"
+                                              th:classappend="${#fields.hasErrors('questionText')} ? 'is-invalid'" placeholder="Enter the question"></textarea>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('questionText')}" th:errors="*{questionText}"></div>
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="optionA">Option A</label>
+                                        <input type="text" id="optionA" th:field="*{optionA}" class="form-control">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="optionB">Option B</label>
+                                        <input type="text" id="optionB" th:field="*{optionB}" class="form-control">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="optionC">Option C</label>
+                                        <input type="text" id="optionC" th:field="*{optionC}" class="form-control">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="optionD">Option D</label>
+                                        <input type="text" id="optionD" th:field="*{optionD}" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <label class="form-label d-block">Correct answer</label>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" th:field="*{correctOption}" id="corrA" value="A">
+                                        <label class="form-check-label" for="corrA">A</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" th:field="*{correctOption}" id="corrB" value="B">
+                                        <label class="form-check-label" for="corrB">B</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" th:field="*{correctOption}" id="corrC" value="C">
+                                        <label class="form-check-label" for="corrC">C</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" th:field="*{correctOption}" id="corrD" value="D">
+                                        <label class="form-check-label" for="corrD">D</label>
+                                    </div>
+                                    <div class="text-danger small mt-1" th:if="${#fields.hasErrors('correctOption')}" th:errors="*{correctOption}"></div>
+                                </div>
+                                <div class="d-flex gap-2 mt-4">
+                                    <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i> <span th:text="${editing} ? 'Save changes' : 'Add question'">Save</span></button>
+                                    <a th:href="@{/trainer/quizzes/{id}/questions(id=${quiz.id})}" class="btn btn-outline-secondary">Cancel</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

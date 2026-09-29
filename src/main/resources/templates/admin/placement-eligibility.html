@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/admin-sidebar :: adminSidebar('placements')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <div>
+                            <h1 class="h3">Placement Eligibility</h1>
+                            <p class="text-muted mb-0">Certified students eligible for placement support</p>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a th:href="@{/admin/placements}" class="btn btn-outline-secondary"><i class="bi bi-briefcase me-1"></i>Placement posts</a>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info"><i class="bi bi-info-circle me-1"></i> Placement tracking uses issued certificates as the eligibility signal. Below are certified students from the live database.</div>
+
+                    <div class="card border-0 shadow-sm">
+                        <div class="table-responsive">
+                            <table class="table data-table mb-0 align-middle">
+                                <thead class="table-light">
+                                    <tr><th>Student</th><th>Course</th><th>Certificate No.</th><th>Issued</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="c : ${certificates}">
+                                        <td class="fw-semibold" th:text="${c.studentName}">Student</td>
+                                        <td th:text="${c.courseTitle}">Course</td>
+                                        <td th:text="${c.certificateNumber}">FBT-0001</td>
+                                        <td th:text="${c.issueDate != null} ? ${#temporals.format(c.issueDate, 'd MMM yyyy')} : '—'">date</td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(certificates)}">
+                                        <td colspan="4"><div class="empty-state"><i class="bi bi-briefcase"></i>No placement-eligible records yet.</div></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

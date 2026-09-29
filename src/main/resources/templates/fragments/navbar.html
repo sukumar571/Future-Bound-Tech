@@ -1,0 +1,174 @@
+<!-- Navbar Fragment — Future Bound Tech -->
+<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark navbar-fbt fixed-top"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+    <div class="container">
+        <!-- Brand -->
+        <a class="navbar-brand" th:href="@{/}">
+            <img th:src="${site != null and site.logoUrl != null and !#strings.isEmpty(site.logoUrl)} ? ${site.logoUrl} : @{/images/logo.png}" th:alt="${site != null and site.name != null} ? ${site.name} : 'Future Bound Tech Logo'" width="38" height="38">
+            <span class="brand-text" th:text="${site != null and site.name != null} ? ${site.name} : 'Future Bound Tech'">Future Bound Tech</span>
+        </a>
+
+        <!-- Mobile Toggle -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain"
+            aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Nav Links -->
+        <div class="collapse navbar-collapse" id="navbarMain">
+
+            <!-- ========== PUBLIC NAVBAR ========== -->
+            <ul class="navbar-nav mx-auto" sec:authorize="!isAuthenticated()">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/}"
+                        th:classappend="${currentUri == '/' || currentUri == '/home'} ? 'active'">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/courses}"
+                        th:classappend="${#strings.startsWith(currentUri ?: '', '/courses')} ? 'active'">Courses</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/practice}"
+                        th:classappend="${currentUri == '/practice'} ? 'active'">Practice</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/placements}"
+                        th:classappend="${currentUri == '/placements'} ? 'active'">Placements</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/community}"
+                        th:classappend="${currentUri == '/community'} ? 'active'">Community</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/about}"
+                        th:classappend="${currentUri == '/about'} ? 'active'">About Us</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/contact}"
+                        th:classappend="${currentUri == '/contact'} ? 'active'">Contact</a>
+                </li>
+            </ul>
+
+            <!-- Public Auth Buttons -->
+            <div class="d-flex flex-wrap gap-2 fbt-nav-actions" sec:authorize="!isAuthenticated()">
+                <a th:href="@{/login}" class="btn btn-nav-login">Login</a>
+                <a th:href="@{/register}" class="btn btn-nav-register">Register</a>
+            </div>
+
+            <!-- ========== STUDENT NAVBAR ========== -->
+            <ul class="navbar-nav mx-auto" sec:authorize="hasRole('STUDENT')">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/student/dashboard}"
+                        th:classappend="${currentUri == '/student/dashboard'} ? 'active'">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/courses}"
+                        th:classappend="${#strings.startsWith(currentUri ?: '', '/courses')} ? 'active'">Courses</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/practice}"
+                        th:classappend="${currentUri == '/practice'} ? 'active'">Practice</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/placements}"
+                        th:classappend="${currentUri == '/placements'} ? 'active'">Placements</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/community}"
+                        th:classappend="${currentUri == '/community'} ? 'active'">Community</a>
+                </li>
+            </ul>
+
+            <!-- ========== TRAINER NAVBAR ========== -->
+            <ul class="navbar-nav mx-auto" sec:authorize="hasRole('TRAINER')">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/trainer/dashboard}"><i class="bi bi-grid me-1"></i> Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/trainer/courses}"><i class="bi bi-book me-1"></i> Courses</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/trainer/batches}"><i class="bi bi-people me-1"></i> Batches</a>
+                </li>
+            </ul>
+
+            <!-- ========== ADMIN NAVBAR ========== -->
+            <ul class="navbar-nav mx-auto" sec:authorize="hasRole('ADMIN')">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/dashboard}"
+                        th:classappend="${#strings.startsWith(currentUri ?: '', '/admin/dashboard')} ? 'active'">
+                        <i class="bi bi-speedometer2 me-1"></i> Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/courses}"
+                        th:classappend="${#strings.startsWith(currentUri ?: '', '/admin/courses')} ? 'active'">
+                        <i class="bi bi-journal-bookmark me-1"></i> Courses</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/courses}">
+                        <i class="bi bi-globe me-1"></i> Catalog</a>
+                </li>
+            </ul>
+
+            <!-- Authenticated User Menu -->
+            <div class="d-flex flex-wrap align-items-center gap-2 fbt-nav-actions" sec:authorize="isAuthenticated()">
+                <!-- Notification bell (students) -->
+                <a sec:authorize="hasRole('STUDENT')" th:href="@{/student/notifications}"
+                   class="btn btn-nav-login position-relative" title="Notifications">
+                    <i class="bi bi-bell"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                          th:if="${navUnreadCount != null and navUnreadCount > 0}" th:text="${navUnreadCount}">0</span>
+                </a>
+                <!-- Notification bell (trainers) -->
+                <a sec:authorize="hasRole('TRAINER')" th:href="@{/trainer/notifications}"
+                   class="btn btn-nav-login position-relative" title="Notifications">
+                    <i class="bi bi-bell"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                          th:if="${navUnreadCount != null and navUnreadCount > 0}" th:text="${navUnreadCount}">0</span>
+                </a>
+                <!-- Theme toggle -->
+                <button class="btn btn-nav-login" type="button" id="themeToggle" title="Toggle theme"
+                        aria-label="Toggle dark mode">
+                    <i class="bi bi-moon-stars-fill"></i>
+                </button>
+                <div class="dropdown">
+                    <button class="btn btn-nav-login dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        <i class="bi bi-person-circle me-1"></i>
+                        <span sec:authentication="name">User</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" th:href="@{/profile}"><i class="bi bi-person me-2"></i>Profile</a>
+                        </li>
+                        <li sec:authorize="hasRole('STUDENT')">
+                            <a class="dropdown-item" th:href="@{/student/courses}"><i class="bi bi-book me-2"></i>My Courses</a>
+                        </li>
+                        <li sec:authorize="hasRole('STUDENT')">
+                            <a class="dropdown-item" th:href="@{/student/assignments}"><i class="bi bi-pencil-square me-2"></i>Assignments</a>
+                        </li>
+                        <li sec:authorize="hasRole('STUDENT')">
+                            <a class="dropdown-item" th:href="@{/student/payments}"><i class="bi bi-credit-card me-2"></i>Payments</a>
+                        </li>
+                        <li sec:authorize="hasRole('STUDENT')">
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <form th:action="@{/logout}" method="post">
+                                <button type="submit" class="dropdown-item text-danger">
+                                    <i class="bi bi-box-arrow-right me-2"></i>Logout
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Navbar spacer -->
+<div th:fragment="navbar-spacer" class="navbar-spacer-fbt"></div>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/admin-sidebar :: adminSidebar('batches')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <h1 class="h3" th:text="${editing} ? 'Edit batch' : 'New batch'">Batch</h1>
+                        <a th:href="@{/admin/batches}" class="btn btn-link"><i class="bi bi-arrow-left"></i> Back to batches</a>
+                    </div>
+
+                    <div class="card form-card shadow-sm">
+                        <div class="card-body p-4">
+                            <form th:action="${formAction}" th:object="${batchDto}" method="post">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Batch name</label>
+                                        <input type="text" class="form-control" th:field="*{batchName}" th:classappend="${#fields.hasErrors('batchName')} ? 'is-invalid'">
+                                        <div class="invalid-feedback" th:errors="*{batchName}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Course</label>
+                                        <select class="form-select" th:field="*{courseId}" th:classappend="${#fields.hasErrors('courseId')} ? 'is-invalid'">
+                                            <option value="">— Select course —</option>
+                                            <option th:each="c : ${courses}" th:value="${c.id}" th:text="${c.title}"></option>
+                                        </select>
+                                        <div class="invalid-feedback" th:errors="*{courseId}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Trainer</label>
+                                        <select class="form-select" th:field="*{trainerId}" th:classappend="${#fields.hasErrors('trainerId')} ? 'is-invalid'">
+                                            <option value="">— Select trainer —</option>
+                                            <option th:each="t : ${trainers}" th:value="${t.id}" th:text="${t.fullName}"></option>
+                                        </select>
+                                        <div class="invalid-feedback" th:errors="*{trainerId}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Max seats</label>
+                                        <input type="number" min="1" class="form-control" th:field="*{maxSeats}" th:classappend="${#fields.hasErrors('maxSeats')} ? 'is-invalid'">
+                                        <div class="invalid-feedback" th:errors="*{maxSeats}"></div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Start date</label>
+                                        <input type="date" class="form-control" th:field="*{startDate}">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">End date</label>
+                                        <input type="date" class="form-control" th:field="*{endDate}">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Start time</label>
+                                        <input type="time" class="form-control" th:field="*{startTime}">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">End time</label>
+                                        <input type="time" class="form-control" th:field="*{endTime}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Training mode</label>
+                                        <select class="form-select" id="modeSelect" th:field="*{mode}">
+                                            <option th:each="m : ${trainingModes}" th:value="${m}" th:text="${m}"></option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Status</label>
+                                        <select class="form-select" th:field="*{status}">
+                                            <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}"></option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Enrollment</label>
+                                        <select class="form-select" th:field="*{enrollmentStatus}">
+                                            <option th:each="es : ${enrollmentStatuses}" th:value="${es}" th:text="${es.label}"></option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-12" id="meetingLinkField">
+                                        <label class="form-label">Meeting link <span class="text-muted small">(online / hybrid)</span></label>
+                                        <input type="url" class="form-control" th:field="*{meetingLink}" placeholder="https://meet.example.com/...">
+                                    </div>
+                                    <div class="col-md-8" id="classroomField">
+                                        <label class="form-label">Classroom address <span class="text-muted small">(offline / hybrid)</span></label>
+                                        <input type="text" class="form-control" th:field="*{classroomAddress}" placeholder="Configurable institute / venue address">
+                                    </div>
+                                    <div class="col-md-4" id="roomField">
+                                        <label class="form-label">Room number</label>
+                                        <input type="text" class="form-control" th:field="*{roomNumber}">
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label class="form-label">Notes</label>
+                                        <textarea class="form-control" rows="3" th:field="*{notes}" placeholder="Internal notes about this batch"></textarea>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="publishedToggle" th:field="*{published}">
+                                            <label class="form-check-label" for="publishedToggle">Published — visible to students for enrollment</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <button type="submit" class="btn btn-primary"><i class="bi bi-check2 me-1"></i> Save</button>
+                                    <a th:href="@{/admin/batches}" class="btn btn-outline-secondary">Cancel</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+    <script>
+        (function () {
+            var select = document.getElementById('modeSelect');
+            if (!select) return;
+            function toggle() {
+                var v = select.value;
+                var online = v !== 'OFFLINE';
+                var offline = v !== 'ONLINE';
+                document.getElementById('meetingLinkField').style.display = online ? '' : 'none';
+                document.getElementById('classroomField').style.display = offline ? '' : 'none';
+                document.getElementById('roomField').style.display = offline ? '' : 'none';
+            }
+            select.addEventListener('change', toggle);
+            toggle();
+        })();
+    </script>
+</body>
+</html>

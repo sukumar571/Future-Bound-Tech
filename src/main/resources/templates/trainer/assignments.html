@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/trainer-sidebar :: trainerSidebar('assignments')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <div>
+                            <h1 class="h3">Assignments</h1>
+                            <p class="text-muted mb-0">Create assignments, set deadlines and review submissions for your batches.</p>
+                        </div>
+                        <a th:href="@{/trainer/assignments/new}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i> New assignment</a>
+                    </div>
+
+                    <div class="card border-0 shadow-sm">
+                        <div class="table-responsive">
+                            <table class="table data-table mb-0 align-middle">
+                                <thead class="table-light">
+                                    <tr><th>Title</th><th>Course</th><th>Batch</th><th>Due</th><th>Submissions</th><th class="text-end">Actions</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="a : ${assignments}">
+                                        <td class="fw-semibold" th:text="${a.title}">Title</td>
+                                        <td th:text="${a.courseTitle}">Course</td>
+                                        <td th:text="${a.batchName}">Batch</td>
+                                        <td>
+                                            <div class="small" th:text="${a.dueDate != null ? #temporals.format(a.dueDate, 'd MMM yyyy, h:mm a') : '—'}">due</div>
+                                            <div class="small text-muted" th:text="${a.dueLabel}">label</div>
+                                        </td>
+                                        <td><span class="badge text-bg-light" th:text="${a.submissionCount}">0</span></td>
+                                        <td class="text-end text-nowrap">
+                                            <a class="btn btn-sm btn-outline-secondary" th:href="@{/trainer/assignments/{id}/submissions(id=${a.id})}" title="Review submissions"><i class="bi bi-inbox"></i></a>
+                                            <a class="btn btn-sm btn-outline-primary" th:href="@{/trainer/assignments/{id}/edit(id=${a.id})}" title="Edit"><i class="bi bi-pencil"></i></a>
+                                            <form th:action="@{/trainer/assignments/{id}/delete(id=${a.id})}" method="post" class="d-inline"
+                                                  onsubmit="return confirm('Delete this assignment?');">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(assignments)}">
+                                        <td colspan="6"><div class="empty-state"><i class="bi bi-pencil-square"></i>No assignments yet. Create one to get started.</div></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

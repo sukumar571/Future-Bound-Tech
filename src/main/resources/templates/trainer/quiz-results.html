@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/trainer-sidebar :: trainerSidebar('quizzes')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <div>
+                            <h1 class="h3">Results — <span th:text="${quiz.title}">Quiz</span></h1>
+                            <p class="text-muted mb-0" th:text="${quiz.courseTitle} + ' · ' + ${#lists.size(results)} + ' attempt(s)'">course</p>
+                        </div>
+                        <a th:href="@{/trainer/quizzes}" class="btn btn-link"><i class="bi bi-arrow-left"></i> Back to quizzes</a>
+                    </div>
+
+                    <div class="card border-0 shadow-sm">
+                        <div class="table-responsive">
+                            <table class="table data-table mb-0 align-middle">
+                                <thead class="table-light">
+                                    <tr><th>Student</th><th>Score</th><th>Result</th><th>Attempted</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="r : ${results}">
+                                        <td>
+                                            <div class="fw-semibold" th:text="${r.studentName}">Student</div>
+                                            <div class="small text-muted" th:text="${r.studentEmail}">email</div>
+                                        </td>
+                                        <td th:text="${r.scoreObtained} != null ? ${r.scoreObtained} : '—'">0</td>
+                                        <td>
+                                            <span class="badge" th:classappend="${r.passed} ? 'text-bg-success' : 'text-bg-danger'" th:text="${r.passedLabel}">Result</span>
+                                        </td>
+                                        <td class="small" th:text="${r.attemptedAt != null ? #temporals.format(r.attemptedAt, 'd MMM yyyy, h:mm a') : '—'}">date</td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(results)}">
+                                        <td colspan="4"><div class="empty-state"><i class="bi bi-bar-chart"></i>No attempts recorded yet.</div></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

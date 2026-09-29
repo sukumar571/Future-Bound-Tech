@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+
+    <section class="student-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/student-sidebar :: studentSidebar('quizzes')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+                    <h1 class="h4 mb-4"><i class="bi bi-patch-question me-2 text-primary"></i>Quizzes</h1>
+
+                    <div class="row g-3" th:if="${!quizzes.isEmpty()}">
+                        <div class="col-md-6" th:each="q : ${quizzes}">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h2 class="h6 mb-0" th:text="${q.title}">Quiz</h2>
+                                        <span class="badge"
+                                              th:classappend="${q.passed} ? 'text-bg-success' : 'text-bg-secondary'"
+                                              th:text="${q.passed} ? 'Passed' : 'Not passed'">—</span>
+                                    </div>
+                                    <p class="small text-muted mb-2"><i class="bi bi-journal me-1"></i><span th:text="${q.courseTitle}">Course</span></p>
+                                    <ul class="list-unstyled small mb-3">
+                                        <li><i class="bi bi-list-ol me-2 text-primary"></i><span th:text="${q.questionCount}">0</span> questions</li>
+                                        <li><i class="bi bi-clock me-2 text-primary"></i><span th:text="${q.timeLimitMinutes > 0} ? ${q.timeLimitMinutes} + ' min' : 'No time limit'"></span></li>
+                                        <li><i class="bi bi-trophy me-2 text-primary"></i>Pass mark: <span th:text="${q.passingScore} + '%'"></span></li>
+                                        <li th:if="${q.bestScore != null}"><i class="bi bi-graph-up me-2 text-success"></i>Best score: <span th:text="${q.bestScore} + '%'"></span> · Attempts: <span th:text="${q.attemptCount}"></span><span th:if="${q.attemptLimit != null}" th:text="' / ' + ${q.attemptLimit}"></span></li>
+                                        <li th:if="${q.bestScore == null and q.attemptLimit != null}"><i class="bi bi-shuffle me-2 text-primary"></i>Attempts allowed: <span th:text="${q.attemptLimit}"></span></li>
+                                    </ul>
+                                    <a th:if="${!q.attemptsExhausted}" th:href="@{/student/quizzes/{id}/take(id=${q.id})}" class="btn btn-sm btn-primary">
+                                        <i class="bi bi-play-fill me-1"></i> <span th:text="${q.attemptCount > 0} ? 'Retake Quiz' : 'Start Quiz'">Start Quiz</span>
+                                    </a>
+                                    <button type="button" class="btn btn-sm btn-secondary" th:if="${q.attemptsExhausted}" disabled>
+                                        <i class="bi bi-x-circle me-1"></i> No attempts left
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm" th:if="${quizzes.isEmpty()}">
+                        <div class="card-body empty-state">
+                            <i class="bi bi-patch-question"></i>
+                            <h3 class="h5">No quizzes available</h3>
+                            <p>Quizzes from your enrolled courses will appear here.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+
+</html>

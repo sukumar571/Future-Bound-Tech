@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+
+    <section class="section-padding" style="background: var(--light-bg);">
+        <div class="container">
+            <div class="mb-4">
+                <a th:href="@{/admin/courses/{id}/syllabus(id=${module.courseId})}" class="text-decoration-none">
+                    <i class="bi bi-arrow-left"></i> Back to syllabus
+                </a>
+                <h1 class="h3 fw-bold mt-2" th:text="${editing} ? 'Edit lesson' : 'New lesson'">Lesson form</h1>
+                <p class="text-muted mb-0">
+                    Module: <span class="fw-semibold" th:text="${module.title}">Module</span> ·
+                    <span th:text="${module.courseTitle}">Course</span>
+                </p>
+            </div>
+
+            <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+            <form class="card border-0 shadow-sm" th:action="@{${formAction}}" th:object="${lessonDto}" method="post"
+                  enctype="multipart/form-data">
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <div class="col-lg-8">
+                            <label class="form-label" for="title">Title</label>
+                            <input id="title" class="form-control" th:field="*{title}" maxlength="180"
+                                   th:classappend="${#fields.hasErrors('title')} ? 'is-invalid'">
+                            <div class="invalid-feedback" th:errors="*{title}"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="lessonType">Lesson type</label>
+                            <select id="lessonType" class="form-select" th:field="*{lessonType}"
+                                    th:classappend="${#fields.hasErrors('lessonType')} ? 'is-invalid'">
+                                <option th:each="type : ${lessonTypes}" th:value="${type}" th:text="${type.label}">Type</option>
+                            </select>
+                            <div class="invalid-feedback" th:errors="*{lessonType}"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="durationMinutes">Duration (minutes)</label>
+                            <input id="durationMinutes" type="number" min="1" max="1440" class="form-control" th:field="*{durationMinutes}"
+                                   th:classappend="${#fields.hasErrors('durationMinutes')} ? 'is-invalid'">
+                            <div class="invalid-feedback" th:errors="*{durationMinutes}"></div>
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label" for="videoUrl">Video URL</label>
+                            <input id="videoUrl" class="form-control" th:field="*{videoUrl}" maxlength="500"
+                                   placeholder="https://www.youtube.com/watch?v=..."
+                                   th:classappend="${#fields.hasErrors('videoUrl')} ? 'is-invalid'">
+                            <div class="form-text">YouTube links are embedded automatically for enrolled students.</div>
+                            <div class="invalid-feedback" th:errors="*{videoUrl}"></div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label d-block">Visibility</label>
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" type="checkbox" th:field="*{published}" id="published">
+                                <label class="form-check-label" for="published">Published</label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" for="description">Description</label>
+                            <textarea id="description" class="form-control" rows="5" th:field="*{description}" maxlength="8000"
+                                      th:classappend="${#fields.hasErrors('description')} ? 'is-invalid'"></textarea>
+                            <div class="invalid-feedback" th:errors="*{description}"></div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" for="notes">Notes</label>
+                            <textarea id="notes" class="form-control" rows="7" th:field="*{notes}" maxlength="8000"
+                                      placeholder="Lesson notes shown only to enrolled students"
+                                      th:classappend="${#fields.hasErrors('notes')} ? 'is-invalid'"></textarea>
+                            <div class="invalid-feedback" th:errors="*{notes}"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-white p-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary" th:text="${editing} ? 'Save lesson' : 'Create lesson'">Save</button>
+                    <a th:href="@{/admin/courses/{id}/syllabus(id=${module.courseId})}" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+            </form>
+
+            <div class="card border-0 shadow-sm mt-4" th:if="${editing}">
+                <div class="card-header bg-white p-4 border-bottom">
+                    <h2 class="h5 fw-bold mb-0">Lesson resources</h2>
+                    <p class="text-muted small mb-0 mt-1">Notes, slides, code, and reference files downloadable by enrolled students.</p>
+                </div>
+                <div class="card-body p-4">
+                    <div class="table-responsive mb-4" th:if="${!lessonDto.resources.isEmpty()}">
+                        <table class="table table-sm table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Type</th>
+                                    <th>Source</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="resource : ${lessonDto.resources}">
+                                    <td class="fw-semibold" th:text="${resource.title}">Resource</td>
+                                    <td><span class="badge text-bg-secondary" th:text="${resource.resourceType}">NOTES</span></td>
+                                    <td>
+                                        <a target="_blank" rel="noopener"
+                                           th:href="${resource.storedFile} ? @{/files/staff/lessons/{lessonId}/resources/{resourceId}(lessonId=${lessonDto.id}, resourceId=${resource.id})} : ${resource.fileUrl}">
+                                            <i class="bi bi-box-arrow-up-right me-1"></i>
+                                            <span th:text="${resource.storedFile} ? 'Uploaded file' : 'External link'">Source</span>
+                                        </a>
+                                    </td>
+                                    <td class="text-end">
+                                        <form method="post" th:action="@{/admin/resources/{id}/delete(id=${resource.id})}"
+                                              onsubmit="return confirm('Delete this resource?');">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="text-muted mb-4" th:if="${lessonDto.resources.isEmpty()}">No resources attached yet.</p>
+
+                    <h3 class="h6 fw-bold mb-3">Add a resource</h3>
+                    <form method="post" enctype="multipart/form-data"
+                          th:action="@{/admin/lessons/{id}/resources(id=${lessonDto.id})}">
+                        <div class="row g-3 align-items-end">
+                            <div class="col-md-4">
+                                <label class="form-label" for="resourceTitle">Title</label>
+                                <input id="resourceTitle" class="form-control" name="title" required maxlength="200"
+                                       placeholder="e.g. Module notes PDF">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label" for="resourceType">Type</label>
+                                <select id="resourceType" class="form-select" name="resourceType">
+                                    <option th:each="type : ${resourceTypes}" th:value="${type}"
+                                            th:text="${#strings.toLowerCase(type)}"
+                                            th:selected="${type == 'NOTES'}"></option>
+                                </select>
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label" for="resourceFile">Upload file</label>
+                                <input id="resourceFile" type="file" class="form-control" name="file"
+                                       accept=".pdf,.txt,.md,.csv,.zip,.jpg,.jpeg,.png,.gif,.webp,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.py,.java,.js,.ts,.html,.css,.sql,.json,.xml,.yml,.yaml,.ipynb">
+                            </div>
+                            <div class="col-md-7">
+                                <label class="form-label" for="resourceUrl">…or external link</label>
+                                <input id="resourceUrl" class="form-control" name="fileUrl" maxlength="1000"
+                                       placeholder="https://example.com/resource">
+                            </div>
+                            <div class="col-md-5 d-grid">
+                                <button type="submit" class="btn btn-success"><i class="bi bi-plus-lg me-1"></i> Add resource</button>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-text">Upload a file or paste an external link — at least one is required.</div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+
+</html>

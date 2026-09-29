@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/admin-sidebar :: adminSidebar('placements')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <div>
+                            <h1 class="h3">Placement Posts</h1>
+                            <p class="text-muted mb-0">Job opportunities shown to students and on the public page</p>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a th:href="@{/placements}" class="btn btn-outline-secondary" target="_blank" rel="noopener">
+                                <i class="bi bi-box-arrow-up-right me-1"></i>Public page
+                            </a>
+                            <a th:href="@{/admin/placements/new}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>New post</a>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-warning small">
+                        <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                        Never publish unverified hiring information. Until real openings are confirmed, keep demo
+                        company names/roles and the <strong>(DEMO)</strong> label. We do not promise guaranteed placements.
+                    </div>
+
+                    <div class="card border-0 shadow-sm">
+                        <div class="table-responsive">
+                            <table class="table data-table mb-0 align-middle">
+                                <thead class="table-light">
+                                    <tr><th>Company</th><th>Role</th><th>Location</th><th>Skills</th><th>Deadline</th><th>Status</th><th class="text-end">Actions</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="p : ${placements}">
+                                        <td class="fw-semibold" th:text="${p.companyName}">Company</td>
+                                        <td th:text="${p.jobTitle}">Role</td>
+                                        <td class="small" th:text="${p.location} ?: '—'">—</td>
+                                        <td class="small" style="max-width:220px">
+                            <span th:text="${p.skills} ?: '—'">skills</span>
+                                        </td>
+                                        <td class="small text-nowrap">
+                                            <span th:if="${p.deadline == null}">—</span>
+                                            <span th:if="${p.deadline != null}"
+                                                  th:classappend="${p.deadlinePassed} ? 'text-danger fw-semibold' : (${p.deadlineClosingSoon} ? 'text-warning fw-semibold' : '')"
+                                                  th:text="${#temporals.format(p.deadline, 'MMM d, yyyy')}">date</span>
+                                        </td>
+                                        <td><span class="badge" th:classappend="${p.published} ? 'text-bg-success' : 'text-bg-secondary'" th:text="${p.published} ? 'Published' : 'Draft'">Status</span></td>
+                                        <td class="text-end text-nowrap">
+                                            <a th:href="@{/admin/placements/{id}/edit(id=${p.id})}" class="btn btn-sm btn-outline-secondary" title="Edit"><i class="bi bi-pencil"></i></a>
+                                            <form th:action="${p.published} ? @{/admin/placements/{id}/unpublish(id=${p.id})} : @{/admin/placements/{id}/publish(id=${p.id})}" method="post" class="d-inline">
+                                                <button type="submit" class="btn btn-sm btn-outline-success" th:title="${p.published} ? 'Unpublish' : 'Publish'"><i class="bi" th:classappend="${p.published} ? 'bi-eye-slash' : 'bi-eye'"></i></button>
+                                            </form>
+                                            <form th:action="@{/admin/placements/{id}/delete(id=${p.id})}" method="post" class="d-inline" onsubmit="return confirm('Delete this placement post?');">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(placements)}">
+                                        <td colspan="7"><div class="empty-state"><i class="bi bi-briefcase"></i>No placement posts yet.</div></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

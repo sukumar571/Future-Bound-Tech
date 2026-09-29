@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/admin-sidebar :: adminSidebar('announcements')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <h1 class="h3" th:text="${editing} ? 'Edit announcement' : 'New announcement'">Announcement</h1>
+                        <a th:href="@{/admin/announcements}" class="btn btn-link"><i class="bi bi-arrow-left"></i> Back to announcements</a>
+                    </div>
+
+                    <div class="card form-card shadow-sm">
+                        <div class="card-body p-4">
+                            <form th:action="${formAction}" th:object="${announcementDto}" method="post">
+                                <div class="row g-3">
+                                    <div class="col-md-12">
+                                        <label class="form-label">Title</label>
+                                        <input type="text" class="form-control" th:field="*{title}" th:classappend="${#fields.hasErrors('title')} ? 'is-invalid'">
+                                        <div class="invalid-feedback" th:errors="*{title}"></div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label class="form-label">Message</label>
+                                        <textarea class="form-control" rows="5" th:field="*{content}" th:classappend="${#fields.hasErrors('content')} ? 'is-invalid'"></textarea>
+                                        <div class="invalid-feedback" th:errors="*{content}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Target batch</label>
+                                        <select class="form-select" th:field="*{batchId}">
+                                            <option value="">Global — all students</option>
+                                            <option th:each="b : ${batches}" th:value="${b.id}" th:text="${b.batchName}"></option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <button type="submit" class="btn btn-primary"><i class="bi bi-check2 me-1"></i> Publish</button>
+                                    <a th:href="@{/admin/announcements}" class="btn btn-outline-secondary">Cancel</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+
+    <!-- Hero -->
+    <section class="py-5" style="background: linear-gradient(135deg, #0B1020 0%, #0d1535 60%, #0B1020 100%); color:#fff;">
+        <div class="container py-4">
+            <div class="row justify-content-center text-center">
+                <div class="col-lg-8">
+                    <span class="badge rounded-pill px-3 py-2 mb-3" style="background:rgba(6,182,212,.15); color:#06B6D4; border:1px solid rgba(6,182,212,.4);">
+                        <i class="bi bi-briefcase-fill me-1"></i> Placement Preparation
+                    </span>
+                    <h1 class="display-5 fw-bold">Career Preparation, Done Right</h1>
+                    <p class="lead text-white-50">
+                        Sharpen your coding, aptitude and interview skills, polish your resume and
+                        discover hand-picked job opportunities — all in one place.
+                    </p>
+                    <div class="d-flex gap-2 justify-content-center flex-wrap mt-4">
+                        <a th:href="@{/student/practice}" class="btn btn-primary px-4">
+                            <i class="bi bi-controller me-2"></i> Start Practicing
+                        </a>
+                        <a th:href="@{/student/placements}" class="btn btn-outline-light px-4">
+                            <i class="bi bi-search me-2"></i> Browse Opportunities
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Preparation tracks -->
+    <section class="py-5">
+        <div class="container">
+            <div class="text-center mb-4">
+                <h2 class="fw-bold">What we help you prepare</h2>
+                <p class="text-muted">Structured preparation across every stage of the placement journey.</p>
+            </div>
+            <div class="row g-3">
+                <div class="col-sm-6 col-lg-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="fs-3 text-primary mb-2"><i class="bi bi-code-slash"></i></div>
+                            <h3 class="h6">Coding Preparation</h3>
+                            <p class="small text-muted mb-2">Topic-wise coding problems in Java, Python, SQL and JavaScript with constraints and worked examples.</p>
+                            <a th:href="@{/student/practice/coding}" class="small text-decoration-none">Explore the problem library <i class="bi bi-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="fs-3 text-primary mb-2"><i class="bi bi-calculator"></i></div>
+                            <h3 class="h6">Aptitude Preparation</h3>
+                            <p class="small text-muted mb-2">Timed MCQ practice for quant, logical reasoning and verbal ability with instant explanations.</p>
+                            <a th:href="@{/student/practice/mcq}" class="small text-decoration-none">Practice aptitude MCQs <i class="bi bi-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="fs-3 text-primary mb-2"><i class="bi bi-pc-display"></i></div>
+                            <h3 class="h6">Technical Interviews</h3>
+                            <p class="small text-muted mb-2">Core CS, framework and system-design questions across every technology track we teach.</p>
+                            <a th:href="@{/student/practice/mcq(category='TECHNICAL_INTERVIEW')}" class="small text-decoration-none">Practice technical questions <i class="bi bi-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="fs-3 text-primary mb-2"><i class="bi bi-chat-heart"></i></div>
+                            <h3 class="h6">HR Interviews</h3>
+                            <p class="small text-muted mb-2">Behavioural question practice with the STAR framework and model answer explanations.</p>
+                            <a th:href="@{/student/practice/mcq(category='HR_INTERVIEW')}" class="small text-decoration-none">Practice HR questions <i class="bi bi-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="fs-3 text-primary mb-2"><i class="bi bi-file-earmark-person"></i></div>
+                            <h3 class="h6">Resume Preparation</h3>
+                            <p class="small text-muted mb-2">Bring your draft resume to your mentor sessions — get structure, wording and project-section feedback.</p>
+                            <a th:href="@{/contact}" class="small text-decoration-none">Ask your mentor <i class="bi bi-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="fs-3 text-primary mb-2"><i class="bi bi-camera-video"></i></div>
+                            <h3 class="h6">Mock Interviews</h3>
+                            <p class="small text-muted mb-2">Panel-style mock interviews are run for enrolled batches near the placement window.</p>
+                            <a th:href="@{/contact}" class="small text-decoration-none">Enquire via Contact <i class="bi bi-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="fs-3 text-primary mb-2"><i class="bi bi-compass"></i></div>
+                            <h3 class="h6">Career Guidance</h3>
+                            <p class="small text-muted mb-2">1:1 counselling on specialisation, roadmap and job-role fit as part of every program.</p>
+                            <a th:href="@{/contact}" class="small text-decoration-none">Book counselling <i class="bi bi-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="fs-3 text-primary mb-2"><i class="bi bi-stopwatch"></i></div>
+                            <h3 class="h6">Timed Mock Tests</h3>
+                            <p class="small text-muted mb-2">Full-length timed tests with auto-scoring and per-question review to benchmark readiness.</p>
+                            <a th:href="@{/student/practice/tests}" class="small text-decoration-none">Take a mock test <i class="bi bi-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="fs-3 text-primary mb-2"><i class="bi bi-graph-up-arrow"></i></div>
+                            <h3 class="h6">Performance Tracking</h3>
+                            <p class="small text-muted mb-2">Category-wise accuracy and test history show exactly where to focus next.</p>
+                            <a th:href="@{/student/practice/performance}" class="small text-decoration-none">See your dashboard <i class="bi bi-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Job opportunities -->
+    <section class="py-5 bg-light" id="opportunities">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+                <div>
+                    <h2 class="fw-bold mb-1">Job Opportunities</h2>
+                    <p class="text-muted small mb-0">Hiring posts curated by our placement cell.</p>
+                </div>
+                <a th:href="@{/student/placements}" class="btn btn-primary">
+                    <i class="bi bi-signpost-split me-1"></i> View all opportunities
+                </a>
+            </div>
+
+            <div class="row g-3" th:if="${!opportunities.isEmpty()}">
+                <div class="col-md-6 col-lg-4" th:each="p : ${opportunities}">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                <h3 class="h6 mb-0" th:text="${p.companyName}">Company</h3>
+                                <span class="badge text-bg-light" th:if="${p.jobType}" th:text="${p.jobType}">Type</span>
+                            </div>
+                            <p class="text-primary fw-semibold small mb-2" th:text="${p.jobTitle}">Role</p>
+                            <p class="small text-muted flex-grow-1" th:text="${#strings.abbreviate(p.description ?: '', 110)}">Description</p>
+                            <div class="small text-muted mb-2">
+                                <span th:if="${p.location}"><i class="bi bi-geo-alt me-1"></i><span th:text="${p.location}">loc</span></span>
+                                <span th:if="${p.deadline != null}" class="ms-2"><i class="bi bi-calendar-event me-1"></i>Apply by <span th:text="${#temporals.format(p.deadline, 'MMM d')}">date</span></span>
+                            </div>
+                            <div class="mb-2" th:if="${!p.skillList.isEmpty()}">
+                                <span class="badge text-bg-light border me-1" th:each="s : ${p.skillList}" th:text="${s}">skill</span>
+                            </div>
+                            <span class="small text-muted mt-auto"><i class="bi bi-person-lock me-1"></i>Sign in as a student to apply</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm" th:if="${opportunities.isEmpty()}">
+                <div class="card-body empty-state">
+                    <i class="bi bi-briefcase"></i>
+                    <h3 class="h5">No openings posted right now</h3>
+                    <p>Check back soon — new opportunities are published by the placement cell regularly.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Disclaimer -->
+    <section class="py-4">
+        <div class="container">
+            <div class="alert alert-warning border-0 shadow-sm small mb-0">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <strong>Please note:</strong> Future Bound Tech provides placement <em>preparation</em> and shares
+                legitimate job opportunities. We do not promise or guarantee placements.
+                Listings shown before real hiring information is available are clearly labelled
+                <strong>DEMO</strong> and must not be treated as actual openings.
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

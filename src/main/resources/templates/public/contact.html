@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+
+    <section class="page-header">
+        <div class="container">
+            <div class="page-header-content">
+                <h1 class="page-header-title">Contact Us</h1>
+                <p class="page-header-subtitle">Have questions? We're here to help!</p>
+            </div>
+        </div>
+    </section>
+
+   <section class="section-padding">
+        <div class="container">
+            <div class="row g-5">
+                <!-- Contact Form -->
+                <div class="col-lg-7 fade-in-up">
+                    <h3 style="font-weight: 700; margin-bottom: 0.5rem;">Send Us a Message</h3>
+                    <p style="color: var(--gray-500); margin-bottom: 2rem;">Fill in the form below and we'll get back to
+                        you as soon as possible.</p>
+
+                    <div th:if="${successMessage}" class="alert alert-success" role="alert"
+                         style="border-radius: var(--radius-md);">
+                        <i class="bi bi-check-circle me-2"></i><span th:text="${successMessage}"></span>
+                    </div>
+
+                    <form th:action="@{/contact}" th:object="${contactForm}" method="post">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold" style="font-size: 0.85rem;" for="name">Full Name</label>
+                                <input type="text" id="name" th:field="*{name}" class="form-control" placeholder="Your name"
+                                    style="border-radius: var(--radius-md); padding: 12px 16px;">
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold" style="font-size: 0.85rem;" for="email">Email</label>
+                                <input type="email" id="email" th:field="*{email}" class="form-control" placeholder="you@example.com"
+                                    style="border-radius: var(--radius-md); padding: 12px 16px;">
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold" style="font-size: 0.85rem;" for="phone">Phone</label>
+                                <input type="tel" id="phone" th:field="*{phone}" class="form-control" placeholder="Your phone number"
+                                    style="border-radius: var(--radius-md); padding: 12px 16px;">
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold" style="font-size: 0.85rem;" for="courseInterest">Course of Interest</label>
+                                <select id="courseInterest" th:field="*{courseInterest}" class="form-select"
+                                    style="border-radius: var(--radius-md); padding: 12px 16px;">
+                                    <option value="">Select a course (optional)</option>
+                                    <option th:each="c : ${courseInterests}" th:value="${c}" th:text="${c}"></option>
+                                </select>
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('courseInterest')}" th:errors="*{courseInterest}"></div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold" style="font-size: 0.85rem;" for="message">Message</label>
+                                <textarea id="message" th:field="*{message}" class="form-control" rows="5" placeholder="Write your message here..."
+                                    style="border-radius: var(--radius-md); padding: 12px 16px;"></textarea>
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('message')}" th:errors="*{message}"></div>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn-primary-fbt" style="padding: 12px 32px;">
+                                    <i class="bi bi-send me-2"></i> Send Message
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Contact Info -->
+                <div class="col-lg-5 fade-in-up delay-2">
+                    <div
+                        style="background: var(--gradient-hero); border-radius: var(--radius-xl); padding: 2.5rem; height: 100%;">
+                        <h3 style="color: var(--white); font-weight: 700; margin-bottom: 2rem;" th:text="'Get in Touch'">Get in Touch</h3>
+
+                        <div style="margin-bottom: 2rem;">
+                            <div style="display: flex; gap: 14px; margin-bottom: 1.5rem;">
+                                <div
+                                    style="width: 44px; height: 44px; border-radius: var(--radius-md); background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                    <i class="bi bi-telephone" style="color: var(--cyan);"></i>
+                                </div>
+                                <div>
+                                    <div style="color: rgba(255,255,255,0.5); font-size: 0.82rem; margin-bottom: 2px;">
+                                        Phone</div>
+                                    <a th:if="${settings != null and settings.phone1 != null}" th:href="'tel:' + ${settings.phone1}"
+                                        th:text="${settings.phone1}" style="color: var(--white); font-weight: 600; display: block;">8978866005</a>
+                                    <a th:if="${settings != null and settings.phone2 != null}" th:href="'tel:' + ${settings.phone2}"
+                                        th:text="${settings.phone2}" style="color: var(--white); font-weight: 600; display: block;">7893702635</a>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; gap: 14px; margin-bottom: 1.5rem;" th:if="${settings != null and settings.email != null}">
+                                <div
+                                    style="width: 44px; height: 44px; border-radius: var(--radius-md); background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                    <i class="bi bi-envelope" style="color: var(--cyan);"></i>
+                                </div>
+                                <div>
+                                    <div style="color: rgba(255,255,255,0.5); font-size: 0.82rem; margin-bottom: 2px;">
+                                        Email</div>
+                                    <a th:if="${#strings.contains(settings.email, '@')}" th:href="'mailto:' + ${settings.email}" th:text="${settings.email}"
+                                        style="color: var(--white); font-weight: 600;">info@example.com</a>
+                                    <span th:unless="${#strings.contains(settings.email, '@')}" th:text="${settings.email}"
+                                        style="color: rgba(255,255,255,0.85); font-weight: 600;">Not decided</span>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; gap: 14px; margin-bottom: 1.5rem;">
+                                <div
+                                    style="width: 44px; height: 44px; border-radius: var(--radius-md); background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                    <i class="bi bi-geo-alt" style="color: var(--coral-pink);"></i>
+                                </div>
+                                <div>
+                                    <div style="color: rgba(255,255,255,0.5); font-size: 0.82rem; margin-bottom: 2px;">
+                                        Location</div>
+                                    <div style="color: var(--white); font-weight: 500;"
+                                         th:text="${settings != null and settings.address != null} ? ${settings.address} : 'Online &amp; classroom batches available'">Coming soon</div>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; gap: 14px;">
+                                <div
+                                    style="width: 44px; height: 44px; border-radius: var(--radius-md); background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                    <i class="bi bi-clock" style="color: var(--vibrant-yellow);"></i>
+                                </div>
+                                <div>
+                                    <div style="color: rgba(255,255,255,0.5); font-size: 0.82rem; margin-bottom: 2px;">
+                                        Working Hours</div>
+                                    <div style="color: var(--white); font-weight: 500;">Mon–Sat: 9:00 AM – 7:00 PM</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr style="border-color: rgba(255,255,255,0.1);">
+
+                        <h6
+                            style="color: rgba(255,255,255,0.7); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem;">
+                            Follow Us</h6>
+                        <div class="footer-social">
+                            <a th:if="${settings != null and settings.facebookUrl != null}" th:href="${settings.facebookUrl}" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+                            <a th:if="${settings != null and settings.twitterUrl != null}" th:href="${settings.twitterUrl}" aria-label="Twitter"><i class="bi bi-twitter-x"></i></a>
+                            <a th:if="${settings != null and settings.linkedinUrl != null}" th:href="${settings.linkedinUrl}" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                            <a th:if="${settings != null and settings.instagramUrl != null}" th:href="${settings.instagramUrl}" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+                            <a th:if="${settings != null and settings.youtubeUrl != null}" th:href="${settings.youtubeUrl}" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
+                            <span th:if="${settings == null or (settings.facebookUrl == null and settings.twitterUrl == null and settings.linkedinUrl == null and settings.instagramUrl == null and settings.youtubeUrl == null)}">
+                                <a href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+                                <a href="#" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                                <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <button id="backToTop" class="back-to-top" aria-label="Back to top"><i class="bi bi-chevron-up"></i></button>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+
+</html>

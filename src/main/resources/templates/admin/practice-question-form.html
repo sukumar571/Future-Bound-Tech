@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/admin-sidebar :: adminSidebar('practice')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <h1 class="h3" th:text="${editing} ? 'Edit question' : 'New question'">Question</h1>
+                        <a th:href="@{/admin/practice/questions}" class="btn btn-link"><i class="bi bi-arrow-left"></i> Back to questions</a>
+                    </div>
+
+                    <div class="card form-card shadow-sm">
+                        <div class="card-body p-4">
+                            <form th:action="${formAction}" th:object="${questionForm}" method="post">
+                                <div class="row g-3">
+                                    <div class="col-md-12">
+                                        <label class="form-label">Question type</label>
+                                        <div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" id="typeMcq" th:field="*{type}" value="MCQ">
+                                                <label class="form-check-label" for="typeMcq">MCQ</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" id="typeCoding" th:field="*{type}" value="CODING">
+                                                <label class="form-check-label" for="typeCoding">Coding problem</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label class="form-label">Category</label>
+                                        <select class="form-select" th:field="*{category}">
+                                            <option value="">Select…</option>
+                                            <option th:each="e : ${categories}" th:value="${e.key}" th:text="${e.value}"></option>
+                                        </select>
+                                        <div class="invalid-feedback" th:errors="*{category}"></div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Topic</label>
+                                        <input type="text" class="form-control" th:field="*{topic}" placeholder="e.g. Loops, Joins">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Difficulty</label>
+                                        <select class="form-select" th:field="*{difficulty}">
+                                            <option th:each="e : ${difficulties}" th:value="${e.key}" th:text="${e.value}"></option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <label class="form-label">Question / Problem statement</label>
+                                        <textarea class="form-control" rows="3" th:field="*{questionText}" th:classappend="${#fields.hasErrors('questionText')} ? 'is-invalid'"></textarea>
+                                        <div class="invalid-feedback" th:errors="*{questionText}"></div>
+                                    </div>
+                                </div>
+
+                                <!-- MCQ fields -->
+                                <div id="mcqFields" class="mt-4">
+                                    <h2 class="h6 text-muted"><i class="bi bi-list-ul me-1"></i> Options &amp; answer</h2>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Option A</label>
+                                            <input type="text" class="form-control" th:field="*{optionA}">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Option B</label>
+                                            <input type="text" class="form-control" th:field="*{optionB}">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Option C</label>
+                                            <input type="text" class="form-control" th:field="*{optionC}">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Option D</label>
+                                            <input type="text" class="form-control" th:field="*{optionD}">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Correct answer</label>
+                                            <div>
+                                                <div class="form-check form-check-inline" th:each="opt : ${ {'A','B','C','D'} }">
+                                                    <input class="form-check-input" type="radio" th:id="'corr-'+${opt}" th:field="*{correctOption}" th:value="${opt}">
+                                                    <label class="form-check-label" th:for="'corr-'+${opt}" th:text="${opt}">A</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label">Marks</label>
+                                            <input type="number" min="0" class="form-control" th:field="*{marks}">
+                                        </div>
+                                        <div class="col-md-12">
+                                            <label class="form-label">Explanation (shown after answering)</label>
+                                            <textarea class="form-control" rows="2" th:field="*{explanation}"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Coding fields -->
+                                <div id="codingFields" class="mt-4">
+                                    <h2 class="h6 text-muted"><i class="bi bi-code-slash me-1"></i> Problem details</h2>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Input format</label>
+                                            <textarea class="form-control" rows="2" th:field="*{inputFormat}"></textarea>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Output format</label>
+                                            <textarea class="form-control" rows="2" th:field="*{outputFormat}"></textarea>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <label class="form-label">Constraints</label>
+                                            <textarea class="form-control" rows="2" th:field="*{constraintsText}"></textarea>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <label class="form-label">Examples</label>
+                                            <textarea class="form-control" rows="3" th:field="*{examples}" placeholder="Input: …&#10;Output: …"></textarea>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Tags (comma-separated)</label>
+                                            <input type="text" class="form-control" th:field="*{tags}" placeholder="arrays, hashing, two-pointers">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label">Marks</label>
+                                            <input type="number" min="0" class="form-control" th:field="*{marks}">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-check mt-4">
+                                    <input class="form-check-input" type="checkbox" id="published" th:field="*{published}">
+                                    <label class="form-check-label" for="published">Published (visible to students)</label>
+                                </div>
+
+                                <div class="mt-4">
+                                    <button type="submit" class="btn btn-primary"><i class="bi bi-check2 me-1"></i> <span th:text="${editing} ? 'Save changes' : 'Create question'">Save</span></button>
+                                    <a th:href="@{/admin/practice/questions}" class="btn btn-outline-secondary">Cancel</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+    <script>
+        (function () {
+            var mcq = document.getElementById('mcqFields');
+            var coding = document.getElementById('codingFields');
+            function toggle() {
+                var isCoding = document.getElementById('typeCoding').checked;
+                coding.style.display = isCoding ? 'block' : 'none';
+                mcq.style.display = isCoding ? 'none' : 'block';
+            }
+            document.getElementById('typeMcq').addEventListener('change', toggle);
+            document.getElementById('typeCoding').addEventListener('change', toggle);
+            toggle();
+        })();
+    </script>
+</body>
+</html>

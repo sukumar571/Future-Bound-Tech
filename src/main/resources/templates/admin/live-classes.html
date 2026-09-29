@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/admin-sidebar :: adminSidebar('classes')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <div>
+                            <h1 class="h3">Live Classes</h1>
+                            <p class="text-muted mb-0" th:text="${#lists.size(liveClasses)} + ' class(es)'">0</p>
+                        </div>
+                        <a th:href="@{/admin/live-classes/new}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i> Schedule class</a>
+                    </div>
+
+                    <div class="card border-0 shadow-sm">
+                        <div class="table-responsive">
+                            <table class="table data-table mb-0 align-middle">
+                                <thead class="table-light">
+                                    <tr><th>Topic</th><th>Batch</th><th>Course</th><th>Scheduled</th><th>Status</th><th class="text-end">Actions</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="lc : ${liveClasses}">
+                                        <td>
+                                            <div class="fw-semibold" th:text="${lc.topic}">Topic</div>
+                                            <a class="small text-muted" th:if="${lc.meetingLink}" th:href="${lc.meetingLink}" target="_blank" rel="noopener"><i class="bi bi-link-45deg"></i> Meeting link</a>
+                                        </td>
+                                        <td th:text="${lc.batchName} ?: '—'">Batch</td>
+                                        <td th:text="${lc.courseTitle} ?: '—'">Course</td>
+                                        <td>
+                                            <div th:text="${lc.startTime != null} ? ${#temporals.format(lc.startTime, 'd MMM yyyy, hh:mm a')} : '—'">when</div>
+                                            <span class="badge text-bg-info" th:if="${lc.upcoming}">Upcoming</span>
+                                        </td>
+                                        <td><span class="badge text-bg-primary" th:text="${lc.statusLabel} ?: ${lc.status}">Status</span></td>
+                                        <td class="text-end text-nowrap">
+                                            <a class="btn btn-sm btn-outline-primary" th:href="@{/admin/live-classes/{id}/edit(id=${lc.id})}" title="Edit"><i class="bi bi-pencil"></i></a>
+                                            <form th:action="@{/admin/live-classes/{id}/delete(id=${lc.id})}" method="post" class="d-inline" onsubmit="return confirm('Delete this live class?');">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(liveClasses)}">
+                                        <td colspan="6"><div class="empty-state"><i class="bi bi-camera-video"></i>No live classes scheduled.</div></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/admin-sidebar :: adminSidebar('certificates')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head d-flex flex-wrap justify-content-between align-items-start gap-2">
+                        <div>
+                            <h1 class="h3">Certificates</h1>
+                            <p class="text-muted mb-0">Search, approve, issue, download and revoke course certificates.</p>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a th:href="@{/admin/certificates/eligibility}" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-sliders me-1"></i> Eligibility rules
+                            </a>
+                            <a th:href="@{/admin/certificates/issue-preview}" class="btn btn-primary btn-sm">
+                                <i class="bi bi-send-check me-1"></i> Issue certificates
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm mb-3">
+                        <div class="card-body">
+                            <form th:action="@{/admin/certificates}" method="get" class="row g-2 align-items-end">
+                                <div class="col-md-6">
+                                    <label class="form-label small text-muted mb-1">Search</label>
+                                    <input type="text" name="q" th:value="${q}" class="form-control"
+                                           placeholder="Certificate No., student or course">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label small text-muted mb-1">Status</label>
+                                    <select name="status" class="form-select">
+                                        <option value="" th:selected="${status == null or status == ''}">All</option>
+                                        <option value="ISSUED" th:selected="${status == 'ISSUED'}">Issued</option>
+                                        <option value="PENDING_APPROVAL" th:selected="${status == 'PENDING_APPROVAL'}">Pending approval</option>
+                                        <option value="REVOKED" th:selected="${status == 'REVOKED'}">Revoked</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3 d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary flex-grow-1"><i class="bi bi-search me-1"></i> Search</button>
+                                    <a th:href="@{/admin/certificates}" class="btn btn-outline-secondary" title="Clear"><i class="bi bi-x-lg"></i></a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm">
+                        <div class="table-responsive">
+                            <table class="table data-table mb-0 align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Certificate No.</th>
+                                        <th>Student</th>
+                                        <th>Course</th>
+                                        <th>Issued</th>
+                                        <th>Status</th>
+                                        <th class="text-end">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="c : ${certificates}">
+                                        <td class="fw-semibold" th:text="${c.certificateNumber}">FBT-CERT-2026-0001</td>
+                                        <td th:text="${c.studentName}">Student</td>
+                                        <td th:text="${c.courseTitle}">Course</td>
+                                        <td th:text="${c.issueDate != null} ? ${#temporals.format(c.issueDate, 'd MMM yyyy')} : '—'">date</td>
+                                        <td>
+                                            <span class="badge"
+                                                  th:classappend="${c.issued} ? 'text-bg-success' : (${c.pendingApproval} ? 'text-bg-warning' : 'text-bg-danger')"
+                                                  th:text="${c.statusLabel}">Status</span>
+                                            <div class="small text-danger" th:if="${c.revoked and !#strings.isEmpty(c.revokeReason)}" th:text="'Reason: ' + ${c.revokeReason}"></div>
+                                        </td>
+                                        <td class="text-end">
+                                            <div class="d-inline-flex gap-1 flex-wrap justify-content-end">
+                                                <a th:if="${c.issued}" class="btn btn-sm btn-outline-primary"
+                                                   th:href="@{/admin/certificates/{id}/download(id=${c.id})}" title="Download PDF">
+                                                    <i class="bi bi-download"></i>
+                                                </a>
+                                                <form th:if="${c.pendingApproval}" th:action="@{/admin/certificates/{id}/approve(id=${c.id})}" method="post" class="d-inline">
+                                                    <button type="submit" class="btn btn-sm btn-success" title="Approve &amp; issue"><i class="bi bi-check2"></i></button>
+                                                </form>
+                                                <form th:if="${c.pendingApproval}" th:action="@{/admin/certificates/{id}/reject(id=${c.id})}" method="post" class="d-inline"
+                                                      onsubmit="return confirm('Reject and delete this pending certificate?');">
+                                                    <button type="submit" class="btn btn-sm btn-outline-secondary" title="Reject"><i class="bi bi-x-lg"></i></button>
+                                                </form>
+                                                <form th:if="${c.issued}" th:id="'revoke-form-' + ${c.id}"
+                                                      th:action="@{/admin/certificates/{id}/revoke(id=${c.id})}" method="post" class="d-inline">
+                                                    <input type="hidden" name="reason" th:id="'reason-' + ${c.id}">
+                                                    <button type="button" class="btn btn-sm btn-outline-danger js-revoke" title="Revoke"
+                                                            th:attr="data-cert-id=${c.id},data-cert-number=${c.certificateNumber}">
+                                                        <i class="bi bi-shield-x"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(certificates)}">
+                                        <td colspan="6"><div class="empty-state"><i class="bi bi-award"></i>No certificates match your search.</div></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <p class="text-muted small mt-2" th:text="${#lists.size(certificates)} + ' certificate(s) shown.'">0</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <script>
+        function promptRevoke(id, number) {
+            var reason = window.prompt('Revoke certificate ' + number + '?\nPlease enter a reason (required):');
+            if (reason === null) { return; }
+            reason = reason.trim();
+            if (!reason) { window.alert('A revocation reason is required.'); return; }
+            document.getElementById('reason-' + id).value = reason;
+            document.getElementById('revoke-form-' + id).submit();
+        }
+        // Thymeleaf 3.1 forbids string variables inside event handler attributes,
+        // so the id / number travel in data-* attributes instead.
+        document.addEventListener('click', function (event) {
+            var trigger = event.target.closest('.js-revoke');
+            if (trigger) {
+                promptRevoke(trigger.dataset.certId, trigger.dataset.certNumber);
+            }
+        });
+    </script>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

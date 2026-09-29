@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/trainer-sidebar :: trainerSidebar('students')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <div>
+                            <h1 class="h3" th:text="${student.fullName}">Student</h1>
+                            <p class="text-muted mb-0" th:text="${student.email}">email</p>
+                        </div>
+                        <a th:href="@{/trainer/students}" class="btn btn-link"><i class="bi bi-arrow-left"></i> Back to students</a>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-3">
+                            <div class="card stat-card shadow-sm"><div class="card-body">
+                                <div class="stat-value" th:text="${student.enrolledCourses}">0</div>
+                                <div class="stat-label">Courses</div>
+                            </div></div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card stat-card shadow-sm"><div class="card-body">
+                                <div class="stat-value" th:text="${student.completedCourses}">0</div>
+                                <div class="stat-label">Completed</div>
+                            </div></div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card stat-card shadow-sm"><div class="card-body">
+                                <div class="stat-value" th:text="${student.progressPercent} + '%'">0%</div>
+                                <div class="stat-label">Avg progress</div>
+                            </div></div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card stat-card shadow-sm"><div class="card-body">
+                                <div class="stat-value" th:text="${student.attendanceTotal} > 0 ? ${student.attendancePercent} + '%' : '—'">—</div>
+                                <div class="stat-label">Attendance</div>
+                            </div></div>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white fw-semibold">Course progress</div>
+                        <div class="table-responsive">
+                            <table class="table data-table mb-0 align-middle">
+                                <thead class="table-light">
+                                    <tr><th>Course</th><th>Batch</th><th>Lessons</th><th style="min-width:160px">Progress</th><th>Status</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="p : ${progress}">
+                                        <td class="fw-semibold" th:text="${p.courseTitle}">Course</td>
+                                        <td th:text="${p.batchName} ?: '—'">Batch</td>
+                                        <td class="small" th:text="${p.completedLessons} + ' / ' + ${p.totalLessons}">0 / 0</td>
+                                        <td>
+                                            <div class="progress" style="height:8px">
+                                                <div class="progress-bar" th:style="'width:' + ${p.percent} + '%'"></div>
+                                            </div>
+                                            <span class="small text-muted" th:text="${p.percent} + '%'">0%</span>
+                                        </td>
+                                        <td><span class="badge text-bg-secondary" th:text="${p.statusLabel}">Status</span></td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(progress)}">
+                                        <td colspan="5"><div class="empty-state"><i class="bi bi-journal-x"></i>No progress records.</div></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

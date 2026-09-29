@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+
+    <section class="student-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/student-sidebar :: studentSidebar('practice')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+                    <a th:href="@{/student/practice/coding}" class="btn btn-link mb-2"><i class="bi bi-arrow-left"></i> Back to coding problems</a>
+
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge text-bg-info" th:text="${problem.categoryLabel}">Category</span>
+                                <span class="badge"
+                                      th:classappend="${problem.difficulty == 'HARD'} ? 'text-bg-danger' : (${problem.difficulty == 'MEDIUM'} ? 'text-bg-warning' : 'text-bg-success')"
+                                      th:text="${problem.difficulty}">EASY</span>
+                            </div>
+                            <h1 class="h5" th:text="${problem.questionText}">Problem statement</h1>
+                            <div class="small text-muted mb-3">
+                                <span th:if="${problem.topic}">Topic: <span th:text="${problem.topic}">t</span></span>
+                                <span th:if="${problem.tags != null}"> · Tags: <span th:text="${problem.tags}">tags</span></span>
+                            </div>
+
+                            <div class="mb-3" th:if="${problem.inputFormat != null}">
+                                <h2 class="h6 text-muted">Input format</h2>
+                                <pre class="bg-light p-3 rounded small mb-0" th:text="${problem.inputFormat}">input</pre>
+                            </div>
+                            <div class="mb-3" th:if="${problem.outputFormat != null}">
+                                <h2 class="h6 text-muted">Output format</h2>
+                                <pre class="bg-light p-3 rounded small mb-0" th:text="${problem.outputFormat}">output</pre>
+                            </div>
+                            <div class="mb-3" th:if="${problem.constraintsText != null}">
+                                <h2 class="h6 text-muted">Constraints</h2>
+                                <pre class="bg-light p-3 rounded small mb-0" th:text="${problem.constraintsText}">constraints</pre>
+                            </div>
+                            <div class="mb-3" th:if="${problem.examples != null}">
+                                <h2 class="h6 text-muted">Examples</h2>
+                                <pre class="bg-light p-3 rounded small mb-0" th:text="${problem.examples}">examples</pre>
+                            </div>
+
+                            <div class="alert alert-secondary small mb-0">
+                                <i class="bi bi-info-circle me-1"></i> Solve this yourself in the workspace below (or in your own editor). This app stores your work for later — it never runs or judges submitted code.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Student self-solve workspace -->
+                    <div class="card border-0 shadow-sm mt-4">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h2 class="h6 fw-bold mb-0"><i class="bi bi-pencil-square me-1 text-primary"></i> Your solution</h2>
+                                <span class="badge text-bg-success" th:if="${solution.solved}"><i class="bi bi-check2-circle me-1"></i>Solved</span>
+                                <span class="badge text-bg-secondary" th:unless="${solution.solved}" th:if="${solution.present}">In progress</span>
+                            </div>
+                            <p class="small text-muted" th:if="${solution.present}">
+                                <i class="bi bi-clock-history me-1"></i>Last saved <span th:text="${solution.savedLabel}">—</span>
+                            </p>
+                            <form th:action="@{/student/practice/coding/{id}/solution(id=${problem.id})}" method="post">
+                                <div class="row g-2 align-items-center mb-2">
+                                    <div class="col-auto">
+                                        <label class="form-label small mb-0 me-1">Language</label>
+                                    </div>
+                                    <div class="col-auto">
+                                        <select name="language" class="form-select form-select-sm">
+                                            <option value="">Select…</option>
+                                            <option value="Java" th:selected="${solution.language == 'Java'}">Java</option>
+                                            <option value="Python" th:selected="${solution.language == 'Python'}">Python</option>
+                                            <option value="JavaScript" th:selected="${solution.language == 'JavaScript'}">JavaScript</option>
+                                            <option value="SQL" th:selected="${solution.language == 'SQL'}">SQL</option>
+                                            <option value="C++" th:selected="${solution.language == 'C++'}">C++</option>
+                                            <option value="Other" th:selected="${solution.language == 'Other'}">Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <textarea name="code" class="form-control code-editor mb-3" rows="12"
+                                          spellcheck="false" placeholder="Write your solution here…"
+                                          th:text="${solution.code}"></textarea>
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" name="solved" value="true" id="solvedChk"
+                                           th:checked="${solution.solved}">
+                                    <label class="form-check-label small" for="solvedChk">Mark this problem as solved</label>
+                                </div>
+                                <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i> Save solution</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

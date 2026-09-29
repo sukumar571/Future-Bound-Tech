@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/admin-sidebar :: adminSidebar('quizzes')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <div>
+                            <h1 class="h3">Quizzes</h1>
+                            <p class="text-muted mb-0" th:text="${#lists.size(quizzes)} + ' quiz(zes)'">0</p>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm">
+                        <div class="table-responsive">
+                            <table class="table data-table mb-0 align-middle">
+                                <thead class="table-light">
+                                    <tr><th>Title</th><th>Course</th><th>Questions</th><th>Time limit</th><th>Passing %</th><th>Attempts</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="q : ${quizzes}">
+                                        <td class="fw-semibold" th:text="${q.title}">Title</td>
+                                        <td th:text="${q.courseTitle} ?: '—'">Course</td>
+                                        <td th:text="${q.questionCount}">0</td>
+                                        <td th:text="${q.timeLimitMinutes != null} ? ${q.timeLimitMinutes} + ' min' : '—'">—</td>
+                                        <td th:text="${q.passingScore != null} ? ${q.passingScore} + '%' : '—'">—</td>
+                                        <td th:text="${q.attemptCount}">0</td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(quizzes)}">
+                                        <td colspan="6"><div class="empty-state"><i class="bi bi-patch-question"></i>No quizzes created yet.</div></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/admin-sidebar :: adminSidebar('testimonials')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <h1 class="h3" th:text="${editing} ? 'Edit testimonial' : 'New testimonial'">Testimonial</h1>
+                        <a th:href="@{/admin/testimonials}" class="btn btn-link"><i class="bi bi-arrow-left"></i> Back to testimonials</a>
+                    </div>
+
+                    <div class="card form-card shadow-sm">
+                        <div class="card-body p-4">
+                            <form th:action="${formAction}" th:object="${reviewDto}" method="post">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Author name</label>
+                                        <input type="text" class="form-control" th:field="*{authorName}" placeholder="e.g. Rahul S."
+                                               th:classappend="${#fields.hasErrors('authorName')} ? 'is-invalid'">
+                                        <div class="invalid-feedback" th:errors="*{authorName}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Context label <span class="text-muted small">(e.g. course or batch)</span></label>
+                                        <input type="text" class="form-control" th:field="*{contextLabel}" placeholder="e.g. Java Full Stack, 2025"
+                                               th:classappend="${#fields.hasErrors('contextLabel')} ? 'is-invalid'">
+                                        <div class="invalid-feedback" th:errors="*{contextLabel}"></div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Rating</label>
+                                        <select class="form-select" th:field="*{rating}">
+                                            <option th:each="i : ${#numbers.sequence(1, 5)}" th:value="${i}" th:text="${i} + ' star' + (${i} > 1 ? 's' : '')"></option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <label class="form-label">Testimonial</label>
+                                        <textarea class="form-control" rows="4" th:field="*{comment}" th:classappend="${#fields.hasErrors('comment')} ? 'is-invalid'"></textarea>
+                                        <div class="invalid-feedback" th:errors="*{comment}"></div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-check form-check-inline">
+                                            <input type="checkbox" class="form-check-input" id="approved" th:field="*{approved}">
+                                            <label class="form-check-label" for="approved">Approved</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input type="checkbox" class="form-check-input" id="published" th:field="*{published}">
+                                            <label class="form-check-label" for="published">Public on site</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input type="checkbox" class="form-check-input" id="demo" th:field="*{demo}">
+                                            <label class="form-check-label" for="demo">Demo (placeholder)</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <button type="submit" class="btn btn-primary"><i class="bi bi-check2 me-1"></i> Save</button>
+                                    <a th:href="@{/admin/testimonials}" class="btn btn-outline-secondary">Cancel</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

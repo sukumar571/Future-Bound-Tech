@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+
+    <section class="student-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/student-sidebar :: studentSidebar('practice')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+                    <h1 class="h4 mb-1"><i class="bi bi-controller me-2 text-primary"></i>Practice</h1>
+                    <p class="text-muted">Sharpen your skills across technical and aptitude topics.</p>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <a th:href="@{/student/practice/mcq}" class="text-decoration-none">
+                                <div class="card border-0 shadow-sm h-100 text-center p-3">
+                                    <i class="bi bi-ui-checks fs-2 text-primary"></i>
+                                    <div class="fw-semibold mt-2">Practice MCQs</div>
+                                    <div class="small text-muted">Instant feedback &amp; explanations</div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a th:href="@{/student/practice/coding}" class="text-decoration-none">
+                                <div class="card border-0 shadow-sm h-100 text-center p-3">
+                                    <i class="bi bi-code-slash fs-2 text-info"></i>
+                                    <div class="fw-semibold mt-2">Coding Problems</div>
+                                    <div class="small text-muted">Study statements &amp; examples</div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a th:href="@{/student/practice/tests}" class="text-decoration-none">
+                                <div class="card border-0 shadow-sm h-100 text-center p-3">
+                                    <i class="bi bi-clipboard-check fs-2 text-success"></i>
+                                    <div class="fw-semibold mt-2">Mock Tests</div>
+                                    <div class="small text-muted">Timed &amp; auto-scored</div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm mb-4" th:if="${performance.totalAttempts > 0 or performance.mockTestsTaken > 0}">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h2 class="h6 mb-0">Your progress</h2>
+                                <a th:href="@{/student/practice/performance}" class="btn btn-sm btn-link">View details <i class="bi bi-arrow-right"></i></a>
+                            </div>
+                            <div class="row text-center">
+                                <div class="col-4"><div class="h4 mb-0" th:text="${performance.totalAttempts}">0</div><div class="small text-muted">Questions attempted</div></div>
+                                <div class="col-4"><div class="h4 mb-0 text-success" th:text="${performance.accuracyPercent} + '%'">0%</div><div class="small text-muted">Accuracy</div></div>
+                                <div class="col-4"><div class="h4 mb-0" th:text="${performance.mockTestsTaken}">0</div><div class="small text-muted">Mock tests taken</div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h2 class="h6 text-muted mb-2">Browse by category</h2>
+                    <div class="row g-3">
+                        <div class="col-6 col-md-4 col-lg-3" th:each="e : ${categoryOptions}">
+                            <a th:href="@{/student/practice/mcq(category=${e.key})}" class="text-decoration-none">
+                                <div class="card border-0 shadow-sm h-100">
+                                    <div class="card-body py-3">
+                                        <div class="fw-semibold" th:text="${e.value}">Category</div>
+                                        <div class="small text-muted"><span th:text="${counts.getOrDefault(e.key, 0)}">0</span> questions</div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

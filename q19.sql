@@ -1,0 +1,1 @@
+SELECT table_name, column_name FROM information_schema.columns WHERE lower(table_schema)='information_schema' AND table_name IN ('check_constraints','table_constraints') ORDER BY table_name, ordinal_position;

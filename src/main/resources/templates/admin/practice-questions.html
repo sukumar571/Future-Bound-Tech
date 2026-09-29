@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/admin-sidebar :: adminSidebar('practice')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <div>
+                            <h1 class="h3">Practice Questions</h1>
+                            <p class="text-muted mb-0">Manage the MCQ bank and coding-problem library</p>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a th:href="@{/admin/practice/tests}" class="btn btn-outline-primary"><i class="bi bi-clipboard-check me-1"></i>Mock Tests</a>
+                            <a th:href="@{/admin/practice/questions/import}" class="btn btn-outline-secondary"><i class="bi bi-upload me-1"></i>Import</a>
+                            <a th:href="@{/admin/practice/questions/new}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>New question</a>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm mb-3">
+                        <div class="card-body">
+                            <form th:action="@{/admin/practice/questions}" method="get" class="row g-2 align-items-end">
+                                <div class="col-md-2">
+                                    <label class="form-label small mb-1">Type</label>
+                                    <select name="type" class="form-select form-select-sm">
+                                        <option value="">All</option>
+                                        <option value="MCQ" th:selected="${fType == 'MCQ'}">MCQ</option>
+                                        <option value="CODING" th:selected="${fType == 'CODING'}">Coding</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label small mb-1">Category</label>
+                                    <select name="category" class="form-select form-select-sm">
+                                        <option value="">All</option>
+                                        <option th:each="e : ${categories}" th:value="${e.key}" th:text="${e.value}" th:selected="${fCategory == e.key}"></option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label small mb-1">Difficulty</label>
+                                    <select name="difficulty" class="form-select form-select-sm">
+                                        <option value="">All</option>
+                                        <option th:each="e : ${difficulties}" th:value="${e.key}" th:text="${e.value}" th:selected="${fDifficulty == e.key}"></option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label small mb-1">Search</label>
+                                    <input type="text" name="query" class="form-control form-control-sm" th:value="${fQuery}" placeholder="Question text">
+                                </div>
+                                <div class="col-md-2 d-flex gap-2">
+                                    <button type="submit" class="btn btn-sm btn-primary w-100"><i class="bi bi-funnel me-1"></i>Filter</button>
+                                    <a th:href="@{/admin/practice/questions}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-x-lg"></i></a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm">
+                        <div class="table-responsive">
+                            <table class="table data-table mb-0 align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Type</th><th>Category</th><th>Topic</th><th>Diff.</th>
+                                        <th>Question</th><th>Marks</th><th>Status</th><th class="text-end">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="q : ${questions}">
+                                        <td><span class="badge" th:classappend="${q.coding} ? 'text-bg-info' : 'text-bg-primary'" th:text="${q.coding} ? 'Coding' : 'MCQ'">MCQ</span></td>
+                                        <td th:text="${q.categoryLabel}">Category</td>
+                                        <td th:text="${q.topic} ?: '—'">Topic</td>
+                                        <td><span class="small" th:text="${q.difficulty}">EASY</span></td>
+                                        <td>
+                                            <div th:text="${#strings.abbreviate(q.questionText, 70)}">Question</div>
+                                            <div class="small text-muted" th:if="${q.coding and q.tags != null}"><i class="bi bi-tags me-1"></i><span th:text="${q.tags}">tags</span></div>
+                                        </td>
+                                        <td th:text="${q.marks}">1</td>
+                                        <td><span class="badge" th:classappend="${q.published} ? 'text-bg-success' : 'text-bg-secondary'" th:text="${q.published} ? 'Published' : 'Draft'">Status</span></td>
+                                        <td class="text-end text-nowrap">
+                                            <a th:href="@{/admin/practice/questions/{id}/edit(id=${q.id})}" class="btn btn-sm btn-outline-secondary" title="Edit"><i class="bi bi-pencil"></i></a>
+                                            <form th:action="${q.published} ? @{/admin/practice/questions/{id}/unpublish(id=${q.id})} : @{/admin/practice/questions/{id}/publish(id=${q.id})}" method="post" class="d-inline">
+                                                <button type="submit" class="btn btn-sm btn-outline-success" th:title="${q.published} ? 'Move to draft' : 'Publish'"><i class="bi" th:classappend="${q.published} ? 'bi-eye-slash' : 'bi-eye'"></i></button>
+                                            </form>
+                                            <form th:action="@{/admin/practice/questions/{id}/delete(id=${q.id})}" method="post" class="d-inline" onsubmit="return confirm('Delete this question?');">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(questions)}">
+                                        <td colspan="8"><div class="empty-state"><i class="bi bi-controller"></i>No questions yet. Add one to get started.</div></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

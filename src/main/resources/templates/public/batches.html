@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+
+    <!-- Hero -->
+    <section class="py-5" style="background: linear-gradient(135deg, #0B1020 0%, #10213a 60%, #0B1020 100%); color:#fff;">
+        <div class="container py-4">
+            <div class="row justify-content-center text-center">
+                <div class="col-lg-8">
+                    <span class="badge rounded-pill px-3 py-2 mb-3" style="background:rgba(16,185,129,.15); color:#34d399; border:1px solid rgba(16,185,129,.4);">
+                        <i class="bi bi-people-fill me-1"></i> Upcoming Batches
+                    </span>
+                    <h1 class="display-5 fw-bold">Find Your Next Batch</h1>
+                    <p class="lead text-white-50">
+                        Live, cohort-based batches for every published program — with trainer, schedule
+                        and live seat availability. Enrollment opens the moment you pick a batch at checkout.
+                    </p>
+                    <div class="d-flex gap-2 justify-content-center flex-wrap mt-4">
+                        <a href="#batches" class="btn btn-primary px-4">
+                            <i class="bi bi-arrow-down-circle me-2"></i> Browse Open Batches
+                        </a>
+                        <a th:href="@{/courses}" class="btn btn-outline-light px-4">
+                            <i class="bi bi-journal-bookmark me-2"></i> Explore Courses
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Batch listing -->
+    <section class="py-5" id="batches">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+                <div>
+                    <h2 class="fw-bold mb-1">Open for Enrollment</h2>
+                    <p class="text-muted small mb-0">
+                        <span th:text="${#lists.size(batches)}">0</span> batch(es) currently published and accepting students.
+                    </p>
+                </div>
+                <span class="badge text-bg-light border align-self-center">
+                    <i class="bi bi-arrow-repeat me-1"></i> Updated live from the catalog
+                </span>
+            </div>
+
+            <div class="row g-3" th:if="${!batches.isEmpty()}">
+                <div class="col-md-6 col-xl-4" th:each="b : ${batches}">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="badge text-bg-primary"
+                                      th:text="${b.mode != null ? #strings.replace(#strings.toLowerCase(b.mode), '_', ' ') : 'Flexible'}">mode</span>
+                                <span class="badge text-bg-success" th:if="${b.enrollmentStatus == null or b.enrollmentStatus.name() == 'OPEN'}">Open</span>
+                                <span class="badge text-bg-warning" th:unless="${b.enrollmentStatus == null or b.enrollmentStatus.name() == 'OPEN'}"
+                                      th:text="${b.enrollmentStatusLabel != null ? b.enrollmentStatusLabel : 'Waitlist'}">Status</span>
+                            </div>
+                            <h3 class="h6 mb-1">
+                                <a th:href="@{/courses/{slug}(slug=${b.courseSlug})}"
+                                   class="text-decoration-none" th:text="${b.courseTitle}">Course</a>
+                            </h3>
+                            <p class="text-muted small mb-2" th:text="${b.batchName}">Batch name</p>
+                            <div class="small text-muted mb-2">
+                                <div th:if="${b.trainerName}"><i class="bi bi-person-badge me-1"></i><span th:text="${b.trainerName}">Trainer</span></div>
+                                <div th:if="${b.startDate != null}">
+                                    <i class="bi bi-calendar-event me-1"></i>
+                                    Starts <span th:text="${#temporals.format(b.startDate, 'MMM d, yyyy')}">date</span>
+                                </div>
+                                <div th:if="${b.startTime != null}">
+                                    <i class="bi bi-clock me-1"></i>
+                                    <span th:text="${#temporals.format(b.startTime, 'hh:mm a')}">time</span>
+                                    <span th:if="${b.endTime != null}"
+                                          th:text="' – ' + ${#temporals.format(b.endTime, 'hh:mm a')}">end</span>
+                                </div>
+                                <div class="mt-1">
+                                    <i class="bi bi-people me-1"></i>
+                                    <span th:if="${b.maxSeats != null}"
+                                          th:text="${b.seatsAvailable} + ' of ' + ${b.maxSeats} + ' seats left'">seats</span>
+                                    <span th:unless="${b.maxSeats != null}"
+                                          th:text="${b.enrolledCount} + ' enrolled'">enrolled</span>
+                                </div>
+                            </div>
+                            <div class="mt-auto pt-2">
+                                <a th:href="@{/courses/{slug}(slug=${b.courseSlug})}" class="btn btn-sm btn-primary rounded-pill w-100">
+                                    <i class="bi bi-box-arrow-in-right me-1"></i> Enroll in This Batch
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm" th:if="${batches.isEmpty()}">
+                <div class="card-body empty-state">
+                    <i class="bi bi-calendar-x"></i>
+                    <h3 class="h5">No batches open right now</h3>
+                    <p>New batches are published before each cohort starts. Browse our courses and contact us to join the waitlist.</p>
+                    <div class="d-flex gap-2 justify-content-center flex-wrap">
+                        <a th:href="@{/courses}" class="btn btn-primary">View Courses</a>
+                        <a th:href="@{/contact}" class="btn btn-outline-primary">Contact Us</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

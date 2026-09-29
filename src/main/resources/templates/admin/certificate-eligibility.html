@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/admin-sidebar :: adminSidebar('certificates')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head d-flex flex-wrap justify-content-between align-items-start gap-2">
+                        <div>
+                            <h1 class="h3">Certificate Eligibility</h1>
+                            <p class="text-muted mb-0">Rules a student must satisfy before a certificate can be issued.</p>
+                        </div>
+                        <a th:href="@{/admin/certificates}" class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-arrow-left me-1"></i> Back to certificates
+                        </a>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Set an institute-wide <strong>default</strong>, or add <strong>per-course</strong> overrides below.
+                        A threshold of <code>0</code> (assignments / quizzes) or an unselected final assessment means “not required”.
+                        Certificates are never issued unless every configured criterion passes.
+                    </div>
+
+                    <!-- Editing scope selector -->
+                    <ul class="nav nav-pills mb-3">
+                        <li class="nav-item">
+                            <a class="nav-link" th:classappend="${editingCourseId == null} ? 'active'"
+                               th:href="@{/admin/certificates/eligibility}">Default rules</a>
+                        </li>
+                        <li class="nav-item" th:each="cc : ${courseConfigs}">
+                            <a class="nav-link" th:classappend="${editingCourseId != null and editingCourseId == cc.courseId} ? 'active'"
+                               th:href="@{/admin/certificates/eligibility(courseId=${cc.courseId})}" th:text="${cc.courseTitle}">Course</a>
+                        </li>
+                    </ul>
+
+                    <form th:action="@{/admin/certificates/eligibility}" th:object="${form}" method="post">
+                        <input type="hidden" th:field="*{id}">
+                        <input type="hidden" th:field="*{courseId}">
+
+                        <div class="card form-card shadow-sm mb-4">
+                            <div class="card-header bg-white fw-semibold d-flex justify-content-between align-items-center">
+                                <span th:text="*{courseId} == null ? 'Institute-wide default' : 'Rules for: ' + *{courseTitle}">Rules</span>
+                                <span class="badge text-bg-secondary" th:if="*{courseId} != null">course override</span>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Course completion (%)</label>
+                                        <input type="number" min="0" max="100" class="form-control" th:field="*{minCourseCompletionPercent}">
+                                        <div class="form-text">Minimum lesson-completion percentage required.</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Assignment completion (%)</label>
+                                        <input type="number" min="0" max="100" class="form-control" th:field="*{minAssignmentCompletionPercent}">
+                                        <div class="form-text">0 = assignments not required.</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Minimum average quiz score (%)</label>
+                                        <input type="number" min="0" max="100" class="form-control" th:field="*{minQuizAveragePercent}">
+                                        <div class="form-text">Average of best attempts per quiz. 0 = not required.</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Final assessment quiz</label>
+                                        <select class="form-select" th:field="*{finalAssessmentQuizId}">
+                                            <option value="">— none (not required) —</option>
+                                            <option th:each="q : ${quizOptions}" th:value="${q.value}" th:text="${q.name}">Quiz</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Minimum final assessment score (%)</label>
+                                        <input type="number" min="0" max="100" class="form-control" th:field="*{minFinalAssessmentPercent}">
+                                    </div>
+                                    <div class="col-md-6 d-flex align-items-end">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" th:field="*{manualApprovalRequired}" id="manualApproval">
+                                            <label class="form-check-label" for="manualApproval">Require manual admin approval before issuing</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card form-card shadow-sm mb-4">
+                            <div class="card-header bg-white fw-semibold">Certificate appearance &amp; signatory</div>
+                            <div class="card-body p-4">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Certificate title</label>
+                                        <input type="text" class="form-control" th:field="*{certificateTitle}" placeholder="Certificate of Completion">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Signatory name</label>
+                                        <input type="text" class="form-control" th:field="*{signatoryName}">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Signatory designation</label>
+                                        <input type="text" class="form-control" th:field="*{signatoryDesignation}" placeholder="Course Director">
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-text">
+                                            <i class="bi bi-info-circle me-1"></i>
+                                            Appearance is taken from the <strong>default</strong> rules when rendering a PDF.
+                                            Use it to set the official signatory of the institute.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2 mb-5">
+                            <button type="submit" class="btn btn-primary"><i class="bi bi-check2 me-1"></i> Save rules</button>
+                        </div>
+                    </form>
+
+                    <!-- Assign rules to a course -->
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white fw-semibold">Per-course overrides</div>
+                        <div class="card-body">
+                            <form th:action="@{/admin/certificates/eligibility}" method="get" class="row g-2 align-items-end mb-3">
+                                <div class="col-md-8">
+                                    <label class="form-label small text-muted mb-1">Configure a course</label>
+                                    <select class="form-select" name="courseId" id="pickCourse">
+                                        <option value="">Select a course…</option>
+                                        <option th:each="co : ${courseOptions}" th:value="${co.value}" th:text="${co.name}">Course</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <button type="submit" class="btn btn-outline-primary"><i class="bi bi-sliders me-1"></i> Edit course rules</button>
+                                </div>
+                            </form>
+                            <div class="table-responsive">
+                                <table class="table data-table align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr><th>Course</th><th>Completion</th><th>Assignments</th><th>Quiz avg</th><th>Manual approval</th><th></th></tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="cc : ${courseConfigs}">
+                                            <td class="fw-semibold" th:text="${cc.courseTitle}">Course</td>
+                                            <td th:text="${cc.minCourseCompletionPercent} + '%'">100%</td>
+                                            <td th:text="${cc.minAssignmentCompletionPercent} > 0 ? ${cc.minAssignmentCompletionPercent} + '%' : '—'">—</td>
+                                            <td th:text="${cc.minQuizAveragePercent} > 0 ? ${cc.minQuizAveragePercent} + '%' : '—'">—</td>
+                                            <td>
+                                                <span class="badge" th:classappend="${cc.manualApprovalRequired} ? 'text-bg-warning' : 'text-bg-secondary'"
+                                                      th:text="${cc.manualApprovalRequired} ? 'Required' : 'Auto'">Auto</span>
+                                            </td>
+                                            <td class="text-end">
+                                                <a class="btn btn-sm btn-outline-primary" th:href="@{/admin/certificates/eligibility(courseId=${cc.courseId})}">
+                                                    <i class="bi bi-pencil"></i> Edit
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr th:if="${#lists.isEmpty(courseConfigs)}">
+                                            <td colspan="6"><div class="empty-state text-muted py-3">No per-course overrides yet — all courses use the default rules.</div></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

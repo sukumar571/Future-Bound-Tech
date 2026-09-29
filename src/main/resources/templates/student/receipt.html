@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+
+    <section class="student-shell">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-7">
+                    <div class="d-flex justify-content-end gap-2 mb-3 no-print">
+                        <a th:href="@{/student/payments}" class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-arrow-left me-1"></i> Back to payments
+                        </a>
+                        <button type="button" onclick="window.print()" class="btn btn-primary btn-sm">
+                            <i class="bi bi-printer me-1"></i> Print / Save PDF
+                        </button>
+                    </div>
+
+                    <div class="card border-0 shadow-sm p-4 p-md-5 receipt">
+                        <div class="d-flex justify-content-between align-items-start mb-4">
+                            <div>
+                                <h1 class="h4 fw-bold mb-0">Future Bound Tech</h1>
+                                <span class="text-muted small">Payment Receipt</span>
+                            </div>
+                            <div class="text-end">
+                                <div class="small text-muted">Receipt No.</div>
+                                <div class="fw-semibold" th:text="${payment.receiptNumber}">FBT-0000</div>
+                                <div class="small text-muted mt-1"
+                                     th:text="${payment.paidAt != null} ? ${#temporals.format(payment.paidAt, 'd MMM yyyy, h:mm a')} : ${#temporals.format(payment.createdAt, 'd MMM yyyy')}">
+                                    date</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <span class="badge"
+                                  th:classappend="${payment.status == 'SUCCESS'} ? 'text-bg-success' :
+                                                  (${payment.status == 'REFUNDED'} ? 'text-bg-info' :
+                                                  (${payment.status == 'CREATED' or payment.status == 'PENDING'} ? 'text-bg-warning' : 'text-bg-danger'))"
+                                  th:text="${payment.statusLabel}">Status</span>
+                        </div>
+
+                        <dl class="row mb-4">
+                            <dt class="col-sm-4 text-muted fw-normal">Bill to</dt>
+                            <dd class="col-sm-8">
+                                <span class="fw-semibold" th:text="${payment.studentName}">Student</span><br>
+                                <span class="text-muted small" th:text="${payment.studentEmail}">email</span>
+                            </dd>
+                            <dt class="col-sm-4 text-muted fw-normal">Course</dt>
+                            <dd class="col-sm-8" th:text="${payment.courseTitle}">Course</dd>
+                            <dt class="col-sm-4 text-muted fw-normal" th:if="${payment.couponCode}">Coupon</dt>
+                            <dd class="col-sm-8" th:if="${payment.couponCode}" th:text="${payment.couponCode}">CODE</dd>
+                            <dt class="col-sm-4 text-muted fw-normal" th:if="${payment.paymentMethod}">Payment method</dt>
+                            <dd class="col-sm-8" th:if="${payment.paymentMethod}" th:text="${payment.paymentMethod}">—</dd>
+                            <dt class="col-sm-4 text-muted fw-normal" th:if="${payment.razorpayPaymentId}">Gateway payment id</dt>
+                            <dd class="col-sm-8 small text-break" th:if="${payment.razorpayPaymentId}" th:text="${payment.razorpayPaymentId}">—</dd>
+                        </dl>
+
+                        <div class="bg-light rounded p-3 mb-4">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="text-muted">Course fee</span>
+                                <span th:text="${payment.formattedBaseAmount} ?: '—'">₹0</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1"
+                                 th:if="${payment.discountAmount != null and payment.discountAmount.doubleValue() > 0}">
+                                <span class="text-muted">Discount</span>
+                                <span class="text-success" th:text="'− ' + ${payment.formattedDiscount}">− ₹0</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-bold">Amount paid</span>
+                                <span class="fs-5 fw-bold text-primary" th:text="${payment.formattedAmount}">₹0</span>
+                            </div>
+                        </div>
+
+                        <p class="text-danger small" th:if="${payment.failureReason}"
+                           th:text="'Note: ' + ${payment.failureReason}"></p>
+                        <p class="text-muted small mb-0">
+                            <i class="bi bi-shield-check me-1"></i>
+                            This receipt confirms a payment processed through the Future Bound Tech secure checkout.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+
+    <style>
+        @media print {
+            .no-print, nav, footer, .student-sidebar { display: none !important; }
+            .student-shell { padding-top: 0 !important; }
+            .card { box-shadow: none !important; border: 1px solid #dee2e6 !important; }
+        }
+    </style>
+</body>
+
+</html>

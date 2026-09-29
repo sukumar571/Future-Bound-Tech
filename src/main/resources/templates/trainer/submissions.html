@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/trainer-sidebar :: trainerSidebar('assignments')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <div>
+                            <h1 class="h3" th:text="${assignment.title}">Assignment</h1>
+                            <p class="text-muted mb-0">
+                                <span th:text="${assignment.courseTitle}">Course</span>
+                                <span th:if="${assignment.batchName}"> · <span th:text="${assignment.batchName}">Batch</span></span>
+                                <span th:if="${assignment.dueDate != null}"> · Due <span th:text="${#temporals.format(assignment.dueDate, 'd MMM yyyy, h:mm a')}">due</span></span>
+                            </p>
+                        </div>
+                        <a th:href="@{/trainer/assignments}" class="btn btn-link"><i class="bi bi-arrow-left"></i> Back</a>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-12" th:if="${#lists.isEmpty(submissions)}">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body"><div class="empty-state mb-0"><i class="bi bi-inbox"></i>No submissions yet.</div></div>
+                            </div>
+                        </div>
+                        <div class="col-12" th:each="s : ${submissions}">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                                        <div>
+                                            <div class="fw-semibold" th:text="${s.studentName}">Student</div>
+                                            <div class="small text-muted" th:text="${s.studentEmail}">email</div>
+                                            <div class="small text-muted" th:if="${s.submittedAt != null}" th:text="'Submitted ' + ${#temporals.format(s.submittedAt, 'd MMM yyyy, h:mm a')}">submitted</div>
+                                        </div>
+                                        <div class="text-end">
+                                            <span class="badge text-bg-danger me-1" th:if="${s.late}">Late</span>
+                                            <span class="badge"
+                                                  th:classappend="${s.status == 'GRADED'} ? 'text-bg-success' : (${s.status == 'REJECTED'} ? 'text-bg-danger' : 'text-bg-warning')"
+                                                  th:text="${s.statusLabel}">Status</span>
+                                            <div class="small text-muted mt-1" th:if="${s.fileUrl}"><a th:href="@{/files/trainer/submissions/{id}(id=${s.submissionId})}"><i class="bi bi-paperclip"></i> Download file</a></div>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <form th:action="@{/trainer/submissions/{id}/grade(id=${s.submissionId})}" method="post" class="row g-2 align-items-end">
+                                        <input type="hidden" name="assignmentId" th:value="${assignment.id}">
+                                        <div class="col-md-2">
+                                            <label class="form-label small mb-1">Marks<span th:if="${s.maxMarks != null}" th:text="' / ' + ${s.maxMarks}"></span></label>
+                                            <input type="number" name="score" min="0" th:max="${s.maxMarks}" th:value="${s.score}" class="form-control form-control-sm" placeholder="0">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label small mb-1">Status</label>
+                                            <select name="status" class="form-select form-select-sm">
+                                                <option value="PENDING" th:selected="${s.status == 'PENDING'}">Pending</option>
+                                                <option value="GRADED" th:selected="${s.status == 'GRADED'}">Graded</option>
+                                                <option value="REJECTED" th:selected="${s.status == 'REJECTED'}">Rejected</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <label class="form-label small mb-1">Feedback</label>
+                                            <input type="text" name="feedback" th:value="${s.feedback}" class="form-control form-control-sm" placeholder="Add feedback for the student">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button type="submit" class="btn btn-sm btn-primary w-100"><i class="bi bi-check-lg me-1"></i> Save</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

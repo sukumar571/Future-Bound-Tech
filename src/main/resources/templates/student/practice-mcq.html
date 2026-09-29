@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+
+    <section class="student-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/student-sidebar :: studentSidebar('practice')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h1 class="h4 mb-0"><i class="bi bi-ui-checks me-2 text-primary"></i>Practice MCQs</h1>
+                        <a th:href="@{/student/practice}" class="btn btn-link"><i class="bi bi-arrow-left"></i> Practice</a>
+                    </div>
+
+                    <div class="card border-0 shadow-sm mb-3">
+                        <div class="card-body">
+                            <form th:action="@{/student/practice/mcq}" method="get" class="row g-2 align-items-end">
+                                <div class="col-md-4">
+                                    <label class="form-label small mb-1">Category</label>
+                                    <select name="category" class="form-select form-select-sm">
+                                        <option value="">All categories</option>
+                                        <option th:each="e : ${categoryOptions}" th:value="${e.key}" th:text="${e.value}" th:selected="${fCategory == e.key}"></option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label small mb-1">Difficulty</label>
+                                    <select name="difficulty" class="form-select form-select-sm">
+                                        <option value="">Any</option>
+                                        <option th:each="e : ${difficultyOptions}" th:value="${e.key}" th:text="${e.value}" th:selected="${fDifficulty == e.key}"></option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label small mb-1">Topic</label>
+                                    <select name="topic" class="form-select form-select-sm">
+                                        <option value="">Any</option>
+                                        <option th:each="t : ${topics}" th:value="${t}" th:text="${t}" th:selected="${fTopic == t}"></option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="submit" class="btn btn-sm btn-primary w-100"><i class="bi bi-funnel me-1"></i>Apply</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-2" th:if="${!questions.isEmpty()}">
+                        <span class="text-muted small"><span th:text="${#lists.size(questions)}">0</span> question(s) in this practice set</span>
+                        <a th:href="@{/student/practice/mcq/run(category=${fCategory},difficulty=${fDifficulty},topic=${fTopic},i=0)}" class="btn btn-sm btn-primary">
+                            <i class="bi bi-play-circle me-1"></i>Start practice
+                        </a>
+                    </div>
+
+                    <div class="row g-3" th:if="${!questions.isEmpty()}">
+                        <div class="col-md-6" th:each="q, s : ${questions}">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body d-flex flex-column">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <span class="badge text-bg-primary" th:text="${q.categoryLabel}">Category</span>
+                                        <span class="badge"
+                                              th:classappend="${q.difficulty == 'HARD'} ? 'text-bg-danger' : (${q.difficulty == 'MEDIUM'} ? 'text-bg-warning' : 'text-bg-success')"
+                                              th:text="${q.difficulty}">EASY</span>
+                                    </div>
+                                    <p class="mb-1 flex-grow-1" th:text="${#strings.abbreviate(q.questionText, 130)}">Question</p>
+                                    <div class="small text-muted mb-2">
+                                        <span th:if="${q.topic}"><i class="bi bi-hash me-1"></i><span th:text="${q.topic}">topic</span> · </span>
+                                        <span th:text="${q.marks} + ' mark(s)'">1 mark</span>
+                                    </div>
+                                    <a th:href="@{/student/practice/mcq/run(category=${fCategory},difficulty=${fDifficulty},topic=${fTopic},i=${s.index})}" class="btn btn-sm btn-outline-primary align-self-start">
+                                        <i class="bi bi-play-fill me-1"></i> Attempt
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm" th:if="${questions.isEmpty()}">
+                        <div class="card-body empty-state">
+                            <i class="bi bi-ui-checks"></i>
+                            <h3 class="h5">No questions found</h3>
+                            <p>Try a different category or difficulty filter.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

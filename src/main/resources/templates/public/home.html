@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+    <!-- ========================================
+     HERO SECTION
+     ======================================== -->
+    <section class="hero-section hero-home position-relative overflow-hidden">
+
+        <!-- Animated background orbs -->
+        <div class="hero-orb hero-orb-1"></div>
+        <div class="hero-orb hero-orb-2"></div>
+        <div class="hero-orb hero-orb-3"></div>
+
+        <div class="container py-5 position-relative" style="z-index:2;">
+            <div class="row align-items-center g-5">
+
+                <!-- Left Content -->
+                <div class="col-lg-6 text-center text-lg-start">
+                    <!-- Badge -->
+                    <div class="d-inline-flex align-items-center gap-2 rounded-pill px-3 py-2 mb-4 hero-badge-pill">
+                        <span class="badge-dot"></span>
+                        <i class="bi bi-broadcast-pin" style="color:#06B6D4;"></i>
+                        <span style="color:#06B6D4; font-size:0.85rem; font-weight:600;">Online + Offline Training Available</span>
+                    </div>
+
+                    <!-- Logo + Institute Name -->
+                    <div class="d-flex align-items-center gap-3 mb-4 justify-content-center justify-content-lg-start">
+                        <img th:src="@{/images/logo.png}" alt="Future Bound Tech" width="52" height="52" style="border-radius:12px;">
+                        <div style="color:rgba(255,255,255,0.55); font-size:0.95rem; font-weight:500; letter-spacing:0.05em;">FUTURE BOUND TECH</div>
+                    </div>
+
+                    <h1 class="hero-display text-white mb-3">
+                        Build Skills.<br>
+                        <span class="hero-display-accent">Shape Your Future.</span>
+                    </h1>
+
+                    <p class="hero-lead mb-5">
+                        Master industry-relevant technology skills with practical training, expert guidance, and career-focused learning.
+                    </p>
+
+                    <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center justify-content-lg-start mb-5">
+                        <a th:href="@{/courses}" class="btn-hero-cta-primary">
+                            <i class="bi bi-compass me-2"></i> Explore Courses
+                        </a>
+                        <a th:href="@{/register}" class="btn-hero-cta-secondary">
+                            <i class="bi bi-person-plus me-2"></i> Join Future Bound Tech
+                        </a>
+                    </div>
+
+                    <!-- Mini stats row -->
+                    <div class="d-flex flex-wrap gap-4 justify-content-center justify-content-lg-start pt-4" style="border-top:1px solid rgba(255,255,255,0.1);">
+                        <div class="text-center text-lg-start">
+                            <div style="font-size:1.6rem; font-weight:800; color:#FACC15;">5+</div>
+                            <div style="font-size:0.78rem; color:rgba(255,255,255,0.45); text-transform:uppercase; letter-spacing:0.06em;">Courses</div>
+                        </div>
+                        <div class="text-center text-lg-start">
+                            <div style="font-size:1.6rem; font-weight:800; color:#06B6D4;">Expert</div>
+                            <div style="font-size:0.78rem; color:rgba(255,255,255,0.45); text-transform:uppercase; letter-spacing:0.06em;">Trainers</div>
+                        </div>
+                        <div class="text-center text-lg-start">
+                            <div style="font-size:1.6rem; font-weight:800; color:#F472B6;">Online &amp; Offline</div>
+                            <div style="font-size:0.78rem; color:rgba(255,255,255,0.45); text-transform:uppercase; letter-spacing:0.06em;">Learning Modes</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Visual — Tech Illustration -->
+                <div class="col-lg-6 d-none d-lg-flex align-items-center justify-content-center">
+                    <div class="hero-illustration-wrapper">
+                        <!-- Central laptop card -->
+                        <div class="hero-main-card">
+                            <div class="hero-screen">
+                                <div class="hero-screen-topbar">
+                                    <span class="hero-dot" style="background:#FF5F57;"></span>
+                                    <span class="hero-dot" style="background:#FEBC2E;"></span>
+                                    <span class="hero-dot" style="background:#28C840;"></span>
+                                    <span style="color:rgba(255,255,255,0.4); font-size:0.7rem; margin-left:auto;">FutureBoundTech IDE</span>
+                                </div>
+                                <div class="hero-code-lines">
+                                    <div class="hero-code-line"><span style="color:#7C3AED;">public class</span> <span style="color:#06B6D4;">FutureDev</span> {</div>
+                                    <div class="hero-code-line">&nbsp;&nbsp;<span style="color:#FACC15;">String</span> skill <span style="color:#fff;">=</span> <span style="color:#F472B6;">"Full Stack"</span>;</div>
+                                    <div class="hero-code-line">&nbsp;&nbsp;<span style="color:#7C3AED;">void</span> <span style="color:#06B6D4;">build</span>() {</div>
+                                    <div class="hero-code-line">&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(<span style="color:#F472B6;">"Career Launched!"</span>);</div>
+                                    <div class="hero-code-line">&nbsp;&nbsp;}</div>
+                                    <div class="hero-code-line">}</div>
+                                    <div class="hero-cursor"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Floating badge cards -->
+                        <div class="hero-float-badge" style="top:5%; right:0;">
+                            <i class="bi bi-award-fill" style="color:#FACC15; font-size:1.3rem;"></i>
+                            <div><div style="font-weight:700; color:#fff; font-size:0.85rem;">Expert Trainers</div><div style="color:rgba(255,255,255,0.5); font-size:0.72rem;">Industry Pros</div></div>
+                        </div>
+                        <div class="hero-float-badge" style="bottom:8%; left:0;">
+                            <i class="bi bi-laptop-fill" style="color:#06B6D4; font-size:1.3rem;"></i>
+                            <div><div style="font-weight:700; color:#fff; font-size:0.85rem;">Live Projects</div><div style="color:rgba(255,255,255,0.5); font-size:0.72rem;">Real-world experience</div></div>
+                        </div>
+                        <div class="hero-float-badge" style="top:45%; right:-8%;">
+                            <i class="bi bi-patch-check-fill" style="color:#F472B6; font-size:1.3rem;"></i>
+                            <div><div style="font-weight:700; color:#fff; font-size:0.85rem;">Career Ready</div><div style="color:rgba(255,255,255,0.5); font-size:0.72rem;">Interview prep</div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================
+     WHY CHOOSE US
+     ======================================== -->
+    <section class="section-padding bg-light" id="why-us">
+        <div class="container">
+            <div class="text-center mb-5">
+                <span class="fbt-section-badge" style="background:#EFF6FF; color:#2563EB;">✦ Why Choose Us</span>
+                <h2 class="fw-bold mt-3" style="color:#0B1020; font-size:clamp(1.8rem,3vw,2.4rem);">Everything You Need to Succeed</h2>
+                <p class="text-muted mx-auto mt-2" style="max-width:560px;">Comprehensive tech education designed for your career growth, from day one to dream job.</p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-6">
+                    <div class="fbt-feature-card" style="--card-accent:#2563EB;">
+                        <div class="fbt-feature-icon" style="background:#EFF6FF; color:#2563EB;"><i class="bi bi-briefcase-fill fs-4"></i></div>
+                        <h5 class="fw-bold mt-3 mb-2">Project-Based Learning</h5>
+                        <p class="text-muted small mb-0">Build real-world applications from scratch and graduate with a portfolio employers love.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="fbt-feature-card" style="--card-accent:#7C3AED;">
+                        <div class="fbt-feature-icon" style="background:#F5F3FF; color:#7C3AED;"><i class="bi bi-person-workspace fs-4"></i></div>
+                        <h5 class="fw-bold mt-3 mb-2">Expert Trainers</h5>
+                        <p class="text-muted small mb-0">Get mentored by industry professionals with years of hands-on development experience.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="fbt-feature-card" style="--card-accent:#06B6D4;">
+                        <div class="fbt-feature-icon" style="background:#ECFEFF; color:#06B6D4;"><i class="bi bi-display fs-4"></i></div>
+                        <h5 class="fw-bold mt-3 mb-2">Online &amp; Offline Classes</h5>
+                        <p class="text-muted small mb-0">Flexible learning modes — attend live online sessions or in-person classroom training.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="fbt-feature-card" style="--card-accent:#CA8A04;">
+                        <div class="fbt-feature-icon" style="background:#FEF9C3; color:#CA8A04;"><i class="bi bi-keyboard fs-4"></i></div>
+                        <h5 class="fw-bold mt-3 mb-2">Coding Practice</h5>
+                        <p class="text-muted small mb-0">Daily coding challenges and competitive problems to sharpen your logic and skills.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="fbt-feature-card" style="--card-accent:#F472B6;">
+                        <div class="fbt-feature-icon" style="background:#FCE7F3; color:#F472B6;"><i class="bi bi-chat-quote-fill fs-4"></i></div>
+                        <h5 class="fw-bold mt-3 mb-2">Interview Preparation</h5>
+                        <p class="text-muted small mb-0">Mock interviews, HR rounds, and technical Q&amp;A sessions to make you job-ready.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="fbt-feature-card" style="--card-accent:#16A34A;">
+                        <div class="fbt-feature-icon" style="background:#DCFCE7; color:#16A34A;"><i class="bi bi-building-up fs-4"></i></div>
+                        <h5 class="fw-bold mt-3 mb-2">Placement Assistance</h5>
+                        <p class="text-muted small mb-0">Resume building workshops, job referrals, and connect with our hiring network. (No job guarantee.)</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="fbt-feature-card" style="--card-accent:#2563EB;">
+                        <div class="fbt-feature-icon" style="background:#EFF6FF; color:#2563EB;"><i class="bi bi-patch-question-fill fs-4"></i></div>
+                        <h5 class="fw-bold mt-3 mb-2">Doubt Clearing</h5>
+                        <p class="text-muted small mb-0">Dedicated doubt-clearing sessions so no concept is left behind before you move on.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="fbt-feature-card" style="--card-accent:#06B6D4;">
+                        <div class="fbt-feature-icon" style="background:#ECFEFF; color:#06B6D4;"><i class="bi bi-compass-fill fs-4"></i></div>
+                        <h5 class="fw-bold mt-3 mb-2">Career Guidance</h5>
+                        <p class="text-muted small mb-0">1-on-1 counselling sessions to help you navigate the right tech career path.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================
+     POPULAR COURSES
+     ======================================== -->
+    <section class="section-padding bg-white" id="courses">
+        <div class="container">
+            <div class="text-center mb-5">
+                <span class="fbt-section-badge" style="background:#FEF9C3; color:#92400E;">★ Popular Courses</span>
+                <h2 class="fw-bold mt-3" style="color:#0B1020; font-size:clamp(1.8rem,3vw,2.4rem);">Master In-Demand Technologies</h2>
+                <p class="text-muted mx-auto mt-2" style="max-width:560px;">Industry-aligned curriculums taught by experts, designed to make you job-ready.</p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6" th:each="course : ${featuredCourses}">
+                    <div class="fbt-course-card h-100 d-flex flex-column">
+                        <div class="fbt-course-thumb" th:classappend="'theme-' + ${course.themeKey}">
+                            <img th:if="${course.thumbnailUrl}" th:src="@{${course.thumbnailUrl}}" th:alt="${course.title}" class="fbt-course-thumb-img">
+                            <i th:unless="${course.thumbnailUrl}" class="bi fbt-course-icon"
+                               th:classappend="${course.themeKey == 'java'} ? 'bi-cup-hot-fill' : (${course.themeKey == 'python'} ? 'bi-filetype-py' : (${course.themeKey == 'aws'} ? 'bi-cloud-fill' : (${course.themeKey == 'ai'} ? 'bi-robot' : 'bi-code-slash')))"></i>
+                            <span class="fbt-course-level" th:text="${#strings.capitalize(#strings.toLowerCase(course.level.name()))}">Beginner</span>
+                        </div>
+                        <div class="fbt-course-body flex-grow-1">
+                            <h4 class="fw-bold mb-2" th:text="${course.title}">Course</h4>
+                            <p class="text-muted small mb-3" th:text="${course.shortDescription}">Description</p>
+                            <div class="fbt-course-meta">
+                                <span><i class="bi bi-clock text-primary"></i> <span th:text="${course.durationLabel}">Duration</span></span>
+                                <span><i class="bi bi-bar-chart text-warning"></i> <span th:text="${#strings.capitalize(#strings.toLowerCase(course.level.name()))}">Level</span></span>
+                                <span><i class="bi bi-camera-video text-success"></i> <span th:text="${#strings.capitalize(#strings.toLowerCase(course.trainingMode.name()))}">Mode</span></span>
+                            </div>
+                            <div class="fbt-course-fee">
+                                <i class="bi bi-tag-fill text-primary me-1"></i>
+                                <th:block th:if="${course.feeConfigured}">
+                                    <span th:if="${course.discountConfigured}">
+                                        Fee: <strong th:text="${course.formattedDiscountFee}">Discount</strong>
+                                        <span class="text-muted text-decoration-line-through ms-1" th:text="${course.formattedFee}">Fee</span>
+                                    </span>
+                                    <span th:unless="${course.discountConfigured}">
+                                        Fee: <strong th:text="${course.formattedFee}">Fee</strong>
+                                    </span>
+                                </th:block>
+                                <strong th:unless="${course.feeConfigured}">Fee on request</strong>
+                            </div>
+                        </div>
+                        <div class="fbt-course-footer">
+                            <a th:href="@{/courses/{slug}(slug=${course.slug})}" class="btn-fbt-outline w-50 text-center">View Details</a>
+                            <a th:href="@{/courses/{slug}(slug=${course.slug})}" class="btn-fbt-primary w-50 text-center">Enroll Now</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- View All CTA Card -->
+                <div class="col-lg-4 col-md-6 d-flex align-items-stretch">
+                    <div class="fbt-cta-course-card w-100 d-flex flex-column align-items-center justify-content-center text-center p-5">
+                        <div class="mb-4" style="width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;">
+                            <i class="bi bi-grid-3x3-gap-fill text-white fs-2"></i>
+                        </div>
+                        <h5 class="fw-bold text-white mb-2">Browse the Full Catalog</h5>
+                        <p style="color:rgba(255,255,255,0.6); font-size:0.9rem;">Search, filter by category or skill level, and open any published course for details.</p>
+                        <a th:href="@{/courses}" class="btn-hero-cta-primary mt-3">View All Courses <i class="bi bi-arrow-right ms-1"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================
+     LEARNING PROCESS
+     ======================================== -->
+    <section class="section-padding" style="background: linear-gradient(160deg,#0B1020 0%,#0d1a40 100%);">
+        <div class="container">
+            <div class="text-center mb-5">
+                <span class="fbt-section-badge" style="background:rgba(6,182,212,0.15); color:#06B6D4;">⟳ The Journey</span>
+                <h2 class="fw-bold text-white mt-3" style="font-size:clamp(1.8rem,3vw,2.4rem);">Our Learning Process</h2>
+                <p style="color:rgba(255,255,255,0.55); max-width:540px; margin:0 auto;">A structured roadmap from enrollment to becoming an industry-ready professional.</p>
+            </div>
+
+            <div class="fbt-process-row">
+                <div class="fbt-process-step">
+                    <div class="fbt-step-circle" style="background:linear-gradient(135deg,#2563EB,#7C3AED);">
+                        <i class="bi bi-book-fill text-white fs-4"></i>
+                    </div>
+                    <div class="fbt-step-number">01</div>
+                    <h6 class="text-white fw-bold mt-3 mb-1">Choose Your Course</h6>
+                    <p style="color:rgba(255,255,255,0.5); font-size:0.82rem;">Pick the right tech path that aligns with your goals.</p>
+                </div>
+                <div class="fbt-process-connector"></div>
+                <div class="fbt-process-step">
+                    <div class="fbt-step-circle" style="background:linear-gradient(135deg,#7C3AED,#06B6D4);">
+                        <i class="bi bi-person-video3 text-white fs-4"></i>
+                    </div>
+                    <div class="fbt-step-number">02</div>
+                    <h6 class="text-white fw-bold mt-3 mb-1">Learn from Trainers</h6>
+                    <p style="color:rgba(255,255,255,0.5); font-size:0.82rem;">Live classes with expert industry professionals.</p>
+                </div>
+                <div class="fbt-process-connector"></div>
+                <div class="fbt-process-step">
+                    <div class="fbt-step-circle" style="background:linear-gradient(135deg,#06B6D4,#FACC15);">
+                        <i class="bi bi-keyboard text-white fs-4"></i>
+                    </div>
+                    <div class="fbt-step-number">03</div>
+                    <h6 class="text-white fw-bold mt-3 mb-1">Practice Coding</h6>
+                    <p style="color:rgba(255,255,255,0.5); font-size:0.82rem;">Daily challenges to strengthen problem-solving skills.</p>
+                </div>
+                <div class="fbt-process-connector"></div>
+                <div class="fbt-process-step">
+                    <div class="fbt-step-circle" style="background:linear-gradient(135deg,#FACC15,#F472B6);">
+                        <i class="bi bi-tools text-white fs-4"></i>
+                    </div>
+                    <div class="fbt-step-number">04</div>
+                    <h6 class="text-white fw-bold mt-3 mb-1">Build Projects</h6>
+                    <p style="color:rgba(255,255,255,0.5); font-size:0.82rem;">Create portfolio projects with real-world scenarios.</p>
+                </div>
+                <div class="fbt-process-connector"></div>
+                <div class="fbt-process-step">
+                    <div class="fbt-step-circle" style="background:linear-gradient(135deg,#F472B6,#7C3AED);">
+                        <i class="bi bi-person-check text-white fs-4"></i>
+                    </div>
+                    <div class="fbt-step-number">05</div>
+                    <h6 class="text-white fw-bold mt-3 mb-1">Interview Prep</h6>
+                    <p style="color:rgba(255,255,255,0.5); font-size:0.82rem;">Mock interviews and HR rounds before job applications.</p>
+                </div>
+                <div class="fbt-process-connector"></div>
+                <div class="fbt-process-step">
+                    <div class="fbt-step-circle" style="background:linear-gradient(135deg,#7C3AED,#2563EB);">
+                        <i class="bi bi-briefcase-fill text-white fs-4"></i>
+                    </div>
+                    <div class="fbt-step-number">06</div>
+                    <h6 class="text-white fw-bold mt-3 mb-1">Career Guidance</h6>
+                    <p style="color:rgba(255,255,255,0.5); font-size:0.82rem;">1-on-1 counseling to launch your tech career.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================
+     UPCOMING BATCHES
+     ======================================== -->
+    <section class="section-padding bg-light" id="batches">
+        <div class="container">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-5">
+                <div>
+                    <span class="fbt-section-badge" style="background:#EFF6FF; color:#2563EB;">📅 Schedule</span>
+                    <h2 class="fw-bold mt-3" style="color:#0B1020;">Upcoming Batches</h2>
+                    <p class="text-muted">Register early to secure your seat. Limited seats per batch for personalised attention.</p>
+                </div>
+                <a th:href="@{/batches}" class="btn-fbt-outline mt-3 mt-md-0">View Full Schedule</a>
+            </div>
+
+            <div class="table-responsive rounded-3 shadow-sm border bg-white p-3">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr style="background:#F8FAFF;">
+                            <th class="text-uppercase" style="font-size:0.75rem; letter-spacing:0.05em; color:#6B7280;">Course</th>
+                            <th class="text-uppercase" style="font-size:0.75rem; letter-spacing:0.05em; color:#6B7280;">Trainer</th>
+                            <th class="text-uppercase" style="font-size:0.75rem; letter-spacing:0.05em; color:#6B7280;">Start Date</th>
+                            <th class="text-uppercase" style="font-size:0.75rem; letter-spacing:0.05em; color:#6B7280;">Time</th>
+                            <th class="text-uppercase" style="font-size:0.75rem; letter-spacing:0.05em; color:#6B7280;">Mode</th>
+                            <th class="text-uppercase" style="font-size:0.75rem; letter-spacing:0.05em; color:#6B7280;">Seats</th>
+                            <th class="text-uppercase" style="font-size:0.75rem; letter-spacing:0.05em; color:#6B7280;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="b : ${batches}">
+                            <td><span class="fw-bold" style="color:#0B1020;"
+                                      th:text="${b.courseTitle}">Course</span></td>
+                            <td><span class="text-muted small" th:text="${b.trainerName != null ? b.trainerName : 'To be assigned'}">Trainer</span></td>
+                            <td><span class="text-muted small"
+                                      th:text="${b.startDate != null ? #temporals.format(b.startDate, 'MMM d, yyyy') : 'TBA'}">Date</span></td>
+                            <td><span class="text-muted small"
+                                      th:text="${b.startTime != null ? #temporals.format(b.startTime, 'hh:mm a') + ' – ' + (b.endTime != null ? #temporals.format(b.endTime, 'hh:mm a') : '') : 'TBA'}">Time</span></td>
+                            <td><span class="fbt-badge-mode"
+                                      th:classappend="${b.mode != null and b.mode.name() == 'OFFLINE'} ? 'offline' : (${b.mode != null and b.mode.name() == 'BOTH'} ? 'both' : 'online')"
+                                      th:text="${b.mode != null ? #strings.replace(#strings.toLowerCase(b.mode), '_', ' ') : 'flexible'}">mode</span></td>
+                            <td>
+                                <span th:if="${b.maxSeats != null and b.seatsAvailable <= 0}" class="text-danger fw-semibold small"><i class="bi bi-x-circle me-1"></i>Full</span>
+                                <span th:unless="${b.maxSeats != null and b.seatsAvailable <= 0}" class="text-success fw-semibold small"><i class="bi bi-check-circle me-1"></i><span th:text="${b.maxSeats != null ? b.seatsAvailable + ' seats left' : 'Open'}">seats</span></span>
+                            </td>
+                            <td><a th:href="@{/courses/{slug}(slug=${b.courseSlug})}" class="btn-fbt-primary py-1 px-3" style="font-size:0.8rem;">Enroll</a></td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(batches)}">
+                            <td colspan="7" class="text-center text-muted py-4">
+                                <i class="bi bi-calendar-x me-1"></i>No batches are open right now —
+                                <a th:href="@{/contact}" class="text-decoration-underline">contact us</a> to join the waitlist.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================
+     TESTIMONIALS
+     ======================================== -->
+    <section class="section-padding bg-white" id="testimonials">
+        <div class="container">
+            <div class="text-center mb-5">
+                <span class="fbt-section-badge" style="background:#F5F3FF; color:#7C3AED;">💬 Student Feedback</span>
+                <h2 class="fw-bold mt-3" style="color:#0B1020; font-size:clamp(1.8rem,3vw,2.4rem);">What Our Students Say</h2>
+                <p class="text-muted mx-auto mt-2" style="max-width:520px;">Feedback published by the Future Bound Tech team.</p>
+            </div>
+
+            <div class="row g-4" th:if="${!testimonials.isEmpty()}">
+                <div class="col-lg-4 col-md-6" th:each="t : ${testimonials}">
+                    <div class="fbt-testimonial-card h-100">
+                        <div class="fbt-testimonial-quote"><i class="bi bi-quote"></i></div>
+                        <div class="text-warning mb-3">
+                            <i class="bi" th:each="i : ${#numbers.sequence(1, 5)}"
+                               th:classappend="${i <= (t.rating ?: 0)} ? 'bi-star-fill' : 'bi-star text-secondary'"></i>
+                        </div>
+                        <p class="text-muted fst-italic mb-4" th:text="'“' + ${t.comment} + '”'">“Quote”</p>
+                        <div class="d-flex align-items-center border-top pt-3">
+                            <div class="fbt-avatar" style="background:linear-gradient(135deg,#2563EB,#7C3AED);"
+                                 th:text="${t.authorName != null} ? ${#strings.arraySplit(t.authorName, ' ')[0]} : '?'">A</div>
+                            <div class="ms-3">
+                                <h6 class="mb-0 fw-bold" th:text="${t.authorName != null ? t.authorName : 'Anonymous'}">Student</h6>
+                                <small class="text-muted">
+                                    <span th:if="${t.contextLabel != null}" th:text="${t.contextLabel}">Context</span>
+                                    <span class="badge text-bg-light ms-1" th:if="${t.demo}">Demo</span>
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center py-4" th:if="${testimonials.isEmpty()}">
+                <i class="bi bi-star" style="font-size:2.5rem; color:var(--gray-300);"></i>
+                <p class="mt-3 text-muted">Student testimonials are coming soon.</p>
+                <a th:href="@{/testimonials}" class="btn-fbt-outline mt-2">See All Testimonials</a>
+            </div>
+
+            <div class="text-center mt-5" th:if="${!testimonials.isEmpty()}">
+                <a th:href="@{/testimonials}" class="btn-fbt-outline">Read More Reviews <i class="bi bi-arrow-right ms-1"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================
+     FAQ
+     ======================================== -->
+    <section class="section-padding bg-light" id="faq">
+        <div class="container">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-5">
+                    <span class="fbt-section-badge" style="background:#FEF9C3; color:#92400E;">❓ Questions?</span>
+                    <h2 class="fw-bold mt-3" style="color:#0B1020;">Frequently Asked Questions</h2>
+                    <p class="text-muted mt-2 mb-4">Find answers to common questions about our courses, enrollment, timings, and learning process.</p>
+                    <a th:href="@{/faq}" class="btn-fbt-outline">View All FAQs <i class="bi bi-arrow-right ms-1"></i></a>
+                </div>
+                <div class="col-lg-7">
+                    <div class="accordion fbt-accordion" id="faqAccordion">
+                        <div class="accordion-item fbt-accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed fbt-accordion-btn" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                    Do I need prior coding experience?
+                                </button>
+                            </h2>
+                            <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body fbt-accordion-body">
+                                    No prior experience needed. Our courses start from the basics and progressively advance. Anyone with dedication can join and succeed.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item fbt-accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed fbt-accordion-btn" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                    Do you provide placement assistance?
+                                </button>
+                            </h2>
+                            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body fbt-accordion-body">
+                                    Yes — we provide resume building, mock interviews, and share profiles with our hiring network. However, job placement is not guaranteed.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item fbt-accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed fbt-accordion-btn" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                    Can I attend offline classes?
+                                </button>
+                            </h2>
+                            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body fbt-accordion-body">
+                                    Yes! We offer both live online interactive sessions and in-person offline classroom training. Choose the mode that suits you best.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item fbt-accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed fbt-accordion-btn" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                                    Are there doubt-clearing sessions?
+                                </button>
+                            </h2>
+                            <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body fbt-accordion-body">
+                                    Absolutely. We hold dedicated doubt-clearing sessions to ensure no concept is left unclear. You can also reach out to trainers between classes.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item fbt-accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed fbt-accordion-btn" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
+                                    How do I enroll in a course?
+                                </button>
+                            </h2>
+                            <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body fbt-accordion-body">
+                                    Click "Enroll Now" on any course card or contact us directly on WhatsApp / phone. Our team will guide you through registration and batch selection.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================
+     CONTACT SUMMARY
+     ======================================== -->
+    <section class="section-padding" style="background:linear-gradient(135deg,#0B1020,#1a2550);">
+        <div class="container text-center">
+            <span class="fbt-section-badge" style="background:rgba(6,182,212,0.15); color:#06B6D4;">📞 Get in Touch</span>
+            <h2 class="fw-bold text-white mt-3 mb-2">Still Have Questions? Reach Out!</h2>
+            <p style="color:rgba(255,255,255,0.55); max-width:480px; margin:0 auto 2.5rem;">Our team is happy to help you choose the right course and batch that fits your schedule.</p>
+
+            <div class="d-flex flex-wrap justify-content-center gap-4 mb-4">
+                <div class="fbt-contact-chip">
+                    <i class="bi bi-telephone-fill" style="color:#2563EB; font-size:1.4rem;"></i>
+                    <div class="text-start">
+                        <div style="color:rgba(255,255,255,0.5); font-size:0.75rem;">Call us at</div>
+                        <div class="fw-bold text-white">8978866005</div>
+                        <div class="fw-bold text-white">7893702635</div>
+                    </div>
+                </div>
+                <div class="fbt-contact-chip">
+                    <i class="bi bi-envelope-fill" style="color:#06B6D4; font-size:1.4rem;"></i>
+                    <div class="text-start">
+                        <div style="color:rgba(255,255,255,0.5); font-size:0.75rem;">Email us at</div>
+                        <div class="fw-bold text-white" th:text="${instEmail != null ? instEmail : 'hello@futureboundtech.com'}">hello@futureboundtech.com</div>
+                    </div>
+                </div>
+                <div class="fbt-contact-chip">
+                    <i class="bi bi-geo-alt-fill" style="color:#F472B6; font-size:1.4rem;"></i>
+                    <div class="text-start">
+                        <div style="color:rgba(255,255,255,0.5); font-size:0.75rem;">Location</div>
+                        <div class="fw-bold text-white" th:text="${instLocation != null ? instLocation : 'Contact us for address'}">Contact us for address</div>
+                    </div>
+                </div>
+            </div>
+
+            <a th:href="@{/contact}" class="btn-hero-cta-primary">
+                <i class="bi bi-chat-dots me-2"></i> Send Us a Message
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+
+    <!-- Back to Top -->
+    <button id="backToTop" class="back-to-top" aria-label="Back to top">
+        <i class="bi bi-chevron-up"></i>
+    </button>
+
+    <!-- Scripts -->
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+
+    <script>
+        // Back to top button
+        const backToTop = document.getElementById('backToTop');
+        window.addEventListener('scroll', () => {
+            backToTop.classList.toggle('visible', window.scrollY > 400);
+        });
+        backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+        // Scroll-based navbar styling
+        const navbar = document.querySelector('.navbar-fbt');
+        window.addEventListener('scroll', () => {
+            navbar?.classList.toggle('scrolled', window.scrollY > 50);
+        });
+
+        // Intersection Observer - fade-in animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('fbt-visible'); } });
+        }, { threshold: 0.12 });
+        document.querySelectorAll('.fbt-feature-card, .fbt-course-card, .fbt-testimonial-card, .fbt-process-step').forEach(el => observer.observe(el));
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/admin-sidebar :: adminSidebar('enrollments')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <div>
+                            <h1 class="h3">Enrollments</h1>
+                            <p class="text-muted mb-0" th:text="${#lists.size(enrollments)} + ' enrollment(s)'">0</p>
+                        </div>
+                    </div>
+
+                    <form method="get" th:action="@{/admin/enrollments}" class="admin-toolbar">
+                        <input type="text" name="q" th:value="${q}" class="form-control" style="max-width:260px" placeholder="Search student, course">
+                        <select name="status" class="form-select" style="max-width:180px">
+                            <option value="">All statuses</option>
+                            <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}" th:selected="${s == selectedStatus}"></option>
+                        </select>
+                        <button type="submit" class="btn btn-outline-secondary"><i class="bi bi-funnel"></i> Filter</button>
+                        <a th:href="@{/admin/enrollments}" class="btn btn-link">Reset</a>
+                    </form>
+
+                    <div class="card border-0 shadow-sm">
+                        <div class="table-responsive">
+                            <table class="table data-table mb-0 align-middle">
+                                <thead class="table-light">
+                                    <tr><th>Student</th><th>Course</th><th>Batch</th><th>Mode</th><th>Amount</th><th>Payment</th><th>Progress</th><th>Enrolled</th><th>Status</th><th class="text-end">Change status</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="e : ${enrollments}">
+                                        <td>
+                                            <div class="fw-semibold" th:text="${e.studentName}">Student</div>
+                                            <div class="small text-muted" th:text="${e.studentEmail}">email</div>
+                                        </td>
+                                        <td th:text="${e.courseTitle}">Course</td>
+                                        <td th:text="${e.batchName} ?: '—'">Batch</td>
+                                        <td><span class="badge text-bg-light text-dark" th:text="${e.trainingModeLabel} ?: '—'">Mode</span></td>
+                                        <td th:text="${e.amountLabel} ?: '—'">₹0</td>
+                                        <td>
+                                            <span class="badge"
+                                                  th:classappend="${e.paymentStatus != null and e.paymentStatus.name() == 'SUCCESS'} ? 'text-bg-success'
+                                                                  : (${e.paymentStatus != null and (e.paymentStatus.name() == 'FAILED' or e.paymentStatus.name() == 'CANCELLED')} ? 'text-bg-danger' : 'text-bg-warning')"
+                                                  th:text="${e.paymentStatusLabel} ?: '—'">Payment</span>
+                                        </td>
+                                        <td style="min-width:110px">
+                                            <div class="progress" style="height:6px">
+                                                <div class="progress-bar bg-success" th:style="'width:' + ${e.completionPercent} + '%'"></div>
+                                            </div>
+                                            <small class="text-muted" th:text="${e.completionPercent} + '%'">0%</small>
+                                        </td>
+                                        <td th:text="${e.enrolledAt != null} ? ${#temporals.format(e.enrolledAt, 'd MMM yyyy')} : '—'">date</td>
+                                        <td>
+                                            <span class="badge"
+                                                  th:classappend="${e.status.name() == 'ACTIVE'} ? 'text-bg-primary'
+                                                                  : (${e.status.name() == 'COMPLETED'} ? 'text-bg-success'
+                                                                  : (${e.status.name() == 'PENDING_PAYMENT'} ? 'text-bg-warning' : 'text-bg-secondary'))"
+                                                  th:text="${e.statusLabel} ?: ${e.status}">Status</span>
+                                        </td>
+                                        <td class="text-end">
+                                            <form th:action="@{/admin/enrollments/{id}/status(id=${e.id})}" method="post" class="d-flex gap-1 justify-content-end">
+                                                <select name="status" class="form-select form-select-sm" style="max-width:150px">
+                                                    <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}" th:selected="${s.name() == e.status.name()}"></option>
+                                                </select>
+                                                <button type="submit" class="btn btn-sm btn-outline-primary">Update</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(enrollments)}">
+                                        <td colspan="10"><div class="empty-state"><i class="bi bi-ui-checks"></i>No enrollments match your filters.</div></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

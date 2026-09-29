@@ -1,0 +1,36 @@
+target/
+!.mvn/wrapper/maven-wrapper.jar
+log/
+logs/
+*.log
+
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# VS Code
+.vscode/
+
+# MacOS
+.DS_Store
+
+# Environment Variables / User Secrets
+.env
+application-local.properties
+
+# Local run scripts may reference secrets; keep them out of version control
+start-trainer.ps1
+probe*.ps1
+hq*.ps1
+*.err.log
+
+# H2 local database files
+data/
+
+# Uploads
+uploads/
+src/main/resources/static/uploads/*
+!src/main/resources/static/uploads/.gitkeep

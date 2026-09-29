@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/admin-sidebar :: adminSidebar('payments')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <div>
+                            <h1 class="h3">Payments</h1>
+                            <p class="text-muted mb-0" th:text="${#lists.size(payments)} + ' transaction(s)'">0</p>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-6 col-md-3">
+                            <div class="card stat-card shadow-sm"><div class="card-body">
+                                <div class="stat-value fs-5" th:text="${summary.get('collected')}">₹0</div>
+                                <div class="stat-label">Collected</div>
+                            </div></div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="card stat-card shadow-sm"><div class="card-body">
+                                <div class="stat-value" th:text="${summary.get('success')}">0</div>
+                                <div class="stat-label">Successful</div>
+                            </div></div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="card stat-card shadow-sm"><div class="card-body">
+                                <div class="stat-value" th:text="${summary.get('pending')}">0</div>
+                                <div class="stat-label">Pending</div>
+                            </div></div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="card stat-card shadow-sm"><div class="card-body">
+                                <div class="stat-value" th:text="${summary.get('failed')}">0</div>
+                                <div class="stat-label">Failed</div>
+                            </div></div>
+                        </div>
+                    </div>
+
+                    <form method="get" th:action="@{/admin/payments}" class="admin-toolbar">
+                        <select name="status" class="form-select" style="max-width:200px">
+                            <option value="">All statuses</option>
+                            <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}" th:selected="${s == selectedStatus}"></option>
+                        </select>
+                        <button type="submit" class="btn btn-outline-secondary"><i class="bi bi-funnel"></i> Filter</button>
+                        <a th:href="@{/admin/payments}" class="btn btn-link">Reset</a>
+                    </form>
+
+                    <div class="card border-0 shadow-sm">
+                        <div class="table-responsive">
+                            <table class="table data-table mb-0 align-middle">
+                                <thead class="table-light">
+                                    <tr><th>Receipt</th><th>Student</th><th>Course</th><th>Amount</th><th>Method</th><th>Status</th><th>Date</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="p : ${payments}">
+                                        <td class="small" th:text="${p.receiptNumber} ?: (${p.razorpayOrderId} ?: '—')">receipt</td>
+                                        <td>
+                                            <div th:text="${p.studentName}">Student</div>
+                                            <div class="small text-muted" th:text="${p.studentEmail}">email</div>
+                                        </td>
+                                        <td th:text="${p.courseTitle}">Course</td>
+                                        <td class="fw-semibold" th:text="${p.formattedAmount} ?: ${p.amount}">₹0</td>
+                                        <td th:text="${p.paymentMethod} ?: '—'">method</td>
+                                        <td>
+                                            <span class="badge"
+                                                  th:classappend="${p.status.name() == 'SUCCESS'} ? 'text-bg-success' : (${p.status.name() == 'FAILED'} ? 'text-bg-danger' : (${p.status.name() == 'REFUNDED'} ? 'text-bg-secondary' : 'text-bg-warning'))"
+                                                  th:text="${p.statusLabel} ?: ${p.status}">Status</span>
+                                        </td>
+                                        <td class="small" th:text="${p.paidAt != null ? #temporals.format(p.paidAt, 'd MMM yyyy') : (p.createdAt != null ? #temporals.format(p.createdAt, 'd MMM yyyy') : '-')}">date</td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(payments)}">
+                                        <td colspan="7"><div class="empty-state"><i class="bi bi-credit-card"></i>No payments found.</div></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

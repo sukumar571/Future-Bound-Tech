@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <!-- Logo for light backgrounds -->
+  <!-- Background rounded square (Deep Navy) -->
+  <rect x="2" y="2" width="44" height="44" rx="10" ry="10" fill="#0B1020" />
+  
+  <!-- Letter F -->
+  <path d="M14 12 L14 36 L19 36 L19 27 L28 27 L28 22.5 L19 22.5 L19 16.5 L30 16.5 L30 12 Z" fill="#FFFFFF" />
+  
+  <!-- Forward Arrow (Accent Purple) -->
+  <path d="M26 30 L34 30 L34 26 L40 33 L34 40 L34 36 L26 36 Z" fill="#7C3AED" />
+  
+  <!-- Circuit accents -->
+  <circle cx="10" cy="8" r="1.5" fill="#06B6D4" />
+  <circle cx="38" cy="8" r="1.5" fill="#FACC15" />
+  <circle cx="10" cy="42" r="1.5" fill="#F472B6" />
+  
+  <line x1="10" y1="9.5" x2="10" y2="12" stroke="#FFFFFF" stroke-width="0.8" opacity="0.6"/>
+  <line x1="38" y1="9.5" x2="38" y2="12" stroke="#FFFFFF" stroke-width="0.8" opacity="0.6"/>
+  <line x1="11.5" y1="8" x2="14" y2="8" stroke="#FFFFFF" stroke-width="0.8" opacity="0.6"/>
+</svg>

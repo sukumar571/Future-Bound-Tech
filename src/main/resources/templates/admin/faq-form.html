@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/admin-sidebar :: adminSidebar('faqs')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <h1 class="h3" th:text="${editing} ? 'Edit FAQ' : 'New FAQ'">FAQ</h1>
+                        <a th:href="@{/admin/faqs}" class="btn btn-link"><i class="bi bi-arrow-left"></i> Back to FAQs</a>
+                    </div>
+
+                    <div class="card form-card shadow-sm">
+                        <div class="card-body p-4">
+                            <form th:action="${formAction}" th:object="${faqDto}" method="post">
+                                <div class="row g-3">
+                                    <div class="col-md-12">
+                                        <label class="form-label">Question</label>
+                                        <input type="text" class="form-control" th:field="*{question}" th:classappend="${#fields.hasErrors('question')} ? 'is-invalid'">
+                                        <div class="invalid-feedback" th:errors="*{question}"></div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label class="form-label">Answer</label>
+                                        <textarea class="form-control" rows="5" th:field="*{answer}" th:classappend="${#fields.hasErrors('answer')} ? 'is-invalid'"></textarea>
+                                        <div class="invalid-feedback" th:errors="*{answer}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Category <span class="text-muted small">(optional)</span></label>
+                                        <input type="text" class="form-control" th:field="*{category}" placeholder="e.g. Admissions, Courses, Placements"
+                                               th:classappend="${#fields.hasErrors('category')} ? 'is-invalid'">
+                                        <div class="invalid-feedback" th:errors="*{category}"></div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Sort order</label>
+                                        <input type="number" class="form-control" th:field="*{sortOrder}">
+                                        <div class="form-text">Lower numbers appear first.</div>
+                                    </div>
+                                    <div class="col-md-3 d-flex align-items-center">
+                                        <div class="form-check mt-4">
+                                            <input type="checkbox" class="form-check-input" id="published" th:field="*{published}">
+                                            <label class="form-check-label" for="published">Published on site</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <button type="submit" class="btn btn-primary"><i class="bi bi-check2 me-1"></i> Save</button>
+                                    <a th:href="@{/admin/faqs}" class="btn btn-outline-secondary">Cancel</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

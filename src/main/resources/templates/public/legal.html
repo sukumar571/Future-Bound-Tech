@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+
+    <section class="page-header">
+        <div class="container">
+            <div class="page-header-content">
+                <h1 class="page-header-title" th:text="${legalTitle} ?: ${pageTitle}">Legal</h1>
+                <p class="page-header-subtitle">Last updated: policy published by the institute.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-padding">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-9">
+                    <div class="card shadow-sm">
+                        <div class="card-body p-4 p-lg-5">
+                            <div th:if="${legalContent != null and !#strings.isEmpty(legalContent)}"
+                                 style="white-space: pre-wrap; line-height: 1.7; color: var(--gray-700);"
+                                 th:text="${legalContent}">Policy content.</div>
+                            <div th:if="${legalContent == null or #strings.isEmpty(legalContent)}" class="text-center py-5">
+                                <i class="bi bi-file-earmark-text" style="font-size: 3rem; color: var(--gray-300); display:block; margin-bottom: 1rem;"></i>
+                                <h5 style="color: var(--gray-700);">This page is being prepared</h5>
+                                <p style="color: var(--gray-500);">The institute has not published this content yet. Please check back soon or contact us.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center mt-4">
+                        <a th:href="@{/}" class="btn-outline-fbt">Back to Home</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+
+    <section class="student-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/student-sidebar :: studentSidebar('profile')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+                    <h1 class="h4 mb-4"><i class="bi bi-person-circle me-2 text-primary"></i>My Profile</h1>
+
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-center gap-3 mb-4">
+                                <img th:if="${profile.avatarUrl}" th:src="${profile.avatarUrl}" alt="Profile photo"
+                                     class="border" style="width:80px;height:80px;border-radius:9999px;object-fit:cover;">
+                                <div th:unless="${profile.avatarUrl}" class="avatar-circle"
+                                     style="width:80px;height:80px;border-radius:9999px;background:linear-gradient(135deg,var(--royal-blue),var(--electric-purple));color:#fff;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700;"
+                                     th:text="${profile.initials}">ST</div>
+                                <div>
+                                    <h2 class="h5 mb-0" th:text="${profile.fullName}">Student Name</h2>
+                                    <p class="text-muted mb-0" th:text="${profile.email}">email</p>
+                                </div>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="border rounded p-3 h-100">
+                                        <div class="small text-muted"><i class="bi bi-person me-1"></i> Full name</div>
+                                        <div class="fw-semibold" th:text="${profile.fullName}">—</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="border rounded p-3 h-100">
+                                        <div class="small text-muted"><i class="bi bi-envelope me-1"></i> Email</div>
+                                        <div class="fw-semibold" th:text="${profile.email}">—</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="border rounded p-3 h-100">
+                                        <div class="small text-muted"><i class="bi bi-telephone me-1"></i> Phone</div>
+                                        <div class="fw-semibold" th:text="${profile.phone} ?: 'Not provided'">—</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="border rounded p-3 h-100">
+                                        <div class="small text-muted"><i class="bi bi-mortarboard me-1"></i> Education</div>
+                                        <div class="fw-semibold" th:text="${profile.education} ?: 'Not provided'">—</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="border rounded p-3 h-100">
+                                        <div class="small text-muted"><i class="bi bi-calendar-check me-1"></i> Member since</div>
+                                        <div class="fw-semibold"
+                                             th:text="${profile.memberSince != null} ? ${#temporals.format(profile.memberSince, 'MMM d, yyyy')} : '—'">—</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="border rounded p-3 h-100">
+                                        <div class="small text-muted"><i class="bi bi-hash me-1"></i> Student ID</div>
+                                        <div class="fw-semibold" th:text="'FBT-' + ${profile.studentId}">—</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Edit profile -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-body p-4">
+                            <h2 class="h6 mb-3"><i class="bi bi-camera me-2 text-primary"></i>Edit profile</h2>
+                            <form th:action="@{/student/profile}" th:object="${profileForm}" method="post" enctype="multipart/form-data">
+                                <div class="row g-3 align-items-end">
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="photoFile">Profile photo</label>
+                                        <input type="file" id="photoFile" th:field="*{photoFile}" class="form-control"
+                                               accept="image/png,image/jpeg,image/webp,image/gif">
+                                        <div class="form-text">PNG, JPEG, WEBP or GIF up to 2 MB. Leave empty to keep the current photo.</div>
+                                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('photoFile')}" th:errors="*{photoFile}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="education">Education</label>
+                                        <input type="text" id="education" th:field="*{education}" class="form-control"
+                                               maxlength="200" placeholder="e.g. B.Tech Computer Science">
+                                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('education')}" th:errors="*{education}"></div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary mt-3"><i class="bi bi-check2 me-1"></i>Save changes</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Learning summary -->
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <h2 class="h6 mb-3"><i class="bi bi-graph-up-arrow me-2 text-primary"></i>Learning Summary</h2>
+                            <div class="row g-3 text-center">
+                                <div class="col-6 col-md-3">
+                                    <div class="border rounded p-3">
+                                        <div class="fs-4 fw-bold" th:text="${dashboard.enrolledCourses}">0</div>
+                                        <div class="small text-muted">Enrolled</div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="border rounded p-3">
+                                        <div class="fs-4 fw-bold" th:text="${dashboard.completedCourses}">0</div>
+                                        <div class="small text-muted">Completed</div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="border rounded p-3">
+                                        <div class="fs-4 fw-bold text-success" th:text="${dashboard.overallProgressPercent} + '%'">0%</div>
+                                        <div class="small text-muted">Progress</div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="border rounded p-3">
+                                        <div class="fs-4 fw-bold" th:text="${dashboard.certificatesCount}">0</div>
+                                        <div class="small text-muted">Certificates</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+
+</html>

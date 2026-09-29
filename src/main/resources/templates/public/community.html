@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+
+    <section class="page-header">
+        <div class="container">
+            <div class="page-header-content">
+                <h1 class="page-header-title">Community</h1>
+                <p class="page-header-subtitle">Announcements, resources, and ways to connect with Future Bound Tech.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-padding">
+        <div class="container">
+
+            <!-- Announcements -->
+            <h4 class="mb-3" style="font-weight: 700;"><i class="bi bi-megaphone me-2"></i>Announcements</h4>
+            <div th:if="${#lists.isEmpty(announcements)}" class="alert alert-light border" role="alert">
+                No announcements right now — check back soon.
+            </div>
+            <div class="row g-4 mb-5">
+                <div class="col-md-6" th:each="a : ${announcements}">
+                    <div class="card h-100 border-0 shadow-sm" style="border-radius: var(--radius-lg);">
+                        <div class="card-body p-4">
+                            <h6 class="mb-2" style="font-weight: 700;" th:text="${a.title}">Title</h6>
+                            <p class="mb-2" style="color: var(--gray-700);" th:text="${a.content}">Content</p>
+                            <small class="text-muted" th:if="${a.createdAt != null}"
+                                   th:text="${#temporals.format(a.createdAt, 'd MMM yyyy')}">Date</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Learning Resources -->
+            <h4 class="mb-3" style="font-weight: 700;"><i class="bi bi-book me-2"></i>Learning Resources</h4>
+            <div class="row g-4 mb-5">
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm" style="border-radius: var(--radius-lg);">
+                        <div class="card-body p-4 text-center">
+                            <i class="bi bi-journal-code" style="font-size: 2rem; color: var(--cyan);"></i>
+                            <h6 class="mt-2 mb-1" style="font-weight: 700;">Course Catalog</h6>
+                            <p class="small text-muted">Browse our full range of programs and syllabi.</p>
+                            <a th:href="@{/courses}" class="btn-fbt-outline">Explore</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm" style="border-radius: var(--radius-lg);">
+                        <div class="card-body p-4 text-center">
+                            <i class="bi bi-controller" style="font-size: 2rem; color: var(--coral-pink);"></i>
+                            <h6 class="mt-2 mb-1" style="font-weight: 700;">Practice</h6>
+                            <p class="small text-muted">Sharpen your skills with hands-on exercises.</p>
+                            <a th:href="@{/practice}" class="btn-fbt-outline">Practice</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm" style="border-radius: var(--radius-lg);">
+                        <div class="card-body p-4 text-center">
+                            <i class="bi bi-briefcase" style="font-size: 2rem; color: var(--vibrant-yellow);"></i>
+                            <h6 class="mt-2 mb-1" style="font-weight: 700;">Placements</h6>
+                            <p class="small text-muted">Preparation resources and opportunities.</p>
+                            <a th:href="@{/placements}" class="btn-fbt-outline">View</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Discussion & Support -->
+            <h4 class="mb-3" style="font-weight: 700;"><i class="bi bi-chat-heart me-2"></i>Discussion &amp; Support</h4>
+            <div class="row g-4 mb-5">
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm" style="border-radius: var(--radius-lg);">
+                        <div class="card-body p-4">
+                            <h6 style="font-weight: 700;"><i class="bi bi-question-circle me-2"></i>Frequently Asked Questions</h6>
+                            <p class="small text-muted">Quick answers about courses, admissions, and placements.</p>
+                            <a th:href="@{/faq}" class="btn-fbt-outline">Read FAQs</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm" style="border-radius: var(--radius-lg);">
+                        <div class="card-body p-4">
+                            <h6 style="font-weight: 700;"><i class="bi bi-headset me-2"></i>Talk to Us</h6>
+                            <p class="small text-muted">Have a question our team can answer directly? Reach out.</p>
+                            <a th:href="@{/contact}" class="btn-fbt-outline">Contact Us</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Popular Questions -->
+            <div th:unless="${#lists.isEmpty(faqs)}">
+                <h4 class="mb-3" style="font-weight: 700;"><i class="bi bi-patch-question me-2"></i>Popular Questions</h4>
+                <div class="accordion fbt-accordion" id="communityFaq">
+                    <div class="accordion-item fbt-accordion-item" th:each="faq, iter : ${faqs}" th:if="${iter.index < 5}">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button fbt-accordion-btn" type="button"
+                                    data-bs-toggle="collapse" th:attr="data-bs-target='#cf' + ${iter.index}"
+                                    th:classappend="${!iter.first} ? ' collapsed'">
+                                <span th:text="${faq.question}">Question</span>
+                            </button>
+                        </h2>
+                        <div th:id="'cf' + ${iter.index}" class="accordion-collapse collapse"
+                             th:classappend="${iter.first} ? ' show'" data-bs-parent="#communityFaq">
+                            <div class="accordion-body fbt-accordion-body" th:text="${faq.answer}">Answer</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <button id="backToTop" class="back-to-top" aria-label="Back to top"><i class="bi bi-chevron-up"></i></button>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+
+</html>

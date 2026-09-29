@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+
+    <!-- Hero -->
+    <section class="py-5" style="background: linear-gradient(135deg, #0B1020 0%, #131a3d 55%, #0B1020 100%); color:#fff;">
+        <div class="container py-4">
+            <div class="row justify-content-center text-center">
+                <div class="col-lg-8">
+                    <span class="badge rounded-pill px-3 py-2 mb-3" style="background:rgba(139,92,246,.18); color:#a78bfa; border:1px solid rgba(139,92,246,.45);">
+                        <i class="bi bi-controller me-1"></i> Practice Platform
+                    </span>
+                    <h1 class="display-5 fw-bold">Practice Like It's the Real Interview</h1>
+                    <p class="lead text-white-50">
+                        Topic-wise MCQs with instant explanations, a coding problem library,
+                        and full-length timed mock tests with auto-scoring — built into every student account.
+                    </p>
+                    <div class="d-flex gap-2 justify-content-center flex-wrap mt-4">
+                        <a th:href="@{/register}" class="btn btn-primary px-4">
+                            <i class="bi bi-person-plus me-2"></i> Create a Free Student Account
+                        </a>
+                        <a th:href="@{/login}" class="btn btn-outline-light px-4">
+                            <i class="bi bi-box-arrow-in-right me-2"></i> Sign In to Practice
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Live stats (counted from the published question bank) -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row g-3 text-center">
+                <div class="col-6 col-lg-3" th:each="entry : ${stats}">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body py-4">
+                            <div class="fs-2 text-primary mb-2">
+                                <i class="bi" th:switch="${entry.key}">
+                                    <i th:case="'mcqCount'" class="bi bi-list-checks"></i>
+                                    <i th:case="'codingCount'" class="bi bi-code-slash"></i>
+                                    <i th:case="'mockTestCount'" class="bi bi-stopwatch"></i>
+                                    <i th:case="'topicCount'" class="bi bi-collection"></i>
+                                </i>
+                            </div>
+                            <div class="display-6 fw-bold" th:text="${entry.value}">0</div>
+                            <div class="text-muted small text-uppercase" th:switch="${entry.key}">
+                                <span th:case="'mcqCount'">Practice MCQs</span>
+                                <span th:case="'codingCount'">Coding Problems</span>
+                                <span th:case="'mockTestCount'">Mock Tests</span>
+                                <span th:case="'topicCount'">Topics Covered</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Category explorer -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="text-center mb-4">
+                <h2 class="fw-bold">Question Categories</h2>
+                <p class="text-muted">Sign in with a student account to attempt any of these with instant feedback.</p>
+            </div>
+            <div class="row g-3">
+                <div class="col-6 col-sm-4 col-lg-3" th:each="c : ${categoryCounts}"
+                     th:with="label=${#strings.replace(#strings.toLowerCase(c.name), '_', ' ')}">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body text-center py-4">
+                            <div class="h4 fw-bold text-primary mb-0" th:text="${c.value}">0</div>
+                            <div class="text-capitalize small text-muted" th:text="${label}">category</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="py-5">
+        <div class="container">
+            <div class="text-center mb-4">
+                <h2 class="fw-bold">How Practice Works</h2>
+                <p class="text-muted">Three modes, one dashboard that tracks everything.</p>
+            </div>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="fs-3 text-primary mb-2"><i class="bi bi-lightning-charge"></i></div>
+                            <h3 class="h6">Instant-Feedback MCQs</h3>
+                            <p class="small text-muted mb-0">Answer filtered questions by category, difficulty or topic — every answer is checked immediately with an explanation.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="fs-3 text-primary mb-2"><i class="bi bi-braces"></i></div>
+                            <h3 class="h6">Coding Problem Library</h3>
+                            <p class="small text-muted mb-0">A study-only library of interview-style programming problems with constraints and examples to work through.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="fs-3 text-primary mb-2"><i class="bi bi-speedometer2"></i></div>
+                            <h3 class="h6">Timed Mock Tests</h3>
+                            <p class="small text-muted mb-0">Full-length tests auto-scored at submission, with a per-question review and your best score kept on file.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <a th:href="@{/register}" class="btn btn-primary px-4 me-2">
+                    <i class="bi bi-person-plus me-2"></i> Get Started — It's Free
+                </a>
+                <a th:href="@{/placements}" class="btn btn-outline-primary px-4">
+                    <i class="bi bi-briefcase me-2"></i> See Placement Preparation
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

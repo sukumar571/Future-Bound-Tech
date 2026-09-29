@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0B1020">
+    <title>Register — Future Bound Tech</title>
+
+    <link rel="icon" th:href="@{/images/logo.png}">
+
+    <!-- Google Fonts — Inter (body) + Plus Jakarta Sans (display) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5.3 + Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+    <!-- Design system -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body class="auth-shell">
+
+    <div class="auth-split">
+
+        <!-- Colorful showcase rail -->
+        <aside class="auth-showcase">
+            <div>
+                <a th:href="@{/home}" class="text-decoration-none d-inline-flex align-items-center gap-2 mb-4">
+                    <img th:src="@{/images/logo.png}" alt="Future Bound Tech" width="40" height="40">
+                    <span class="fw-bold text-white fs-5">Future Bound Tech</span>
+                </a>
+                <h2 class="auth-showcase-title">Start your tech career today.</h2>
+                <p class="mt-3 mb-0" style="color: rgba(255,255,255,.68); max-width: 32rem;">
+                    Create a free student account to browse courses, enroll, follow your syllabus and track progress in
+                    one colorful dashboard.
+                </p>
+            </div>
+
+            <ul class="auth-showcase-list">
+                <li><span class="tick"><i class="bi bi-journal-bookmark-fill"></i></span> Enroll in full-stack tracks</li>
+                <li><span class="tick"><i class="bi bi-patch-question-fill"></i></span> Practice with quizzes and tests</li>
+                <li><span class="tick"><i class="bi bi-award-fill"></i></span> Earn verifiable certificates</li>
+            </ul>
+
+            <div class="auth-showcase-stats">
+                <div><strong>Free</strong><span>To register</span></div>
+                <div><strong>1 click</strong><span>To enroll</span></div>
+                <div><strong>Secure</strong><span>Encrypted login</span></div>
+            </div>
+        </aside>
+
+        <!-- Form pane -->
+        <main class="auth-pane">
+            <div class="auth-panel">
+                <div class="auth-logo"><i class="bi bi-layers-fill"></i></div>
+                <h1 class="auth-title">Create an account</h1>
+                <p class="auth-subtitle">Join Future Bound Tech as a student today.</p>
+
+                <!-- Global error -->
+                <div th:if="${error}" class="alert alert-danger" role="alert">
+                    <i class="bi bi-exclamation-octagon-fill me-1"></i> <span th:text="${error}"></span>
+                </div>
+
+                <form th:action="@{/register}" th:object="${registrationDto}" method="POST">
+                    <div class="row g-3 mb-3">
+                        <div class="col-sm-6">
+                            <label for="firstName" class="form-label">First name</label>
+                            <input type="text" class="form-control" id="firstName" th:field="*{firstName}"
+                                placeholder="John" required>
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('firstName')}"
+                                th:errors="*{firstName}"></div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="lastName" class="form-label">Last name</label>
+                            <input type="text" class="form-control" id="lastName" th:field="*{lastName}"
+                                placeholder="Doe" required>
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('lastName')}"
+                                th:errors="*{lastName}"></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email address</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                            <input type="email" class="form-control" id="email" th:field="*{email}"
+                                placeholder="name@example.com" required autocomplete="email">
+                        </div>
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Phone number</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                            <input type="tel" class="form-control" id="phone" th:field="*{phone}"
+                                placeholder="+91 98765 43210" required autocomplete="tel">
+                        </div>
+                        <div class="form-text">Used for enrollment and payment receipts.</div>
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-sm-6">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" th:field="*{password}"
+                                placeholder="Strong password" required autocomplete="new-password">
+                            <div class="form-text">Minimum 8 characters.</div>
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('password')}"
+                                th:errors="*{password}"></div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="confirmPassword" class="form-label">Confirm password</label>
+                            <input type="password" class="form-control" id="confirmPassword"
+                                th:field="*{confirmPassword}" placeholder="Repeat password" required
+                                autocomplete="new-password">
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('confirmPassword')}"
+                                th:errors="*{confirmPassword}"></div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-gradient w-100 py-2 mb-3">
+                        Create account <i class="bi bi-person-plus ms-2"></i>
+                    </button>
+
+                    <p class="text-center text-muted mb-3" style="font-size: 0.9rem;">
+                        Already have an account? <a th:href="@{/login}"
+                            class="fw-semibold text-decoration-none">Sign in</a>
+                    </p>
+
+                    <div class="text-center">
+                        <a th:href="@{/home}" class="text-muted text-decoration-none small"><i
+                                class="bi bi-arrow-left me-1"></i> Back to Home</a>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

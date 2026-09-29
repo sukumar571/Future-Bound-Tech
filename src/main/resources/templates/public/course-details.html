@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+
+    <section class="page-header">
+        <div class="container">
+            <div class="page-header-content">
+                <p class="mb-2"><a th:href="@{/courses}" class="text-white-50 text-decoration-none"><i class="bi bi-arrow-left"></i> All courses</a></p>
+                <h1 class="page-header-title" th:text="${course.title}">Course</h1>
+                <p class="page-header-subtitle" th:text="${course.shortDescription}">Short description</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-padding" style="background: var(--light-bg);">
+        <div class="container">
+            <div th:replace="~{fragments/alerts :: alerts}"></div>
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    <div class="card border-0 shadow-sm mb-4 overflow-hidden card-accent">
+                        <div class="course-detail-hero" th:classappend="'theme-' + ${course.themeKey}">
+                            <img th:if="${course.thumbnailUrl}" th:src="@{${course.thumbnailUrl}}" th:alt="${course.title}">
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="d-flex flex-wrap gap-2 mb-3">
+                                <span class="badge text-bg-primary" th:text="${course.category.label}">Category</span>
+                                <span class="badge text-bg-secondary" th:text="${#strings.capitalize(#strings.toLowerCase(course.level.name()))}">Level</span>
+                                <span class="badge text-bg-info" th:text="${#strings.capitalize(#strings.toLowerCase(course.trainingMode.name()))}">Mode</span>
+                                <span class="badge text-bg-success" th:if="${course.certificateEligible}">Certificate eligible</span>
+                            </div>
+                            <h2 class="h4 fw-bold">About this course</h2>
+                            <p class="text-muted" style="white-space: pre-line;" th:text="${course.detailedDescription}">Details</p>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm mb-4 card-accent blue" th:if="${!course.learningOutcomeItems.isEmpty()}">
+                        <div class="card-body p-4">
+                            <h2 class="h5 fw-bold">Learning outcomes</h2>
+                            <ul class="mt-3 fbt-check-list">
+                                <li th:each="item : ${course.learningOutcomeItems}" th:text="${item}">Outcome</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm mb-4 card-accent yellow" th:if="${!course.prerequisiteItems.isEmpty()}">
+                        <div class="card-body p-4">
+                            <h2 class="h5 fw-bold">Prerequisites</h2>
+                            <ul class="mt-3 fbt-check-list">
+                                <li th:each="item : ${course.prerequisiteItems}" th:text="${item}">Prerequisite</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm mb-4 card-accent purple" th:if="${!course.projectItems.isEmpty()}">
+                        <div class="card-body p-4">
+                            <h2 class="h5 fw-bold">Projects</h2>
+                            <ul class="mt-3 fbt-check-list">
+                                <li th:each="item : ${course.projectItems}" th:text="${item}">Project</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm mb-4 card-accent cyan" th:if="${syllabusPreview != null and !syllabusPreview.isEmpty()}">
+                        <div class="card-body p-4">
+                            <h2 class="h5 fw-bold mb-3">Curriculum</h2>
+                            <div class="accordion" id="publicSyllabus">
+                                <div class="accordion-item" th:each="module, mIter : ${syllabusPreview}">
+                                    <h3 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                                th:attr="data-bs-target='#publicModule' + ${module.id}">
+                                            <span class="badge text-bg-dark me-2" th:text="'M' + ${module.orderIndex}">#</span>
+                                            <span th:text="${module.title}">Module</span>
+                                            <span class="badge text-bg-light text-dark ms-2"
+                                                  th:text="${module.lessonCount} + ' lessons'">3 lessons</span>
+                                        </button>
+                                    </h3>
+                                    <div th:id="'publicModule' + ${module.id}" class="accordion-collapse collapse"
+                                         data-bs-parent="#publicSyllabus">
+                                        <div class="accordion-body py-2">
+                                            <ul class="list-unstyled mb-0">
+                                                <li class="d-flex justify-content-between align-items-center py-1 border-bottom"
+                                                    th:each="lesson : ${module.lessons}">
+                                                    <span><i class="bi me-2" th:classappend="${lesson.lessonType.icon}"></i><span th:text="${lesson.title}">Lesson</span></span>
+                                                    <small class="text-muted" th:if="${lesson.durationLabel}" th:text="${lesson.durationLabel}">45 min</small>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-muted small mb-0 mt-3">
+                                <i class="bi bi-info-circle me-1"></i>Full lesson content, notes, and downloads unlock after enrollment.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card border-0 shadow-sm sticky-top card-accent" style="top: 90px;">
+                        <div class="card-body p-4">
+                            <h2 class="h5 fw-bold mb-3">Enrollment</h2>
+                            <p class="mb-1"><i class="bi bi-clock me-2 text-primary"></i><span th:text="${course.durationLabel}">Duration</span></p>
+                            <p class="mb-1"><i class="bi bi-person me-2 text-primary"></i>
+                                <span th:text="${course.trainerName != null} ? ${course.trainerName} : 'Trainer to be assigned'">Trainer</span>
+                            </p>
+                            <p class="mb-3" th:if="${course.trainerExpertise}"><small class="text-muted" th:text="${course.trainerExpertise}"></small></p>
+
+                            <div class="p-3 rounded-3 mb-3 bg-soft-blue">
+                                <div th:if="${course.feeConfigured}">
+                                    <div th:if="${course.discountConfigured}">
+                                        <div class="text-muted text-decoration-line-through" th:text="${course.formattedFee}">Fee</div>
+                                        <div class="fs-4 fw-bold" th:text="${course.formattedDiscountFee}">Discount</div>
+                                        <small class="text-muted">Discounted fee</small>
+                                    </div>
+                                    <div th:unless="${course.discountConfigured}">
+                                        <div class="fs-4 fw-bold" th:text="${course.formattedFee}">Fee</div>
+                                        <small class="text-muted">Course fee</small>
+                                    </div>
+                                </div>
+                                <div th:unless="${course.feeConfigured}">
+                                    <div class="fw-bold">Fee on request</div>
+                                    <small class="text-muted">The institute has not published a final fee for this course yet.</small>
+                                </div>
+                            </div>
+
+                            <div th:if="${enrolled}" class="alert alert-success">You are enrolled in this course.</div>
+                            <a th:if="${enrolled}" th:href="@{/student/courses/{id}/syllabus(id=${course.id})}"
+                               class="btn btn-outline-primary w-100 py-2 mb-3">
+                                <i class="bi bi-list-task me-1"></i> Open syllabus
+                            </a>
+
+                            <form th:if="${!enrolled}" sec:authorize="hasRole('STUDENT')" th:action="@{/student/checkout}" method="get" class="mb-1">
+                                <input type="hidden" name="slug" th:value="${course.slug}">
+                                <div class="mb-3" th:if="${enrollableBatches != null and !enrollableBatches.isEmpty()}">
+                                    <label class="form-label small fw-semibold">Choose a batch</label>
+                                    <select class="form-select" name="batchId">
+                                        <option value="">— No preference (assigned later) —</option>
+                                        <option th:each="b : ${enrollableBatches}" th:value="${b.id}"
+                                                th:text="${b.batchName + (b.maxSeats != null ? ' · ' + b.seatsAvailable + ' seats left' : '') + ' · ' + b.mode}"></option>
+                                    </select>
+                                    <small class="text-muted">Only published batches with open enrollment are shown.</small>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100 py-2">Enroll Now</button>
+                                <p class="small text-muted text-center mt-2 mb-0" th:if="${course.feeConfigured}">You'll confirm fee and payment on the next step.</p>
+                                <p class="small text-muted text-center mt-2 mb-0" th:unless="${course.feeConfigured}">Enrollment opens once the institute publishes a fee.</p>
+                            </form>
+                            <a th:if="${!enrolled}" sec:authorize="!isAuthenticated()" th:href="@{/login}" class="btn btn-primary w-100 py-2">Login to Enroll</a>
+                            <p class="small text-muted mt-2 mb-0" sec:authorize="hasAnyRole('ADMIN','TRAINER')">Staff accounts cannot enroll as students.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+
+</html>

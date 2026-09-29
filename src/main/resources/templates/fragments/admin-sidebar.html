@@ -1,0 +1,134 @@
+<!-- Admin Portal Sidebar Fragment — Future Bound Tech -->
+<aside th:fragment="adminSidebar(active)" class="admin-sidebar">
+    <div class="card border-0 shadow-sm admin-sidebar-card">
+        <div class="card-body p-2">
+            <div class="portal-rail-title">
+                <span class="rail-chip"><i class="bi bi-shield-lock-fill"></i></span>
+                <span>Admin Console<small>Institute control</small></span>
+            </div>
+            <ul class="nav flex-column gap-1">
+                <li class="sidebar-heading">Overview</li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/dashboard}" th:classappend="${active == 'dashboard'} ? 'active'">
+                        <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/reports}" th:classappend="${active == 'reports'} ? 'active'">
+                        <i class="bi bi-graph-up me-2"></i> Reports
+                    </a>
+                </li>
+
+                <li class="sidebar-heading">People</li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/students}" th:classappend="${active == 'students'} ? 'active'">
+                        <i class="bi bi-people me-2"></i> Students
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/trainers}" th:classappend="${active == 'trainers'} ? 'active'">
+                        <i class="bi bi-person-video3 me-2"></i> Trainers
+                    </a>
+                </li>
+
+                <li class="sidebar-heading">Academics</li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/courses}" th:classappend="${active == 'courses'} ? 'active'">
+                        <i class="bi bi-journal-bookmark me-2"></i> Courses
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/syllabus}" th:classappend="${active == 'syllabus'} ? 'active'">
+                        <i class="bi bi-list-columns me-2"></i> Syllabus
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/batches}" th:classappend="${active == 'batches'} ? 'active'">
+                        <i class="bi bi-collection me-2"></i> Batches
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/live-classes}" th:classappend="${active == 'classes'} ? 'active'">
+                        <i class="bi bi-camera-video me-2"></i> Live Classes
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/enrollments}" th:classappend="${active == 'enrollments'} ? 'active'">
+                        <i class="bi bi-ui-checks me-2"></i> Enrollments
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/assignments}" th:classappend="${active == 'assignments'} ? 'active'">
+                        <i class="bi bi-pencil-square me-2"></i> Assignments
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/quizzes}" th:classappend="${active == 'quizzes'} ? 'active'">
+                        <i class="bi bi-patch-question me-2"></i> Quizzes
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/certificates}" th:classappend="${active == 'certificates'} ? 'active'">
+                        <i class="bi bi-award me-2"></i> Certificates
+                    </a>
+                </li>
+
+                <li class="sidebar-heading">Commerce</li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/payments}" th:classappend="${active == 'payments'} ? 'active'">
+                        <i class="bi bi-credit-card me-2"></i> Payments
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/coupons}" th:classappend="${active == 'coupons'} ? 'active'">
+                        <i class="bi bi-ticket-perforated me-2"></i> Coupons
+                    </a>
+                </li>
+
+                <li class="sidebar-heading">Engagement</li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/notifications}" th:classappend="${active == 'notifications'} ? 'active'">
+                        <i class="bi bi-bell me-2"></i> Notifications
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/announcements}" th:classappend="${active == 'announcements'} ? 'active'">
+                        <i class="bi bi-megaphone me-2"></i> Announcements
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/practice}" th:classappend="${active == 'practice'} ? 'active'">
+                        <i class="bi bi-controller me-2"></i> Practice
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/placements}" th:classappend="${active == 'placements'} ? 'active'">
+                        <i class="bi bi-briefcase me-2"></i> Placements
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/testimonials}" th:classappend="${active == 'testimonials'} ? 'active'">
+                        <i class="bi bi-star me-2"></i> Testimonials
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/contact-messages}" th:classappend="${active == 'contact'} ? 'active'">
+                        <i class="bi bi-envelope me-2"></i> Contact Messages
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/faqs}" th:classappend="${active == 'faqs'} ? 'active'">
+                        <i class="bi bi-patch-question me-2"></i> FAQs
+                    </a>
+                </li>
+
+                <li class="sidebar-heading">System</li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/settings}" th:classappend="${active == 'settings'} ? 'active'">
+                        <i class="bi bi-gear me-2"></i> Settings
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</aside>

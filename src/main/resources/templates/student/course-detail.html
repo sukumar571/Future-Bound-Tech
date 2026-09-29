@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+
+    <section class="student-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/student-sidebar :: studentSidebar('courses')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+                    <p class="mb-2">
+                        <a th:href="@{/student/courses}" class="text-decoration-none small">
+                            <i class="bi bi-arrow-left"></i> Back to My Courses
+                        </a>
+                    </p>
+
+                    <div class="card border-0 shadow-sm mb-4 overflow-hidden">
+                        <div class="course-thumb" style="height: 220px; font-size: 4rem;"
+                             th:style="'height:220px;' + (${course.thumbnailUrl != null} ? 'background-image:url(' + ${course.thumbnailUrl} + ');' : '')">
+                            <i class="bi bi-book-half" th:if="${course.thumbnailUrl == null}"></i>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                                <div>
+                                    <h1 class="h4 mb-1" th:text="${course.title}">Course</h1>
+                                    <p class="text-muted mb-0">
+                                        <i class="bi bi-person-badge me-1"></i><span th:text="${course.trainerName}">Trainer</span>
+                                        <span th:if="${course.categoryLabel}"> · <span th:text="${course.categoryLabel}"></span></span>
+                                        <span th:if="${course.levelLabel}"> · <span th:text="${course.levelLabel}"></span></span>
+                                    </p>
+                                </div>
+                                <span class="badge align-self-start"
+                                      th:classappend="${course.completed} ? 'text-bg-success' : (${course.active} ? 'text-bg-primary' : 'text-bg-secondary')"
+                                      th:text="${course.completed} ? 'Completed' : (${course.active} ? 'In Progress' : 'Enrolled')">Active</span>
+                            </div>
+
+                            <hr>
+                            <div class="d-flex justify-content-between small mb-1">
+                                <span class="text-muted" th:text="${course.completedLessons} + ' of ' + ${course.totalLessons} + ' lessons completed'"></span>
+                                <span class="fw-bold" th:text="${course.progressPercent} + '%'"></span>
+                            </div>
+                            <div class="progress mb-3" style="height: 12px;">
+                                <div class="progress-bar" th:classappend="${course.completed} ? 'bg-success' : ''"
+                                     th:style="'width:' + ${course.progressPercent} + '%'"></div>
+                            </div>
+
+                            <div class="row g-2 mb-3" th:if="${course.lastCompletedLesson != null or course.nextLesson != null}">
+                                <div class="col-md-6" th:if="${course.lastCompletedLesson != null}">
+                                    <div class="border rounded p-2 small">
+                                        <i class="bi bi-check2-circle text-success me-1"></i>
+                                        <span class="text-muted">Last completed:</span>
+                                        <span class="fw-semibold" th:text="${course.lastCompletedLesson}"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6" th:if="${course.nextLesson != null}">
+                                    <div class="border rounded p-2 small">
+                                        <i class="bi bi-arrow-right-circle text-primary me-1"></i>
+                                        <span class="text-muted">Up next:</span>
+                                        <span class="fw-semibold" th:text="${course.nextLesson}"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex flex-wrap gap-2">
+                                <a th:href="@{/student/courses/{id}/syllabus(id=${course.courseId})}" class="btn btn-primary">
+                                    <i class="bi bi-list-check me-1"></i> View Syllabus &amp; Lessons
+                                </a>
+                                <a th:if="${course.slug}" th:href="@{/courses/{slug}(slug=${course.slug})}"
+                                   class="btn btn-outline-secondary">
+                                    <i class="bi bi-info-circle me-1"></i> Public Page
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body p-4 text-center">
+                                    <i class="bi bi-camera-video fs-1 text-primary"></i>
+                                    <h2 class="h6 mt-2">Live Classes</h2>
+                                    <a th:href="@{/student/classes}" class="btn btn-sm btn-outline-primary">View classes</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body p-4 text-center">
+                                    <i class="bi bi-patch-question fs-1 text-primary"></i>
+                                    <h2 class="h6 mt-2">Quizzes</h2>
+                                    <a th:href="@{/student/quizzes}" class="btn btn-sm btn-outline-primary">View quizzes</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+
+</html>

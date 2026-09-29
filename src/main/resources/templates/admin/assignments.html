@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/admin-sidebar :: adminSidebar('assignments')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <div>
+                            <h1 class="h3">Assignments</h1>
+                            <p class="text-muted mb-0" th:text="${#lists.size(assignments)} + ' assignment(s)'">0</p>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm">
+                        <div class="table-responsive">
+                            <table class="table data-table mb-0 align-middle">
+                                <thead class="table-light">
+                                    <tr><th>Title</th><th>Course</th><th>Batch</th><th>Due</th><th>Submissions</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="a : ${assignments}">
+                                        <td class="fw-semibold" th:text="${a.title}">Title</td>
+                                        <td th:text="${a.courseTitle} ?: '—'">Course</td>
+                                        <td th:text="${a.batchName} ?: '—'">Batch</td>
+                                        <td>
+                                            <div th:text="${a.dueDate != null} ? ${#temporals.format(a.dueDate, 'd MMM yyyy')} : '—'">date</div>
+                                            <span class="badge text-bg-danger" th:if="${a.dueLabel == 'Overdue'}">Overdue</span>
+                                        </td>
+                                        <td th:text="${a.submissionCount}">0</td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(assignments)}">
+                                        <td colspan="5"><div class="empty-state"><i class="bi bi-pencil-square"></i>No assignments created yet.</div></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

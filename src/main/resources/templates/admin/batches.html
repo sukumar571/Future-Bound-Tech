@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/admin-sidebar :: adminSidebar('batches')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <div>
+                            <h1 class="h3">Batches</h1>
+                            <p class="text-muted mb-0" th:text="${#lists.size(batches)} + ' batch(es)'">0</p>
+                        </div>
+                        <a th:href="@{/admin/batches/new}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i> Add batch</a>
+                    </div>
+
+                    <div class="card border-0 shadow-sm">
+                        <div class="table-responsive">
+                            <table class="table data-table mb-0 align-middle">
+                                <thead class="table-light">
+                                    <tr><th>Batch</th><th>Course</th><th>Trainer</th><th>Schedule</th><th>Mode</th><th>Seats</th><th>Status</th><th>Enrollment</th><th class="text-end">Actions</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="b : ${batches}">
+                                        <td class="fw-semibold" th:text="${b.batchName}">Batch</td>
+                                        <td th:text="${b.courseTitle} ?: '—'">Course</td>
+                                        <td th:text="${b.trainerName} ?: '—'">Trainer</td>
+                                        <td class="small">
+                                            <div th:text="${b.startDate != null} ? ${#temporals.format(b.startDate, 'd MMM yyyy')} : 'Dates TBA'">dates</div>
+                                            <div class="text-muted" th:text="${b.startTime != null} ? ${#temporals.format(b.startTime, 'hh:mm a')} : '—'">time</div>
+                                        </td>
+                                        <td th:text="${b.mode} ?: '—'">mode</td>
+                                        <td><span th:text="${b.enrolledCount}">0</span> / <span th:text="${b.maxSeats} ?: '—'">—</span></td>
+                                        <td><span class="badge text-bg-primary" th:text="${b.statusLabel} ?: ${b.status}">Status</span></td>
+                                        <td class="text-nowrap">
+                                            <span class="badge" th:classappend="${b.published} ? 'text-bg-success' : 'text-bg-secondary'" th:text="${b.published} ? 'Published' : 'Unpublished'">Pub</span>
+                                            <span class="badge" th:classappend="${b.enrollmentStatus.name() == 'OPEN'} ? 'text-bg-info' : 'text-bg-dark'" th:text="${b.enrollmentStatusLabel}">Enroll</span>
+                                        </td>
+                                        <td class="text-end text-nowrap">
+                                            <form th:action="@{/admin/batches/{id}/publish(id=${b.id})}" method="post" class="d-inline" th:if="${!b.published}">
+                                                <button type="submit" class="btn btn-sm btn-outline-success" title="Publish"><i class="bi bi-eye"></i></button>
+                                            </form>
+                                            <form th:action="@{/admin/batches/{id}/unpublish(id=${b.id})}" method="post" class="d-inline" th:if="${b.published}">
+                                                <button type="submit" class="btn btn-sm btn-outline-secondary" title="Unpublish"><i class="bi bi-eye-slash"></i></button>
+                                            </form>
+                                            <form th:action="@{/admin/batches/{id}/enrollment(id=${b.id})}" method="post" class="d-inline">
+                                                <input type="hidden" name="status" th:value="${b.enrollmentStatus.name() == 'OPEN'} ? 'CLOSED' : 'OPEN'">
+                                                <button type="submit" class="btn btn-sm btn-outline-warning"
+                                                        th:title="${b.enrollmentStatus.name() == 'OPEN'} ? 'Close enrollment' : 'Open enrollment'">
+                                                    <i class="bi" th:classappend="${b.enrollmentStatus.name() == 'OPEN'} ? 'bi-lock' : 'bi-unlock'"></i>
+                                                </button>
+                                            </form>
+                                            <a class="btn btn-sm btn-outline-primary" th:href="@{/admin/batches/{id}/edit(id=${b.id})}" title="Edit"><i class="bi bi-pencil"></i></a>
+                                            <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal"
+                                                    th:attr="data-action=@{/admin/batches/{id}/delete(id=${b.id})},data-name=${b.batchName}" title="Delete"><i class="bi bi-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(batches)}">
+                                        <td colspan="9"><div class="empty-state"><i class="bi bi-collection"></i>No batches created yet.</div></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <form method="post" id="deleteForm" class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Delete batch</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-0">Are you sure you want to delete <strong id="deleteName"></strong>? Batches with enrolled students cannot be deleted.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger"><i class="bi bi-trash me-1"></i> Delete</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var modal = document.getElementById('deleteModal');
+            if (modal) {
+                modal.addEventListener('show.bs.modal', function (e) {
+                    var btn = e.relatedTarget;
+                    document.getElementById('deleteForm').action = btn.getAttribute('data-action');
+                    document.getElementById('deleteName').textContent = btn.getAttribute('data-name');
+                });
+            }
+        });
+    </script>
+</body>
+</html>

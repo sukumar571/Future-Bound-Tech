@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+
+    <section class="student-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/student-sidebar :: studentSidebar('assignments')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+                    <h1 class="h4 mb-4"><i class="bi bi-pencil-square me-2 text-primary"></i>Assignments</h1>
+
+                    <div class="accordion" id="assignmentList" th:if="${!assignments.isEmpty()}">
+                        <div class="accordion-item border-0 shadow-sm mb-3 rounded" th:each="a, iter : ${assignments}">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button fw-semibold" type="button" data-bs-toggle="collapse"
+                                        th:classappend="${!iter.first} ? 'collapsed'"
+                                        th:attr="data-bs-target='#assign' + ${a.id}">
+                                    <div class="d-flex justify-content-between align-items-center w-100 pe-3">
+                                        <span th:text="${a.title}">Assignment</span>
+                                        <span class="ms-3">
+                                            <span class="badge text-bg-success" th:if="${a.submissionStatus == 'GRADED'}">Graded</span>
+                                            <span class="badge text-bg-secondary" th:if="${a.submissionStatus == 'PENDING'}">Submitted</span>
+                                            <span class="badge text-bg-danger" th:if="${a.submissionStatus == 'REJECTED'}">Rejected</span>
+                                            <span class="badge text-bg-warning" th:if="${!a.submitted and a.overdue}">Overdue</span>
+                                            <span class="badge text-bg-info" th:if="${!a.submitted and !a.overdue}">Pending</span>
+                                        </span>
+                                    </div>
+                                </button>
+                            </h2>
+                            <div th:id="'assign' + ${a.id}" class="accordion-collapse collapse"
+                                 th:classappend="${iter.first} ? 'show'" data-bs-parent="#assignmentList">
+                                <div class="accordion-body">
+                                    <p class="small text-muted mb-1"><i class="bi bi-journal me-1"></i><span th:text="${a.courseTitle}">Course</span></p>
+                                    <p class="small mb-2" th:if="${a.dueDate}">
+                                        <i class="bi bi-calendar-event me-1 text-danger"></i>
+                                        Due: <span th:text="${#temporals.format(a.dueDate, 'MMM d, yyyy h:mm a')}">Due</span>
+                                        <span class="badge text-bg-warning ms-1" th:if="${a.maxMarks != null}">Max <span th:text="${a.maxMarks}">0</span> marks</span>
+                                    </p>
+                                    <p th:if="${a.description}" th:text="${a.description}">Description</p>
+
+                                    <a th:if="${a.hasAttachment}" th:href="@{/files/student/assignments/{id}/attachment(id=${a.id})}"
+                                       class="btn btn-sm btn-outline-primary mb-2">
+                                        <i class="bi bi-download me-1"></i> Download assignment file
+                                        <span th:if="${a.attachmentName}" class="text-muted">(<span th:text="${a.attachmentName}">file</span>)</span>
+                                    </a>
+
+                                    <div class="alert alert-success small" th:if="${a.submissionStatus == 'GRADED'}">
+                                        <div><i class="bi bi-check-circle me-1"></i> Your submission has been graded.</div>
+                                        <div th:if="${a.score != null}">Score: <strong th:text="${a.score}"></strong><span th:if="${a.maxMarks != null}" th:text="' / ' + ${a.maxMarks}"></span></div>
+                                        <div th:if="${a.late}" class="text-warning"><i class="bi bi-clock-history me-1"></i>Submitted late.</div>
+                                        <div th:if="${a.feedback}">Feedback: <em th:text="${a.feedback}"></em></div>
+                                    </div>
+
+                                    <div class="alert alert-secondary small" th:if="${a.submissionStatus == 'PENDING'}">
+                                        <i class="bi bi-hourglass-split me-1"></i> Submitted<span th:if="${a.late}"> <strong>(late)</strong></span> — awaiting review. You can still update before grading.
+                                    </div>
+
+                                    <div class="alert alert-danger small" th:if="${a.closed and !a.submitted}">
+                                        <i class="bi bi-lock me-1"></i> The submission deadline has passed — submissions are closed.
+                                    </div>
+
+                                    <!-- Submit form -->
+                                    <form th:action="@{/student/assignments/{id}/submit(id=${a.id})}" method="post"
+                                          enctype="multipart/form-data" class="row g-2 align-items-end mt-2"
+                                          th:if="${a.submissionStatus != 'GRADED' and !a.closed}">
+                                        <div class="col-12" th:if="${a.overdue and a.allowLate}">
+                                            <div class="alert alert-warning small py-1 mb-1"><i class="bi bi-clock-history me-1"></i> The deadline has passed; your submission will be marked <strong>late</strong>.</div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-semibold">Upload your work</label>
+                                            <input class="form-control form-control-sm" type="file" name="file" required>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label small fw-semibold">Note (optional)</label>
+                                            <input class="form-control form-control-sm" type="text" name="note" placeholder="Short note">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button type="submit" class="btn btn-sm btn-primary w-100">
+                                                <i class="bi bi-upload me-1"></i> <span th:text="${a.submitted} ? 'Update' : 'Submit'">Submit</span>
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm" th:if="${assignments.isEmpty()}">
+                        <div class="card-body empty-state">
+                            <i class="bi bi-clipboard-check"></i>
+                            <h3 class="h5">No assignments yet</h3>
+                            <p>Assignments from your enrolled course batches will appear here.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+
+</html>

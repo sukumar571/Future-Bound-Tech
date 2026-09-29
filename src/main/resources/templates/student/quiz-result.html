@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+
+    <section class="student-shell">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm text-center">
+                        <div class="card-body p-5">
+                            <div class="mb-3">
+                                <i class="bi" th:classappend="${result.passed} ? 'bi-trophy-fill text-success' : 'bi-x-octagon-fill text-danger'"
+                                   style="font-size: 4rem;"></i>
+                            </div>
+                            <h1 class="h4" th:text="${result.passed} ? 'Congratulations! You passed' : 'Keep practising!'">Result</h1>
+                            <p class="text-muted" th:text="${result.quizTitle}">Quiz</p>
+
+                            <div class="display-3 fw-bold my-3" th:text="${result.scorePercent} + '%'">0%</div>
+
+                            <div class="row text-start g-3 mb-4">
+                                <div class="col-6">
+                                    <div class="border rounded p-3">
+                                        <div class="small text-muted">Correct answers</div>
+                                        <div class="fw-bold" th:text="${result.correctAnswers} + ' / ' + ${result.totalQuestions}">0 / 0</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="border rounded p-3">
+                                        <div class="small text-muted">Pass mark</div>
+                                        <div class="fw-bold" th:text="${result.passingScore} + '%'">0%</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="progress mb-4" style="height: 12px;">
+                                <div class="progress-bar" th:classappend="${result.passed} ? 'bg-success' : 'bg-danger'"
+                                     th:style="'width:' + ${result.scorePercent} + '%'"></div>
+                            </div>
+
+                            <span class="badge mb-4" th:classappend="${result.passed} ? 'text-bg-success' : 'text-bg-danger'"
+                                  th:text="'Attempt #' + ${result.attemptNumber}"></span>
+
+                            <div class="d-flex justify-content-center gap-2">
+                                <a th:href="@{/student/quizzes/{id}/take(id=${result.quizId})}" class="btn btn-outline-primary">
+                                    <i class="bi bi-arrow-repeat me-1"></i> Retake
+                                </a>
+                                <a th:href="@{/student/quizzes}" class="btn btn-primary">
+                                    <i class="bi bi-list me-1"></i> All Quizzes
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+
+</html>

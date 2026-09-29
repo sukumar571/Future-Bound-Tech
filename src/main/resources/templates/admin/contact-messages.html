@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/admin-sidebar :: adminSidebar('contact')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <div>
+                            <h1 class="h3">Contact Messages</h1>
+                            <p class="text-muted mb-0" th:text="${#lists.size(messages)} + ' message(s)'">0</p>
+                        </div>
+                    </div>
+
+                    <form th:action="@{/admin/contact-messages}" method="get" class="card border-0 shadow-sm mb-3">
+                        <div class="card-body">
+                            <div class="row g-2 align-items-end">
+                                <div class="col-md-6">
+                                    <label class="form-label small text-muted mb-1" for="q">Search</label>
+                                    <input type="text" id="q" name="q" class="form-control" placeholder="Name, email or message"
+                                           th:value="${searchQuery}">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small text-muted mb-1" for="status">Status</label>
+                                    <select id="status" name="status" class="form-select">
+                                        <option value="">All statuses</option>
+                                        <option th:each="s : ${statuses}" th:value="${s.name()}" th:text="${s.label}"
+                                                th:selected="${statusFilter == s.name()}"></option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2 d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary flex-grow-1"><i class="bi bi-search"></i></button>
+                                    <a th:href="@{/admin/contact-messages}" class="btn btn-outline-secondary" title="Clear"><i class="bi bi-x-lg"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div th:if="${#lists.isEmpty(messages)}" class="card border-0 shadow-sm">
+                        <div class="card-body"><div class="empty-state mb-0"><i class="bi bi-envelope"></i>No messages match your filters.</div></div>
+                    </div>
+
+                    <div class="accordion" id="msgAccordion">
+                        <div class="card border-0 shadow-sm mb-2" th:each="m, st : ${messages}">
+                            <div class="card-body d-flex justify-content-between align-items-start flex-wrap gap-2">
+                                <div>
+                                    <div class="fw-semibold">
+                                        <span th:text="${m.subject} ?: 'General enquiry'">Subject</span>
+                                        <span class="badge ms-1"
+                                              th:classappend="${m.status.name() == 'RESOLVED'} ? 'text-bg-success' : (${m.status.name() == 'FOLLOW_UP'} ? 'text-bg-warning' : 'text-bg-info')"
+                                              th:text="${m.statusLabel}">New</span>
+                                    </div>
+                                    <div class="small text-muted">
+                                        <span th:text="${m.name}">Name</span> &middot;
+                                        <a th:href="'mailto:' + ${m.email}" th:text="${m.email}">email</a>
+                                        <span th:if="${m.phone}"> &middot; <a th:href="'tel:' + ${m.phone}" th:text="${m.phone}">phone</a></span>
+                                        <span th:if="${m.courseInterest}"> &middot; <i class="bi bi-journal-bookmark"></i> <span th:text="${m.courseInterest}">course</span></span>
+                                        &middot;
+                                        <span th:text="${m.createdAt != null} ? ${#temporals.format(m.createdAt, 'd MMM yyyy, hh:mm a')} : ''">date</span>
+                                    </div>
+                                    <p class="mb-0 mt-2" th:text="${m.message}">message</p>
+                                </div>
+                                <form th:action="@{/admin/contact-messages/{id}/status(id=${m.id})}" method="post" class="text-nowrap d-flex gap-2 align-items-center">
+                                    <select name="status" class="form-select form-select-sm" style="width:auto" aria-label="Status">
+                                        <option th:each="s : ${statuses}" th:value="${s.name()}" th:text="${s.label}"
+                                                th:selected="${m.status != null and m.status.name() == s.name()}"></option>
+                                    </select>
+                                    <button type="submit" class="btn btn-sm btn-outline-primary">Update</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

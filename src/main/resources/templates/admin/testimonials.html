@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/admin-sidebar :: adminSidebar('testimonials')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <div>
+                            <h1 class="h3">Testimonials</h1>
+                            <p class="text-muted mb-0" th:text="${#lists.size(reviews)} + ' review(s)'">0</p>
+                        </div>
+                        <a th:href="@{/admin/testimonials/new}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i> New testimonial</a>
+                    </div>
+
+                    <div class="card border-0 shadow-sm">
+                        <div class="table-responsive">
+                            <table class="table data-table mb-0 align-middle">
+                                <thead class="table-light">
+                                    <tr><th>Author</th><th>Context</th><th>Rating</th><th>Comment</th><th>Approval</th><th>Visibility</th><th class="text-end">Actions</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="r : ${reviews}">
+                                        <td class="fw-semibold">
+                                            <span th:text="${r.authorName} ?: (${r.studentName} ?: 'Anonymous')">Author</span>
+                                            <span class="badge text-bg-secondary ms-1" th:if="${r.demo}">Demo</span>
+                                        </td>
+                                        <td class="small" th:text="${r.contextLabel} ?: (${r.courseTitle} ?: '—')">Course</td>
+                                        <td class="text-nowrap">
+                                            <span class="text-warning" th:each="i : ${#numbers.sequence(1, 5)}">
+                                                <i class="bi" th:classappend="${r.rating != null and i <= r.rating} ? 'bi-star-fill' : 'bi-star'"></i>
+                                            </span>
+                                        </td>
+                                        <td class="small text-truncate" style="max-width:240px" th:text="${r.comment} ?: '—'">comment</td>
+                                        <td>
+                                            <span class="badge" th:classappend="${r.approved} ? 'text-bg-success' : 'text-bg-secondary'"
+                                                  th:text="${r.approved} ? 'Approved' : 'Pending'">Approved</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge" th:classappend="${r.published} ? 'text-bg-primary' : 'text-bg-light text-dark'"
+                                                  th:text="${r.published} ? 'Public' : 'Hidden'">Public</span>
+                                        </td>
+                                        <td class="text-end text-nowrap">
+                                            <a class="btn btn-sm btn-outline-primary" th:href="@{/admin/testimonials/{id}/edit(id=${r.id})}" title="Edit"><i class="bi bi-pencil"></i></a>
+                                            <form th:action="@{/admin/testimonials/{id}/approve(id=${r.id})}" method="post" class="d-inline">
+                                                <input type="hidden" name="approved" th:value="${r.approved} ? 'false' : 'true'">
+                                                <button type="submit" class="btn btn-sm btn-outline-success" th:title="${r.approved} ? 'Revoke approval' : 'Approve'"
+                                                        th:text="${r.approved} ? 'Unapprove' : 'Approve'">Approve</button>
+                                            </form>
+                                            <form th:action="@{/admin/testimonials/{id}/publish(id=${r.id})}" method="post" class="d-inline">
+                                                <input type="hidden" name="published" th:value="${r.published} ? 'false' : 'true'">
+                                                <button type="submit" class="btn btn-sm btn-outline-primary" th:text="${r.published} ? 'Unpublish' : 'Publish'">Publish</button>
+                                            </form>
+                                            <form th:action="@{/admin/testimonials/{id}/delete(id=${r.id})}" method="post" class="d-inline" onsubmit="return confirm('Delete this testimonial?');">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(reviews)}">
+                                        <td colspan="7"><div class="empty-state"><i class="bi bi-star"></i>No testimonials yet.</div></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/admin-sidebar :: adminSidebar('practice')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <div>
+                            <h1 class="h3">Mock Tests</h1>
+                            <p class="text-muted mb-0">Timed, auto-scored practice tests</p>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a th:href="@{/admin/practice/questions}" class="btn btn-outline-secondary"><i class="bi bi-list-ul me-1"></i>Questions</a>
+                            <a th:href="@{/admin/practice/tests/new}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>New test</a>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm">
+                        <div class="table-responsive">
+                            <table class="table data-table mb-0 align-middle">
+                                <thead class="table-light">
+                                    <tr><th>Title</th><th>Questions</th><th>Total marks</th><th>Duration</th><th>Passing</th><th>Attempts</th><th>Status</th><th class="text-end">Actions</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="t : ${tests}">
+                                        <td class="fw-semibold" th:text="${t.title}">Title</td>
+                                        <td th:text="${t.questionCount}">0</td>
+                                        <td th:text="${t.totalMarks}">0</td>
+                                        <td th:text="${t.durationMinutes != null} ? ${t.durationMinutes} + ' min' : 'Untimed'">—</td>
+                                        <td th:text="${t.passingMarks != null} ? ${t.passingMarks} : '50%'">—</td>
+                                        <td th:text="${t.attemptCount}">0</td>
+                                        <td><span class="badge" th:classappend="${t.published} ? 'text-bg-success' : 'text-bg-secondary'" th:text="${t.published} ? 'Published' : 'Draft'">Status</span></td>
+                                        <td class="text-end text-nowrap">
+                                            <a th:href="@{/admin/practice/tests/{id}/edit(id=${t.id})}" class="btn btn-sm btn-outline-secondary" title="Edit"><i class="bi bi-pencil"></i></a>
+                                            <form th:action="${t.published} ? @{/admin/practice/tests/{id}/unpublish(id=${t.id})} : @{/admin/practice/tests/{id}/publish(id=${t.id})}" method="post" class="d-inline">
+                                                <button type="submit" class="btn btn-sm btn-outline-success" th:title="${t.published} ? 'Move to draft' : 'Publish'"><i class="bi" th:classappend="${t.published} ? 'bi-eye-slash' : 'bi-eye'"></i></button>
+                                            </form>
+                                            <form th:action="@{/admin/practice/tests/{id}/delete(id=${t.id})}" method="post" class="d-inline" onsubmit="return confirm('Delete this mock test?');">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(tests)}">
+                                        <td colspan="8"><div class="empty-state"><i class="bi bi-clipboard-check"></i>No mock tests yet.</div></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

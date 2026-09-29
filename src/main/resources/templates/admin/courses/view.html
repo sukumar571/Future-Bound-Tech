@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+
+    <section class="section-padding" style="background: var(--light-bg);">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-start mb-4">
+                <div>
+                    <a th:href="@{/admin/courses}" class="text-decoration-none"><i class="bi bi-arrow-left"></i> All courses</a>
+                    <h1 class="h3 fw-bold mt-2" th:text="${course.title}">Course</h1>
+                    <p class="text-muted mb-0" th:text="${course.slug}">slug</p>
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                    <a class="btn btn-outline-secondary" th:href="@{/admin/courses/{id}/syllabus(id=${course.id})}">
+                        <i class="bi bi-list-task me-1"></i> Manage syllabus
+                    </a>
+                    <a class="btn btn-outline-primary" th:href="@{/admin/courses/{id}/edit(id=${course.id})}">Edit</a>
+                    <form th:if="${course.status.name() != 'PUBLISHED'}" th:action="@{/admin/courses/{id}/publish(id=${course.id})}" method="post">
+                        <button class="btn btn-success" type="submit">Publish</button>
+                    </form>
+                    <form th:if="${course.status.name() == 'PUBLISHED'}" th:action="@{/admin/courses/{id}/unpublish(id=${course.id})}" method="post">
+                        <button class="btn btn-warning" type="submit">Unpublish</button>
+                    </form>
+                    <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteCourseModal">Delete</button>
+                </div>
+            </div>
+
+            <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="card border-0 shadow-sm mb-4">
+                        <img th:if="${course.thumbnailUrl}" th:src="@{${course.thumbnailUrl}}" class="card-img-top" th:alt="${course.title}">
+                        <div class="card-body">
+                            <span class="badge me-1"
+                                  th:classappend="${course.status.name() == 'PUBLISHED'} ? 'text-bg-success' : 'text-bg-secondary'"
+                                  th:text="${course.status}">Status</span>
+                            <span class="badge" th:classappend="${course.publicListed} ? 'text-bg-success' : 'text-bg-light text-dark'"
+                                  th:text="${course.publicListed} ? 'Public' : 'Not public'">Public</span>
+                            <span class="badge text-bg-info" th:if="${course.certificateEligible}">Certificate eligible</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-0">
+                            <table class="table mb-0">
+                                <tbody>
+                                    <tr><th class="w-25">Category</th><td th:text="${course.category.label}">Cat</td></tr>
+                                    <tr><th>Skill level</th><td th:text="${course.level}">Level</td></tr>
+                                    <tr><th>Duration</th><td th:text="${course.durationLabel}">Duration</td></tr>
+                                    <tr><th>Training mode</th><td th:text="${course.trainingMode}">Mode</td></tr>
+                                    <tr><th>Trainer</th><td th:text="${course.trainerName != null} ? ${course.trainerName} : 'Unassigned'">Trainer</td></tr>
+                                    <tr>
+                                        <th>Course fee</th>
+                                        <td th:text="${course.feeConfigured} ? ${course.formattedFee} : 'Not set'">Fee</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Discount fee</th>
+                                        <td th:text="${course.discountConfigured} ? ${course.formattedDiscountFee} : 'Not set'">Discount</td>
+                                    </tr>
+                                    <tr><th>Short description</th><td th:text="${course.shortDescription}"></td></tr>
+                                    <tr><th>Detailed description</th><td style="white-space:pre-line;" th:text="${course.detailedDescription}"></td></tr>
+                                    <tr>
+                                        <th>Learning outcomes</th>
+                                        <td>
+                                            <ul class="mb-0">
+                                                <li th:each="item : ${course.learningOutcomeItems}" th:text="${item}"></li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Prerequisites</th>
+                                        <td>
+                                            <ul class="mb-0">
+                                                <li th:each="item : ${course.prerequisiteItems}" th:text="${item}"></li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Projects</th>
+                                        <td>
+                                            <ul class="mb-0">
+                                                <li th:each="item : ${course.projectItems}" th:text="${item}"></li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <a class="btn btn-link mt-3" th:href="@{/courses/{slug}(slug=${course.slug})}" th:if="${course.publicListed}">Open public page</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="modal fade" id="deleteCourseModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Delete this course?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    Deletion is blocked if the course already has enrollments or other related records. In that case, unpublish it instead.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form th:action="@{/admin/courses/{id}/delete(id=${course.id})}" method="post">
+                        <button type="submit" class="btn btn-danger">Delete safely</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+
+</html>

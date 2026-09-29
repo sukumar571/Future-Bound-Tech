@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/trainer-sidebar :: trainerSidebar('quizzes')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <div>
+                            <h1 class="h3" th:text="${quiz.title}">Quiz</h1>
+                            <p class="text-muted mb-0">
+                                <span th:text="${quiz.courseTitle}">Course</span>
+                                <span> · <span th:text="${quiz.timeLimitMinutes}">0</span> min</span>
+                                <span> · Passing <span th:text="${quiz.passingScore}">0</span>%</span>
+                            </p>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a th:href="@{/trainer/quizzes/{id}/questions/new(id=${quiz.id})}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i> Add question</a>
+                            <a th:href="@{/trainer/quizzes}" class="btn btn-link">Back</a>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-12" th:if="${#lists.isEmpty(questions)}">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body"><div class="empty-state mb-0"><i class="bi bi-list-ol"></i>No questions yet. Add the first question.</div></div>
+                            </div>
+                        </div>
+                        <div class="col-12" th:each="q, iter : ${questions}">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start gap-2">
+                                        <div>
+                                            <div class="text-muted small">Question <span th:text="${iter.count}">1</span></div>
+                                            <div class="fw-semibold" th:text="${q.questionText}">Question text</div>
+                                        </div>
+                                        <div class="text-nowrap">
+                                            <a class="btn btn-sm btn-outline-primary" th:href="@{/trainer/questions/{id}/edit(id=${q.id})}" title="Edit"><i class="bi bi-pencil"></i></a>
+                                            <form th:action="@{/trainer/questions/{id}/delete(id=${q.id})}" method="post" class="d-inline"
+                                                  onsubmit="return confirm('Delete this question?');">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <ul class="list-unstyled mt-3 mb-0 small">
+                                        <li th:if="${q.optionA}" th:classappend="${q.correctOption == 'A'} ? 'fw-bold text-success'" >
+                                            <i th:class="${q.correctOption == 'A'} ? 'bi bi-check-circle-fill' : 'bi bi-circle'"></i> A. <span th:text="${q.optionA}"></span>
+                                        </li>
+                                        <li th:if="${q.optionB}" th:classappend="${q.correctOption == 'B'} ? 'fw-bold text-success'">
+                                            <i th:class="${q.correctOption == 'B'} ? 'bi bi-check-circle-fill' : 'bi bi-circle'"></i> B. <span th:text="${q.optionB}"></span>
+                                        </li>
+                                        <li th:if="${q.optionC}" th:classappend="${q.correctOption == 'C'} ? 'fw-bold text-success'">
+                                            <i th:class="${q.correctOption == 'C'} ? 'bi bi-check-circle-fill' : 'bi bi-circle'"></i> C. <span th:text="${q.optionC}"></span>
+                                        </li>
+                                        <li th:if="${q.optionD}" th:classappend="${q.correctOption == 'D'} ? 'fw-bold text-success'">
+                                            <i th:class="${q.correctOption == 'D'} ? 'bi bi-check-circle-fill' : 'bi bi-circle'"></i> D. <span th:text="${q.optionD}"></span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/trainer-sidebar :: trainerSidebar('profile')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <div>
+                            <h1 class="h3">My profile</h1>
+                            <p class="text-muted mb-0">Update your contact details, expertise and bio. Your role and account status are managed by the institute.</p>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm form-card">
+                        <div class="card-body p-4">
+                            <form th:action="@{/trainer/profile}" th:object="${profileForm}" method="post">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="firstName">First name</label>
+                                        <input type="text" id="firstName" th:field="*{firstName}" class="form-control"
+                                               th:classappend="${#fields.hasErrors('firstName')} ? 'is-invalid'">
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="lastName">Last name</label>
+                                        <input type="text" id="lastName" th:field="*{lastName}" class="form-control"
+                                               th:classappend="${#fields.hasErrors('lastName')} ? 'is-invalid'">
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="email">Email</label>
+                                        <input type="email" id="email" th:field="*{email}" class="form-control" readonly>
+                                        <div class="form-text">Your email is your login and cannot be changed here.</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="phone">Phone</label>
+                                        <input type="text" id="phone" th:field="*{phone}" class="form-control"
+                                               th:classappend="${#fields.hasErrors('phone')} ? 'is-invalid'" placeholder="+91 90000 00000">
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label" for="expertise">Expertise</label>
+                                        <input type="text" id="expertise" th:field="*{expertise}" class="form-control" maxlength="160"
+                                               placeholder="e.g. Java, Spring Boot, System Design"
+                                               th:classappend="${#fields.hasErrors('expertise')} ? 'is-invalid'">
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('expertise')}" th:errors="*{expertise}"></div>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label" for="bio">Bio</label>
+                                        <textarea id="bio" th:field="*{bio}" class="form-control" rows="5" maxlength="1000"
+                                                  placeholder="A short professional bio shown to your students"
+                                                  th:classappend="${#fields.hasErrors('bio')} ? 'is-invalid'"></textarea>
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('bio')}" th:errors="*{bio}"></div>
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-2 mt-4">
+                                    <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i> Save changes</button>
+                                    <a th:href="@{/trainer/dashboard}" class="btn btn-outline-secondary">Cancel</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

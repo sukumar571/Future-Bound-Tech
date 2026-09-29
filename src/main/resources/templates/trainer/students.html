@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/trainer-sidebar :: trainerSidebar('students')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <div>
+                            <h1 class="h3">My students</h1>
+                            <p class="text-muted mb-0">Learners enrolled in your batches.</p>
+                        </div>
+                    </div>
+
+                    <form method="get" th:action="@{/trainer/students}" class="admin-toolbar">
+                        <input type="text" name="q" th:value="${q}" class="form-control" style="max-width:260px" placeholder="Search name or email">
+                        <select name="batchId" class="form-select" style="max-width:240px">
+                            <option value="">All batches</option>
+                            <option th:each="b : ${batches}" th:value="${b.id}" th:text="${b.batchName} + ' — ' + ${b.courseTitle}"
+                                    th:selected="${selectedBatchId != null and selectedBatchId == b.id}">Batch</option>
+                        </select>
+                        <button type="submit" class="btn btn-outline-secondary"><i class="bi bi-funnel"></i> Filter</button>
+                        <a th:href="@{/trainer/students}" class="btn btn-link">Reset</a>
+                    </form>
+
+                    <div class="card border-0 shadow-sm">
+                        <div class="table-responsive">
+                            <table class="table data-table mb-0 align-middle">
+                                <thead class="table-light">
+                                    <tr><th>Student</th><th>Batch</th><th>Course</th><th style="min-width:150px">Progress</th><th>Attendance</th><th class="text-end">Actions</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="s : ${students}">
+                                        <td>
+                                            <a class="fw-semibold text-decoration-none" th:href="@{/trainer/students/{id}(id=${s.studentId})}" th:text="${s.fullName}">Name</a>
+                                            <div class="small text-muted" th:text="${s.email}">email</div>
+                                        </td>
+                                        <td th:text="${s.batchName}">Batch</td>
+                                        <td th:text="${s.courseTitle}">Course</td>
+                                        <td>
+                                            <div class="progress" style="height:8px">
+                                                <div class="progress-bar" role="progressbar" th:style="'width:' + ${s.progressPercent} + '%'"
+                                                     th:attr="aria-valuenow=${s.progressPercent}" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                            <span class="small text-muted" th:text="${s.progressPercent} + '%'">0%</span>
+                                        </td>
+                                        <td>
+                                            <span class="small" th:text="${s.attendancePresent} + ' / ' + ${s.attendanceTotal}">0 / 0</span>
+                                            <div class="small text-muted" th:text="${s.attendanceTotal} > 0 ? ${s.attendancePercent} + '% present' : 'No records'"></div>
+                                        </td>
+                                        <td class="text-end">
+                                            <a class="btn btn-sm btn-outline-secondary" th:href="@{/trainer/students/{id}(id=${s.studentId})}"><i class="bi bi-eye"></i></a>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(students)}">
+                                        <td colspan="6"><div class="empty-state"><i class="bi bi-people"></i>No students match your filters.</div></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

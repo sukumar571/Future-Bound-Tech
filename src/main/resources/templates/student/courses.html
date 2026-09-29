@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+
+    <section class="student-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/student-sidebar :: studentSidebar('courses')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h1 class="h4 mb-0"><i class="bi bi-journal-bookmark me-2 text-primary"></i>My Courses</h1>
+                        <a th:href="@{/courses}" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-plus-lg me-1"></i> Enroll in more
+                        </a>
+                    </div>
+
+                    <div class="row g-4" th:if="${!courses.isEmpty()}">
+                        <div class="col-md-6 col-xl-4" th:each="course : ${courses}">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="course-thumb rounded-top"
+                                     th:style="${course.thumbnailUrl != null} ? 'background-image:url(' + ${course.thumbnailUrl} + ')' : ''">
+                                    <i class="bi bi-book-half" th:if="${course.thumbnailUrl == null}"></i>
+                                </div>
+                                <div class="card-body d-flex flex-column">
+                                    <div class="d-flex justify-content-between align-items-start mb-1">
+                                        <span class="badge text-bg-light text-dark" th:if="${course.categoryLabel}" th:text="${course.categoryLabel}">Category</span>
+                                        <span class="badge"
+                                              th:classappend="${course.completed} ? 'text-bg-success' : (${course.active} ? 'text-bg-primary' : 'text-bg-secondary')"
+                                              th:text="${course.completed} ? 'Completed' : (${course.active} ? 'Active' : 'Enrolled')">Active</span>
+                                    </div>
+                                    <h2 class="h6 mt-2 text-truncate" th:text="${course.title}">Course</h2>
+                                    <p class="small text-muted mb-2">
+                                        <i class="bi bi-person-badge me-1"></i><span th:text="${course.trainerName}">Trainer</span>
+                                        <span th:if="${course.levelLabel}"> · <span th:text="${course.levelLabel}">Level</span></span>
+                                    </p>
+                                    <div class="mt-auto">
+                                        <div class="d-flex justify-content-between small mb-1">
+                                            <span class="text-muted" th:text="${course.completedLessons} + '/' + ${course.totalLessons} + ' lessons'"></span>
+                                            <span class="fw-semibold" th:text="${course.progressPercent} + '%'"></span>
+                                        </div>
+                                        <div class="progress mb-3" style="height: 8px;">
+                                            <div class="progress-bar"
+                                                 th:classappend="${course.completed} ? 'bg-success' : ''"
+                                                 th:style="'width:' + ${course.progressPercent} + '%'"></div>
+                                        </div>
+                                        <div class="btn-group w-100" role="group">
+                                            <a th:href="@{/student/courses/{id}(id=${course.courseId})}"
+                                               class="btn btn-sm btn-primary">
+                                                <i class="bi bi-box-arrow-in-right me-1"></i> Open
+                                            </a>
+                                            <a th:href="@{/student/courses/{id}/syllabus(id=${course.courseId})}"
+                                               class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-list-check me-1"></i> Syllabus
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm" th:if="${courses.isEmpty()}">
+                        <div class="card-body empty-state">
+                            <i class="bi bi-journal-x"></i>
+                            <h3 class="h5">No enrolled courses yet</h3>
+                            <p>Explore our catalog and start your learning journey.</p>
+                            <a th:href="@{/courses}" class="btn btn-primary">Browse Courses</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/admin-sidebar :: adminSidebar('practice')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <h1 class="h3">Import questions</h1>
+                        <a th:href="@{/admin/practice/questions}" class="btn btn-link"><i class="bi bi-arrow-left"></i> Back to questions</a>
+                    </div>
+
+                    <div class="card form-card shadow-sm">
+                        <div class="card-body p-4">
+                            <form th:action="@{/admin/practice/questions/import}" method="post">
+                                <div class="mb-3">
+                                    <label class="form-label">Format</label>
+                                    <select name="format" class="form-select" style="max-width:220px">
+                                        <option value="json" th:selected="${format == null or format == 'json'}">JSON (one object per line, or an array)</option>
+                                        <option value="csv" th:selected="${format == 'csv'}">CSV</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Data</label>
+                                    <textarea name="payload" class="form-control font-monospace" rows="12" th:text="${payload}" placeholder='{"category":"JAVA","topic":"OOP","difficulty":"EASY","question":"Which keyword inherits a class?","optionA":"implements","optionB":"extends","optionC":"super","optionD":"this","correctOption":"B","explanation":"extends is used for class inheritance."}'></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary"><i class="bi bi-upload me-1"></i> Import</button>
+                                <a th:href="@{/admin/practice/questions}" class="btn btn-outline-secondary">Cancel</a>
+                            </form>
+
+                            <hr class="my-4">
+                            <div class="small text-muted">
+                                <p class="mb-1"><strong>JSON keys:</strong> type (optional, defaults MCQ), category, topic, difficulty, question, optionA..D, correctOption, explanation, marks.</p>
+                                <p class="mb-0"><strong>CSV columns:</strong> category, topic, difficulty, question, optionA, optionB, optionC, optionD, correctOption, explanation (optional).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

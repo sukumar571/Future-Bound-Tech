@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+
+    <section class="page-hero py-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <h1 class="display-6 fw-bold mb-2"><i class="bi bi-patch-check me-2 text-primary"></i>Certificate Verification</h1>
+                    <p class="lead text-muted">Confirm that a <span th:text="${institutionName}">Future Bound Tech</span> course certificate is genuine.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-7">
+                    <form th:action="@{/certificate/verify}" method="get" class="card border-0 shadow-sm mb-4">
+                        <div class="card-body p-4">
+                            <label for="number" class="form-label fw-semibold">Certificate number</label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text"><i class="bi bi-upc-scan"></i></span>
+                                <input id="number" type="text" name="number" th:value="${number}" class="form-control"
+                                       placeholder="FBT-CERT-2026-0001" autocomplete="off">
+                                <button type="submit" class="btn btn-primary px-4"><i class="bi bi-search me-1"></i> Verify</button>
+                            </div>
+                            <div class="form-text">Enter the certificate ID exactly as printed on the document.</div>
+                        </div>
+                    </form>
+
+                    <!-- Result -->
+                    <div th:if="${result != null}" class="card border-0 shadow-sm">
+                        <!-- VALID -->
+                        <div th:if="${result.valid}" class="row g-0">
+                            <div class="col-3 bg-success text-white d-flex align-items-center justify-content-center rounded-start" style="min-height:150px">
+                                <i class="bi bi-patch-check-fill" style="font-size:2.6rem"></i>
+                            </div>
+                            <div class="col-9">
+                                <div class="card-body">
+                                    <h2 class="h5 text-success mb-1">Valid certificate</h2>
+                                    <p class="text-muted small mb-3">This certificate is authentic and currently issued.</p>
+                                    <dl class="row mb-0 small">
+                                        <dt class="col-sm-4">Holder</dt><dd class="col-sm-8 fw-semibold" th:text="${result.studentName}">Name</dd>
+                                        <dt class="col-sm-4">Course</dt><dd class="col-sm-8" th:text="${result.courseTitle}">Course</dd>
+                                        <dt class="col-sm-4">Issued</dt>
+                                        <dd class="col-sm-8" th:text="${result.issueDate != null} ? ${#temporals.format(result.issueDate, 'd MMMM yyyy')} : '—'">Date</dd>
+                                        <dt class="col-sm-4">Institution</dt><dd class="col-sm-8 mb-0" th:text="${result.institutionName}">Future Bound Tech</dd>
+                                        <dt class="col-sm-4">Certificate ID</dt><dd class="col-sm-8 mb-0 font-monospace" th:text="${result.queriedNumber}">ID</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- REVOKED -->
+                        <div th:if="${result.outcome == 'REVOKED'}" class="row g-0">
+                            <div class="col-3 bg-danger text-white d-flex align-items-center justify-content-center rounded-start" style="min-height:150px">
+                                <i class="bi bi-x-octagon-fill" style="font-size:2.6rem"></i>
+                            </div>
+                            <div class="col-9">
+                                <div class="card-body">
+                                    <h2 class="h5 text-danger mb-1">Revoked certificate</h2>
+                                    <p class="text-muted small mb-2">This certificate has been revoked by the institute and is no longer valid.</p>
+                                    <p class="small mb-2"><span class="fw-semibold">Holder:</span> <span th:text="${result.studentName}">Name</span></p>
+                                    <p class="small mb-0"><span class="fw-semibold">Reason:</span> <span th:text="${result.revokeReason} ?: 'Not specified'">Reason</span></p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- PENDING -->
+                        <div th:if="${result.outcome == 'PENDING_APPROVAL'}" class="row g-0">
+                            <div class="col-3 bg-warning text-white d-flex align-items-center justify-content-center rounded-start" style="min-height:150px">
+                                <i class="bi bi-hourglass-split" style="font-size:2.6rem"></i>
+                            </div>
+                            <div class="col-9">
+                                <div class="card-body">
+                                    <h2 class="h5 text-warning-emphasis mb-1">Awaiting approval</h2>
+                                    <p class="text-muted small mb-0">This certificate has not yet been approved/issued and cannot be verified.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- NOT FOUND -->
+                        <div th:if="${result.outcome == 'NOT_FOUND'}" class="row g-0">
+                            <div class="col-3 bg-secondary text-white d-flex align-items-center justify-content-center rounded-start" style="min-height:150px">
+                                <i class="bi bi-question-circle-fill" style="font-size:2.6rem"></i>
+                            </div>
+                            <div class="col-9">
+                                <div class="card-body">
+                                    <h2 class="h5 text-secondary mb-1">Certificate not found</h2>
+                                    <p class="text-muted small mb-0">
+                                        No record matches <span class="font-monospace" th:text="${result.queriedNumber}">ID</span>.
+                                        Double-check the number, or contact the institute if the problem persists.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-light border mt-4 small text-muted">
+                        <i class="bi bi-shield-lock me-1"></i>
+                        Verification only confirms the authenticity of a certificate issued by the institute. It does not constitute a claim of external accreditation.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

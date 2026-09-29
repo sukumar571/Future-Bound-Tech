@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${pageTitle})}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    <div th:replace="~{fragments/navbar :: navbar-spacer}"></div>
+    <section class="admin-shell">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div th:replace="~{fragments/admin-sidebar :: adminSidebar('students')}"></div>
+                </div>
+                <div class="col-lg-9">
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <div class="admin-page-head">
+                        <h1 class="h3" th:text="${editing} ? 'Edit student' : 'Add student'">Student</h1>
+                        <a th:href="@{/admin/students}" class="btn btn-link"><i class="bi bi-arrow-left"></i> Back to students</a>
+                    </div>
+
+                    <div class="card form-card shadow-sm">
+                        <div class="card-body p-4">
+                            <form th:action="${formAction}" th:object="${studentForm}" method="post">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">First name</label>
+                                        <input type="text" class="form-control" th:field="*{firstName}" th:classappend="${#fields.hasErrors('firstName')} ? 'is-invalid'">
+                                        <div class="invalid-feedback" th:errors="*{firstName}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Last name</label>
+                                        <input type="text" class="form-control" th:field="*{lastName}" th:classappend="${#fields.hasErrors('lastName')} ? 'is-invalid'">
+                                        <div class="invalid-feedback" th:errors="*{lastName}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Email</label>
+                                        <input type="email" class="form-control" th:field="*{email}" th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'">
+                                        <div class="invalid-feedback" th:errors="*{email}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Phone</label>
+                                        <input type="text" class="form-control" th:field="*{phone}" th:classappend="${#fields.hasErrors('phone')} ? 'is-invalid'">
+                                        <div class="invalid-feedback" th:errors="*{phone}"></div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label class="form-label">Education</label>
+                                        <input type="text" class="form-control" th:field="*{education}" placeholder="e.g. B.Tech Computer Science">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label" th:if="${editing}">New password <span class="text-muted small">(leave blank to keep current)</span></label>
+                                        <label class="form-label" th:unless="${editing}">Password</label>
+                                        <input type="password" class="form-control" th:field="*{password}" autocomplete="new-password">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Confirm password</label>
+                                        <input type="password" class="form-control" th:field="*{confirmPassword}" autocomplete="new-password">
+                                    </div>
+                                    <div class="col-12 form-check ms-2" th:if="${editing}">
+                                        <input type="checkbox" class="form-check-input" id="active" th:field="*{active}">
+                                        <label class="form-check-label" for="active">Account active</label>
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <button type="submit" class="btn btn-primary"><i class="bi bi-check2 me-1"></i> Save</button>
+                                    <a th:href="@{/admin/students}" class="btn btn-outline-secondary">Cancel</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>
